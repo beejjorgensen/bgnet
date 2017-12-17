@@ -8,13 +8,13 @@ all:
 
 .PHONY: buildcp
 buildcp:
-	mkdir -p $(BUILDDIR)/{pdf,html/single,html/multi,html/archive}
+	mkdir -p $(BUILDDIR)/{pdf,html/single,html/multi,html/archive,translations}
 	cp -v website/* $(BUILDDIR)
 	cp -v builders/print/*.pdf $(BUILDDIR)/pdf
 	cp -v builders/html/$(PACKAGE)*.{tgz,zip} $(BUILDDIR)/html/archive
 	cp -v builders/html/singlepage/*.{html,css,png} $(BUILDDIR)/html/single
 	cp -v builders/html/multipage/*.{html,css,png} $(BUILDDIR)/html/multi
-	cp -rv translations/*.{pdf} $(BUILDDIR)
+	cp -v translations/*.pdf $(BUILDDIR)/translations 2>/dev/null || : 
 
 .PHONY: upload
 upload: all buildcp
@@ -24,6 +24,7 @@ upload: all buildcp
 pristine: clean
 	$(MAKE) -C builders $@
 	rm -rf $(BUILDDIR)
+	rm -f lib/*.pyc
 
 .PHONY: clean
 clean:
