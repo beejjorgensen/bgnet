@@ -63,7 +63,8 @@ have to consider any copyright issues when merging changes.
       <code file="..." />
       <code annotate="y">  ]]><foo>blah</foo><![CDATA[
 
-### bg2html
+### In `bg2html`
+
 * Auto-manpage links in <func> tags.
 
       <code file="..." />
