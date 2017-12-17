@@ -17,7 +17,7 @@ buildcp:
 	cp -v translations/*.pdf $(BUILDDIR)/translations 2>/dev/null || : 
 
 .PHONY: upload
-upload: all buildcp
+upload: pristine all buildcp
 	rsync -rv -e ssh --delete build/* $(UPLOADDIR)
 
 .PHONY: pristine

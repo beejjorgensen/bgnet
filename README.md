@@ -27,15 +27,19 @@ You'll need:
    If you have Gnu Make, it should work fine.  Other makes might work as
    well.  Windows users might want to check out Cygwin.
 
-2. There is no step two.
+2. Type `make buildcp` to copy all the build products and website to the
+   `build` directory.
 
-You can also `cd` to anywhere in the `output` directory tree and `make`.
+3. There is no step three.
+
+You can also `cd` to anywhere in the `builders` directory tree and
+`make`.
 
 `make clean` cleans, and `make pristine` cleans to "original" state.
 
 To embed your own fonts in the PDFs, see the file
-`output/print/fop.xconf` which already embeds the Liberation Fonts into
-the PDF.
+`builders/print/fop.xconf` which already embeds the Liberation Fonts
+into the PDF.
 
 The `makeupload` script demonstrates the build steps for a complete
 release.  You'll need to change the `upload` target in the top-level

@@ -1,8 +1,0 @@
-#!/bin/sh
-
-make pristine
-#make dist
-make
-make clean
-#make upload
-
