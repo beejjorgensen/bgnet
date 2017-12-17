@@ -41,10 +41,11 @@ To embed your own fonts in the PDFs, see the file
 `builders/print/fop.xconf` which already embeds the Liberation Fonts
 into the PDF.
 
-The `makeupload` script demonstrates the build steps for a complete
-release.  You'll need to change the `upload` target in the top-level
-`Makefile` to point to your host if you want to use that.  You're free
-to upload whatever versions you desire individually, as well.
+The `upload` target in the root `Makefile` demonstrates the build steps
+for a complete release.  You'll need to change the `UPLOADDIR` macro in
+the top-level `Makefile` to point to your host if you want to use that.
+You're free to upload whatever versions you desire individually, as
+well.
 
 ## Pull Requests
 
