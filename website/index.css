@@ -1,0 +1,101 @@
+body {
+	font-family: Helvetica,Arial,sans-serif;
+	font-size: 12pt;
+	margin: 30px;
+}
+
+#adsense {
+	float: right;
+	margin: 10px;
+}
+
+.maintitle {
+	font-weight:bold;
+	font-size: 2.0em;
+	margin-bottom: 0px;
+	margin-top: 3ex;
+}
+
+.subtitle {
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1.5em;
+	margin-top: 0.5ex;
+}
+
+.secttitle {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+.subsecttitle {
+	font-weight: bold;
+}
+
+.email {
+	font-family: "Courier","Courier New",monospace;
+	font-weight: bold;
+	font-size: 0.9em;
+}
+
+.headerbar {
+	border: #000 solid 2px;
+	border-color: #000;
+	border-style: solid;
+	border-width: 2px;
+	background-color: #DDD;
+	margin: 1em;
+	padding: 1em;
+}
+
+.beggartable {
+	border: #000,solid,2px;
+	border-color: #000;
+	border-style: solid;
+	border-width: 2px;
+	margin: 1em;
+	padding: 1em;
+}
+
+hr.singleline {
+	border: #000 solid 0px;
+	height: 1px;
+	background-color: #000;
+	border-color: #000;
+}
+
+.ilb {
+	display: inline-block;
+}
+
+.w50p {
+	width: 50%
+}
+
+.center {
+	text-align: center;
+}
+
+#suggestive-sell {
+	font-weight: bold;
+	margin-bottom: 1ex;
+	margin-top: 1ex;
+}
+
+.hr {
+	height: 1px;
+	background: #333;
+	display: inline-block;
+}
+
+.float-left {
+	float: left;
+}
+
+.clear-both {
+	clear: both;
+}
+
+.mb2ex {
+	margin-bottom: 2ex;
+}

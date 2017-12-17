@@ -4,107 +4,49 @@
 <meta name="Description" content="Beej's Guide to Network Programming">
 <meta name="Keywords" content="network programming sockets">
 <link rel="icon" type="image/gif" href="/guide/favicon.gif"/>
-<style type="text/css">
-<!--
-body {
-	font-family: Helvetica,Arial,sans-serif;
-	font-size: 12pt;
-}
-
-#adsense {
-	float: right;
-	margin: 10px;
-}
-
-*.maintitle {
-	font-weight:bold;
-	font-size: 2.0em;
-	margin-bottom: 0px;
-}
-
-*.subtitle {
-	font-weight: bold;
-	font-style: italic;
-	font-size: 1.5em;
-	margin-top: 0px;
-}
-
-*.secttitle {
-	font-weight: bold;
-	font-size: 1.2em;
-}
-
-*.subsecttitle {
-	font-weight: bold;
-}
-
-*.email {
-	font-family: "Courier","Courier New",monospace;
-	font-weight: bold;
-	font-size: 0.9em;
-}
-
-*.headerbar {
-	border: #000 solid 2px;
-	border-color: #000;
-	border-style: solid;
-	border-width: 2px;
-	background-color: #DDD;
-	margin: 1em;
-	padding: 1em;
-}
-
-*.beggartable {
-	border: #000,solid,2px;
-	border-color: #000;
-	border-style: solid;
-	border-width: 2px;
-	margin: 1em;
-	padding: 1em;
-}
-
-hr.singleline {
-	border: #000 solid 0px;
-	height: 1px;
-	background-color: #000;
-	border-color: #000;
-}
--->
-</style>
+<link rel="stylesheet" type="text/css" href="index.css"/>
 </head>
 
 <body>
 
-<table border="0" cellspacing="0" cellpadding="10" class="beggartable">
-<tr><td align="center"><small>Find it useful?</small><br/>
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
-<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHuQYJKoZIhvcNAQcEoIIHqjCCB6YCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYACzGjNdeobbyuFFRxWN4B7AyR3lFBKybAKc+HnQG4tBtRTx1BVzQuUTJRF2yLAT9CgaWQu/SLrAR1tNrysrFvqlXGkRe/0IUNp9wLE2flrpoRwf7Af3pRTNJdgy/JCiSti0Kaz9nR9jB8V8A8CU5gt+5fYZ5dpB0MhgUtYEeRICDELMAkGBSsOAwIaBQAwggE1BgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECDF+UJbmZdzHgIIBED/Kdg64miQoNja+JN1dLojdjTZocgYDS4ykmfBa3hmBkby3kMJWB/8oKkXN3nF8x8ZAjycNrAKejnIsq4oLYBt8/kD6KfeZmysyenw94CZhpkipGKmlvgzuJhygOw5k0wYXE/rV6k9/BVysJduTziLQJ3Yk/ye3KDV17Y8/drLAT0ueiL/sk7eWbEN6Drc1eEVL4FtfaayTWPCDF/McC6AuPLzv+RaoVX/QlOLsjuoibWrVk9P1Sq/76/bR8x5op//ZRDtHnQdy/EH86D0p6XD7EAMg2W1R01+zJ+cdYs6FyCeCFO5OH4d3Kfm1ihJ75JELAKSaomQweP0i4z68p/uoEFS1LMnDzRcwshxo3lmkoIIDhzCCA4MwggLsoAMCAQICAQAwDQYJKoZIhvcNAQEFBQAwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMB4XDTA0MDIxMzEwMTMxNVoXDTM1MDIxMzEwMTMxNVowgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBR07d/ETMS1ycjtkpkvjXZe9k+6CieLuLsPumsJ7QC1odNz3sJiCbs2wC0nLE0uLGaEtXynIgRqIddYCHx88pb5HTXv4SZeuv0Rqq4+axW9PLAAATU8w04qqjaSXgbGLP3NmohqM6bV9kZZwZLR/klDaQGo1u9uDb9lr4Yn+rBQIDAQABo4HuMIHrMB0GA1UdDgQWBBSWn3y7xm8XvVk/UtcKG+wQ1mSUazCBuwYDVR0jBIGzMIGwgBSWn3y7xm8XvVk/UtcKG+wQ1mSUa6GBlKSBkTCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb22CAQAwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQUFAAOBgQCBXzpWmoBa5e9fo6ujionW1hUhPkOBakTr3YCDjbYfvJEiv/2P+IobhOGJr85+XHhN0v4gUkEDI8r2/rNk1m0GA8HKddvTjyGw/XqXa+LSTlDYkqI8OwR8GEYj4efEtcRpRYBxV8KxAW93YDWzFGvruKnnLbDAF6VR5w/cCMn5hzGCAZowggGWAgEBMIGUMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbQIBADAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMDUxMDEzMjE1OTQ3WjAjBgkqhkiG9w0BCQQxFgQUi4sL42exjNSpMdBUve7Ce9pPAYcwDQYJKoZIhvcNAQEBBQAEgYCM72UuR8Nn4fKimzHPU3DjjWAwlSzm5YuhFmbX/gvpZBGoVOZ4INSEtParcwwQrTzmtbKmrcxyogEI6aRbjd/RU6aPPlkxSpga+Ds0hajH8AHqNFR2Tmbd0e5NHmGh6av/nV9ai7xcLPIlxD5GOMTBGThzd6fkCQQkslYSxU8shg==-----END PKCS7-----
-"></form><small>Make a donation!</small></td>
-
-<td bgcolor="#dddddd" valign="top"><p><b>News</b>: Three things, first
-thing last!  <b><a href="http://beej.us/blog/">Check out my tech
-blog!</a></b>&mdash;and tell all your friends!</p>
-
-<p>Next!  You can</p>
-
-<p><center><a target="_blank" href="http://beej.us/guide/url/bgbuy">
-<img border="0" src="bgnetcover.png" alt="book cover image"/><br/>
-<b><i><span style="font-size:1.4em;">Buy the Guide as a Real Life
-Perfect-Bound BOOK right now!</span><br/>Holy Moly!</i></b></a></center></p>
-
-<p>Just click on the above link!  Proceeds from the reasonably-priced
-volume go to support further guide development!  Wo0t!</p>
-
-<p>And now the first thing: the Guide, as you may have read earlier, has
-been updated to include IPv6 stuff!  Amaze your friends and dismay your
-enemies today!  (And tell me about any errors you find along the
-way!)</p></td></tr>
-
-</table>
+<div class="center">
+	<div class="hr w50p"></div>
+	<div id="suggestive-sell">Like the guide? Pitch in!</div>
+	<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+	<input type="hidden" name="cmd" value="_s-xclick">
+	<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but04.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+	<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+	</form>
+	<div class="hr w50p"></div>
+</div>
 
 <p>
+
+<div class="center">
+	<div class="w50p ilb">
+		<div class="float-left mb2ex">
+			<a target="_blank" href="http://beej.us/guide/url/bgbuy">
+				<img border="0" src="bgnetcover.png" alt="book cover image"/>
+			</a>
+		</div>
+
+		<div style="margin-top: 4ex;">
+			<a target="_blank" href="http://beej.us/guide/url/bgbuy">
+				<b><span class="bigfont">Buy the Guide as a Real Life
+				Perfect-Bound BOOK right now!</span></b>
+				<p>
+				<b><i>Holy Moly!</i></b>
+			</a>
+		</div>
+
+		<div class="clear-both"></div>
+
+	</div>
+</div>
+
+<div class="center">
+	<div class="hr w50p"></div>
+</div>
 
 <h1 class="maintitle">Beej's Guide to Network Programming</h1>
 <h2 class="subtitle">Using Internet Sockets</h2>
