@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+
+<!-- yes, I know there are other XML DTDs out there, but I needed
+something fast, simple, and underengineered. -->
+
+<bgdd root="guide">
+	<element name="guide">
+		<eref name="guideinfo"/>
+		<eref name="indexinfo"/>
+		<eref name="sect1"/>
+	</element>
+
+	<element name="indexinfo">
+		<eref name="indexentry"/>
+	</element>
+	
+	<element name="indexentry">
+		<element name="copysym"/>
+		<element name="email"/>
+		<eref name="super"/>
+		<element name="br"/>
+		<eref name="table"/>
+		<element name="spaces"/>
+		<element name="index"/>
+		<gref name="types"/>
+		<gref name="links"/>
+		<gref name="misc"/>
+	</element>
+
+	<element name="guideinfo">
+		<eref name="title"/>
+		<eref name="subtitle"/>
+		<element name="version"/>
+		<element name="date"/>
+		<eref name="author"/>
+		<eref name="copyright"/>
+	</element>
+
+	<element name="title">
+		<gref name="types"/>
+		<gref name="links"/>
+	</element>
+
+	<element name="subtitle">
+		<gref name="types"/>
+	</element>
+
+	<element name="copyright">
+		<element name="copysym"/>
+	</element>
+
+	<element name="author">
+		<element name="name"/>
+		<element name="email"/>
+	</element>
+
+	<element name="sect1">
+		<gref name="sectCommon"/>
+		<eref name="sect2"/>
+		<eref name="manpage"/>
+	</element>
+
+	<element name="sect2">
+		<gref name="sectCommon"/>
+		<eref name="sect3"/>
+	</element>
+
+	<element name="sect3">
+		<gref name="sectCommon"/>
+	</element>
+
+	<element name="manpage">
+		<eref name="title"/>
+		<element name="short"><eref name="p"/><gref name="inlines"/></element>
+		<element name="prototypes"><eref name="p"/><gref name="inlines"/></element>
+		<element name="description"><eref name="p"/><gref name="inlines"/></element>
+		<element name="rvalue"><eref name="p"/><gref name="inlines"/></element>
+		<element name="example"><eref name="p"/><gref name="inlines"/></element>
+		<element name="seealso"><eref name="p"/><gref name="inlines"/></element>
+	</element>
+
+	<element name="p">
+		<element name="copysym"/>
+		<element name="email"/>
+		<eref name="super"/>
+		<element name="br"/>
+		<eref name="table"/>
+		<element name="spaces"/>
+		<element name="index"/>
+		<gref name="types"/>
+		<gref name="links"/>
+		<gref name="misc"/>
+	</element>
+
+	<element name="quote">
+		<element name="email"/>
+		<eref name="super"/>
+		<element name="br"/>
+		<gref name="types"/>
+		<gref name="links"/>
+		<gref name="misc"/>
+	</element>
+
+	<element name="super">
+		<gref name="links"/>
+		<gref name="types"/>
+	</element>
+
+	<element name="code">
+		<gref name="links"/>
+		<gref name="types"/>
+		<gref name="misc"/>
+	</element>
+
+	<element name="screen">
+		<gref name="links"/>
+		<gref name="types"/>
+	</element>
+
+	<element name="offsettext">
+		<gref name="links"/>
+		<gref name="types"/>
+	</element>
+
+	<element name="numlist">
+		<eref name="li"/>
+	</element>
+
+	<element name="list">
+		<eref name="li"/>
+	</element>
+
+	<element name="li">
+		<eref name="p"/>
+		<gref name="misc"/>
+		<gref name="links"/>
+		<gref name="types"/>
+	</element>
+
+	<element name="deflist">
+		<element name="def">
+			<element name="deftitle"><gref name="types"/></element>
+			<element name="deftext">
+				<eref name="p"/>
+				<gref name="inlines"/>
+			</element>
+		</element>
+	</element>
+
+	<element name="referenceset">
+		<eref name="reference"/>
+	</element>
+
+	<element name="reference">
+		<eref name="title"/>
+		<gref name="inlines"/>
+		<gref name="links"/>
+		<gref name="misc"/>
+		<gref name="types"/>
+	</element>
+
+	<element name="figure">
+		<eref name="title"/>
+		<eref name="image"/>
+	</element>
+
+	<element name="faq">
+		<element name="faqentry">
+			<element name="q">
+				<element name="copysym"/>
+				<element name="email"/>
+				<eref name="super"/>
+				<element name="br"/>
+				<eref name="table"/>
+				<gref name="misc"/>
+				<gref name="links"/>
+				<gref name="types"/>
+			</element>
+			<element name="a">
+				<eref name="p"/>
+				<gref name="inlines"/>
+				<gref name="misc"/>
+			</element>
+		</element>
+	</element>
+
+	<element name="table">
+		<element name="tr">
+			<element name="td">
+				<eref name="p"/>
+				<eref name="table"/>
+			</element>
+		</element>
+	</element>
+
+	<group name="types">
+		<element name="com"><gref name="links"/><gref name="types"/></element>
+		<element name="func"><gref name="links"/><gref name="types"/></element>
+		<element name="statement"><gref name="links"/><gref name="types"/></element>
+		<element name="var"><gref name="links"/><gref name="types"/></element>
+		<element name="type"><gref name="links"/><gref name="types"/></element>
+		<element name="operator"><gref name="links"/><gref name="types"/></element>
+		<element name="b"><gref name="links"/><gref name="types"/></element>
+		<element name="emp"><gref name="links"/><gref name="types"/></element>
+		<element name="tt"><gref name="links"/><gref name="types"/></element>
+		<element name="const"><gref name="links"/><gref name="types"/></element>
+		<element name="file"><gref name="links"/><gref name="types"/></element>
+		<element name="param"><gref name="links"/><gref name="types"/></element>
+		<element name="foreign"><gref name="links"/><gref name="types"/></element>
+	</group>
+
+	<group name="misc">
+		<element name="smiley"/>
+		<element name="winky"/>
+		<element name="evilwinky"/>
+		<element name="mu"/>
+		<eref name="ii"/>
+	</group>
+
+	<group name="sectCommon">
+		<eref name="title"/>
+		<eref name="p"/>
+		<eref name="faq"/>
+		<eref name="figure"/>
+		<gref name="inlines"/>
+	</group>
+
+	<element name="image"/>
+
+	<element name="link">
+		<eref name="image"/>
+		<gref name="types"/>
+		<gref name="misc"/>
+	</element>
+
+	<element name="ulink">
+		<eref name="image"/>
+		<gref name="types"/>
+	</element>
+
+	<element name="ii"/>
+
+	<group name="links">
+		<eref name="link"/>
+		<eref name="ulink"/>
+	</group>
+
+	<group name="inlines">
+		<eref name="quote"/>
+		<eref name="offsettext"/>
+		<eref name="code"/>
+		<eref name="screen"/>
+		<eref name="figure"/>
+		<eref name="list"/>
+		<eref name="numlist"/>
+		<eref name="deflist"/>
+		<eref name="referenceset"/>
+	</group>
+
+</bgdd>
+

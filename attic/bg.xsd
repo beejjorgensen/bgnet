@@ -1,0 +1,505 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:annotation>
+<xs:documentation>
+XML Schema for Beej's Guides.
+</xs:documentation>
+</xs:annotation>
+
+<!-- ====================== GROUPS ====================== -->
+
+<xs:group name="p.contents">
+	<xs:choice>
+		<xs:element ref="ii"/>
+		<xs:group ref="lists"/>
+		<xs:group ref="inlines"/>
+	</xs:choice>
+</xs:group>
+
+<xs:group name="lists">
+	<xs:choice>
+		<xs:element ref="list"/>
+		<xs:element ref="numlist"/>
+		<xs:element ref="deflist"/>
+	</xs:choice>
+</xs:group>
+
+<xs:group name="sectCommon">
+	<xs:choice>
+		<xs:element ref="p"/>
+		<xs:element ref="faq"/>
+		<xs:element ref="figure"/>
+		<xs:element ref="table"/>
+		<xs:element ref="quote"/>
+		<xs:element ref="offsettext"/>
+		<xs:element ref="code"/>
+		<xs:element ref="screen"/>
+		<xs:group ref="lists"/>
+		<xs:element ref="referenceset"/>
+	</xs:choice>
+</xs:group>
+
+<xs:group name="inlines">
+	<xs:choice>
+		<xs:element ref="email"/>
+		<xs:element ref="super"/>
+		<xs:element ref="b"/>
+		<xs:element ref="emp"/>
+		<xs:element ref="tt"/>
+		<xs:element ref="br"/>
+		<xs:group ref="types"/>
+		<xs:group ref="links"/>
+		<xs:group ref="misc"/>
+	</xs:choice>
+</xs:group>
+
+<xs:group name="types">
+	<xs:choice>
+		<xs:element ref="com"/>
+		<xs:element ref="func"/>
+		<xs:element ref="statement"/>
+		<xs:element ref="var"/>
+		<xs:element ref="type"/>
+		<xs:element ref="operator"/>
+		<xs:element ref="const"/>
+		<xs:element ref="file"/>
+		<xs:element ref="param"/>
+		<xs:element ref="foreign"/>
+	</xs:choice>
+</xs:group>
+
+<xs:group name="links">
+	<xs:choice>
+		<xs:element ref="link"/>
+		<xs:element ref="ulink"/>
+	</xs:choice>
+</xs:group>
+
+<xs:group name="misc">
+	<xs:choice>
+		<xs:element ref="smiley"/>
+		<xs:element ref="winky"/>
+		<xs:element ref="evilwinky"/>
+		<xs:element ref="mu"/>
+		<xs:element ref="copysym"/>
+		<xs:element ref="spaces"/>
+	</xs:choice>
+</xs:group>
+
+<!-- ====================== TYPES ====================== -->
+
+<xs:complexType name="inlineType" mixed="true">
+	<xs:choice minOccurs="0" maxOccurs="unbounded">
+		<xs:group ref="inlines"/>
+	</xs:choice>
+</xs:complexType>
+
+<xs:complexType name="pContainerType" mixed="true">
+	<xs:choice minOccurs="0" maxOccurs="unbounded">
+		<xs:element ref="p"/>
+	</xs:choice>
+</xs:complexType>
+
+<xs:complexType name="pContentsType" mixed="true">
+	<xs:choice minOccurs="0" maxOccurs="unbounded">
+		<xs:group ref="p.contents"/>
+	</xs:choice>
+</xs:complexType>
+
+<!-- ====================== ELEMENTS ====================== -->
+
+<xs:element name="guide">
+	<xs:complexType>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element ref="guideinfo" maxOccurs="1"/>
+				<xs:element ref="indexinfo" maxOccurs="1"/>
+				<xs:element ref="sect1" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element ref="indexinfo" maxOccurs="1"/>
+				<xs:element ref="guideinfo" maxOccurs="1"/>
+				<xs:element ref="sect1" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:choice>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="indexinfo">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="indexentry" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="indexentry">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+		<xs:attribute name="see" type="xs:string"/>
+		<xs:attribute name="seealso" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="guideinfo">
+	<xs:complexType>
+		<xs:all>
+			<xs:element ref="title"/>
+			<xs:element ref="subtitle" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="version" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="date" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="author" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="copyright" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="title">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="inlines"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="subtitle">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="inlines"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="version">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="inlines"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="date">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="inlines"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="author">
+	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element ref="name" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="email" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="name">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="inlines"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="email">
+	<xs:complexType mixed="true"/>
+</xs:element>
+
+<xs:element name="copyright">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="inlines"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="p" type="pContentsType"/>
+
+<xs:element name="sect1">
+	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element ref="title"/>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:group ref="sectCommon"/>
+				<xs:element ref="sect2"/>
+				<xs:element ref="manpage"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="sect2">
+	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element ref="title"/>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:group ref="sectCommon"/>
+				<xs:element ref="sect3"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="sect3">
+	<xs:complexType mixed="true">
+		<xs:sequence>
+			<xs:element ref="title"/>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:group ref="sectCommon"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="manpage">
+	<xs:complexType mixed="true">
+		<xs:all>
+			<xs:element ref="title" minOccurs="1" maxOccurs="1"/>
+			<xs:element ref="short" minOccurs="1" maxOccurs="1"/>
+			<xs:element ref="prototypes" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="description" minOccurs="1" maxOccurs="1"/>
+			<xs:element ref="rvalue" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="example" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="seealso" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="short" type="pContainerType"/>
+
+<xs:element name="prototypes">
+	<xs:complexType>
+		<xs:all>
+			<xs:element ref="code" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="description" type="pContainerType"/>
+
+<xs:element name="rvalue" type="pContainerType"/>
+
+<xs:element name="example" type="pContainerType"/>
+
+<xs:element name="seealso" type="pContainerType"/>
+
+<xs:element name="quote" type="pContainerType"/>
+
+<xs:element name="offsettext" type="pContainerType"/>
+
+<xs:element name="super" type="pContentsType"/>
+
+<xs:element name="code" type="pContentsType"/>
+
+<xs:element name="screen" type="pContentsType"/>
+
+<xs:element name="list">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="li" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="numlist">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="li" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="li">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p"/>
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="deflist">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="def" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="def">
+	<xs:complexType>
+		<xs:all>
+			<xs:element ref="deftitle" minOccurs="1" maxOccurs="1"/>
+			<xs:element ref="deftext" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="deftitle">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p"/>
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="deftext">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p"/>
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="referenceset">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="reference" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="reference">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="title"/>
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="figure">
+	<xs:complexType>
+		<xs:all>
+			<xs:element ref="title" minOccurs="0" maxOccurs="1"/>
+			<xs:element ref="image" minOccurs="1" maxOccurs="1"/>
+		</xs:all>
+		<xs:attribute name="id" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="image">
+	<xs:complexType>
+		<xs:attribute name="file" type="xs:string" use="required"/>
+		<xs:attribute name="printfile" type="xs:string"/>
+		<xs:attribute name="printwidth" type="xs:string"/>
+		<xs:attribute name="alt" type="xs:string"/>
+		<xs:attribute name="align" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="ii">
+	<xs:complexType>
+		<xs:attribute name="key" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="faq">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="faqentry" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="faqentry">
+	<xs:complexType>
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:element ref="q"/>
+			<xs:element ref="a"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="q">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p"/>
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="a">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="p"/>
+			<xs:group ref="p.contents"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="table">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="tr" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+		<xs:attribute name="border" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="tr">
+	<xs:complexType>
+		<xs:choice>
+			<xs:element ref="td" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="td">
+	<xs:complexType mixed="true">
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:group ref="sectCommon"/>
+		</xs:choice>
+		<xs:attribute name="width" type="xs:string"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="link" type="pContentsType"/>
+
+<xs:element name="ulink" type="pContentsType"/>
+
+<xs:element name="spaces">
+	<xs:complexType>
+		<xs:attribute name="count" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="b" type="inlineType"/>
+<xs:element name="emp" type="inlineType"/>
+<xs:element name="tt" type="inlineType"/>
+<xs:element name="com" type="inlineType"/>
+<xs:element name="func" type="inlineType"/>
+<xs:element name="statement" type="inlineType"/>
+<xs:element name="var" type="inlineType"/>
+<xs:element name="type" type="inlineType"/>
+<xs:element name="operator" type="inlineType"/>
+<xs:element name="const" type="inlineType"/>
+<xs:element name="file" type="inlineType"/>
+<xs:element name="param" type="inlineType"/>
+<xs:element name="foreign" type="inlineType"/>
+
+<xs:element name="br"/>
+<xs:element name="smiley"/>
+<xs:element name="winky"/>
+<xs:element name="evilwinky"/>
+<xs:element name="mu"/>
+<xs:element name="copysym"/>
+
+</xs:schema>
+

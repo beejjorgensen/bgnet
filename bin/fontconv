@@ -1,0 +1,60 @@
+#!/bin/bash
+
+function usage() {
+	echo "usage:" `basename $0` "[-fn fontname] -ttf|-pfm fontfile metricsfile.xml"
+	exit 1
+}
+
+FOPDIR=/opt/fop-0.93
+CLASSPATH=$FOPDIR/build/fop.jar:$FOPDIR/lib/avalon-framework.jar
+CLASSPATH=$CLASSPATH:$FOPDIR/lib/commons-logging-1.0.4.jar
+CLASSPATH=$CLASSPATH:$FOPDIR/lib/commons-io-1.1.jar
+
+fontfile=""
+metricsfile=""
+fontname=""
+mode=0 # 0=invalid, 1=ttf, 2=pfm
+
+while [ $# -gt 0 ]; do
+	if [ "x$1" = "x-fn" ]; then
+		shift
+		if [ $# -le 0 ]; then usage; fi
+		fontname=$1
+	elif [ "x$1" = "x-ttf" -a $mode -eq 0 ]; then
+		shift
+		if [ $# -le 0 ]; then usage; fi
+		fontfile=$1
+		mode=1
+	elif [ "x$1" = "x-pfm" -a $mode -eq 0 ]; then
+		shift
+		if [ $# -le 0 ]; then usage; fi
+		fontfile=$1
+		mode=2
+	elif [ "x$metricsfile" = "x" ]; then
+		metricsfile=$1
+	else
+		usage
+	fi
+	shift
+done
+
+if [ "x$fontfile" = "x" -o "x$metricsfile" = "x" ]; then
+	usage
+fi
+
+options=""
+
+if [ "x$fontname" != "x" ]; then
+	options="$options -fn $fontname"
+fi
+
+if [ $mode -eq 1 ]; then # mode=ttf
+	options="$options -enc ansi"
+fi
+
+case $mode in
+	0) usage;;
+	1) java -cp $CLASSPATH org.apache.fop.fonts.apps.TTFReader $options $fontfile $metricsfile;;
+	2) java -cp $CLASSPATH org.apache.fop.fonts.apps.PFMReader $options $fontfile $metricsfile;;
+esac
+

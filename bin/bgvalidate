@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# This wrapper exists to get a valid exit status back to the Makefiles.
+# java returns 0 to the OS no matter if there are errors in the
+# validation or not.
+#
+
+# uncomment the following line to disable validation:
+#disable=1
+
+SCRIPT=`basename $0`
+
+if [ $# -ne 2 ]; then
+	echo "usage: $SCRIPT xmlfile outfile"
+	exit 2
+fi
+
+if [ "x$disable" != "x" ]; then
+	touch $2
+	exit 0
+fi
+
+outfile="/tmp/bgvalidate-$$.tmp"
+DOMCount -v=always $1 2>&1 | tee $outfile
+errcount=`grep -c Error $outfile`
+
+if [ $errcount -eq 0 ]; then
+	mv $outfile $2
+	rm -f $outfile
+else
+	rm -f $outfile
+	exit 1
+fi
+

@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# PNGs out of inkscape SVGs aren't well-compressed and have tons of
+# extra data... this process shrinks them by half or more.
+#
+
+script=`basename $0`
+
+if [ $# -lt 1 ]; then
+	echo usage: $script pngfile
+	exit 1
+fi
+
+while [ $# -ge 1 ]; do
+
+	if [ ! -f $1 ]; then
+		echo ${script}: $1 not found
+	else
+
+		echo ${script}: processing $1...
+
+		tempfile=`mktemp`
+		pngtopnm -mix -background '#FFFFFF' $1 | pnmquant 32 | pnmtopng -compression 9 > $tempfile
+
+		if [ $? -eq 0 ]; then
+			mv $tempfile $1
+		else
+			echo ${script}: error in conversion
+			rm $tempfile
+			exit 3
+		fi
+
+	fi
+
+	shift
+done

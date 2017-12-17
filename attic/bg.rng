@@ -1,0 +1,222 @@
+<?xml version='1.0' encoding="ISO-8859-1"?>
+
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+
+	<start>
+		<element name="guide">
+			<element name="guideinfo">
+				<ref name="guideinfoContent"/>
+			</element>
+			<zeroOrMore>
+				<element name="sect1">
+					<ref name="sect1Content"/>
+				</element>
+			</zeroOrMore>
+		</element>
+	</start>
+
+	<define name="guideinfoContent">
+		<interleave>
+			<element name="title">
+				<ref name="titleContents"/>
+			</element>
+			<zeroOrMore>
+				<element name="subtitle">
+					<text/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="version">
+					<text/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="date">
+					<text/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="author">
+					<text/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="copyright">
+					<interleave><text/><element name="copysym"/></interleave>
+				</element>
+			</zeroOrMore>
+		</interleave>
+	</define>
+
+	<define name="titleContents">
+		<interleave>
+			<zeroOrMore>
+				<ref name="typesContents"/>
+			</zeroOrMore>
+			<text/>
+		</interleave>
+	</define>
+
+	<define name="sectCommon">
+		<interleave>
+
+nestin['sect1'] = ['title', 'sect2', 'p', 'faq', 'manpage', 'figure'] + _inlines
+nestin['sect2'] = ['title', 'sect3', 'p', 'faq', 'figure'] + _inlines
+nestin['sect3'] = ['title', 'p', 'faq', 'figure'] + _inlines
+
+	<define name="sect1Contents">
+		<interleave>
+			<element name="title">
+				<ref name="titleContents"/>
+			</element>
+	</define>
+
+	<define name="typesStdContents">
+		<mixed>
+			<zeroOrMore>
+				<ref name="linksContents/">
+			</zeroOrMore>
+			<zeroOrMore>
+				<ref name="typesContents/">
+			</zeroOrMore>
+		</mixed>
+	</define>
+
+	<define name="typesContents>">
+		<mixed>
+			<zeroOrMore>
+				<element name="com">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="func">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="statement">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="var">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="type">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="operator">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="b">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="emp">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="tt">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="const">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="file">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+			<zeroOrMore>
+				<element name="param">
+					<ref name="typesStdContents"/>
+				</element>
+			</zeroOrMore>
+		</mixed>
+	</define>
+
+</grammar>
+
+<!--
+_misc =		['smiley', 'winky', 'evilwinky', 'mu']
+_links =	['link', 'ulink']
+_inlines =	['quote', 'offsettext', 'code', 'screen', 'figure', 'list', \
+			'numlist', 'deflist']
+
+nestin = {}
+nestin['title'] = ['subtitle','#PCDATA'] + _types
+nestin['subtitle'] = ['#PCDATA'] + _types
+nestin['version'] = ['#PCDATA']
+nestin['date'] = ['#PCDATA']
+nestin['copyright'] = ['#PCDATA', 'copysym']
+nestin['author'] = ['name', 'email']
+nestin['name'] = ['#PCDATA']
+nestin['email'] = ['#PCDATA']
+nestin['manpage'] = ['title', 'short', 'prototypes', 'description', \
+						'rvalue', 'example', 'seealso']
+nestin['short'] = ['p'] + _inlines
+nestin['prototypes'] = ['p', 'code'] + _inlines
+nestin['description'] = ['p'] + _inlines
+nestin['rvalue'] = ['p'] + _inlines
+nestin['example'] = ['p'] + _inlines
+nestin['seealso'] = ['p'] + _inlines
+nestin['p'] = ['#PCDATA', 'copysym', 'email', 'super', 'br', 'table', \
+				'spaces', 'index'] + _types + _links + _misc
+nestin['com'] = ['#PCDATA'] + _links + _types
+nestin['func'] = ['#PCDATA'] + _links + _types
+nestin['statement'] = ['#PCDATA'] + _links + _types
+nestin['type'] = ['#PCDATA'] + _links + _types
+nestin['operator'] = ['#PCDATA'] + _links + _types
+nestin['var'] = ['#PCDATA'] + _links + _types
+nestin['emp'] = ['#PCDATA'] + _links + _types
+nestin['b'] = ['#PCDATA'] + _links + _types
+nestin['const'] = ['#PCDATA'] + _links + _types
+nestin['file'] = ['#PCDATA'] + _links + _types
+nestin['param'] = ['#PCDATA'] + _links + _types
+nestin['tt'] = ['#PCDATA', 'spaces'] + _links + _types
+nestin['super'] = ['#PCDATA'] + _links + _types
+nestin['quote'] = ['#PCDATA', 'email', 'super', 'br'] + _links + _types \
+					+ _misc
+nestin['smiley'] = []
+nestin['winky'] = []
+nestin['evilwinky'] = []
+nestin['link'] = ['#PCDATA', 'image'] + _types
+nestin['ulink'] = ['#PCDATA', 'image'] + _types
+nestin['code'] = ['#PCDATA'] + _links + _types
+nestin['screen'] = ['#PCDATA'] + _links + _types
+nestin['offsettext'] = ['#PCDATA'] + _links + _types
+nestin['numlist'] = ['li']
+nestin['list'] = ['li']
+nestin['li'] = ['#PCDATA', 'p'] + _types + _misc + _links
+nestin['deflist'] = ['def']
+nestin['def'] = ['deftitle', 'deftext']
+nestin['deftitle'] = ['#PCDATA'] + _types
+nestin['deftext'] = ['p'] + _inlines
+nestin['figure'] = ['title', 'image']
+nestin['image'] = ['#PCDATA']
+nestin['faq'] = ['faqentry']
+nestin['faqentry'] = ['q','a']
+nestin['q'] = ['#PCDATA', 'copysym', 'email', 'super', 'br', 'table'] + \
+				_types + _links + _misc
+nestin['a'] = ['p'] + _inlines
+
+nestin['figure'] = ['title', 'image']
+
+nestin['table'] = ['tr']
+nestin['tr'] = ['td']
+nestin['td'] = ['p', 'table']
+
+-->
+

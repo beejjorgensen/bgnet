@@ -1,0 +1,199 @@
+body {
+	background-color: white;
+	color: black;
+	font-family: "Times New Roman", "Times", "Georgia", serif;
+	font-size: 12pt;
+	margin: 35pt;
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+}
+
+#adsense {
+  float: right;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+
+*.joetable {
+	border-width: 1px;
+	border-style: solid;
+	padding: 0.2em;
+}
+
+*.navtable {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-size: 0.8em;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #e7e7e7;
+	border-color: #666;
+	padding: 0.5em;
+}
+
+*.sect1title {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-size: 1.7em;
+	font-weight: bold;
+	margin-bottom: 0.0em;
+}
+
+*.sect2title {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-size: 1.16em;
+	font-weight: bold;
+	margin-top: 1.5em;
+	margin-bottom: 0.0em;
+}
+
+*.sect3title {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-weight: bold;
+	margin-top: 1.5em;
+	margin-bottom: 0.0em;
+}
+
+*.guidetitle {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-weight: bold;
+	font-size: 2em;
+	margin-bottom: 0em;
+}
+
+*.guidesubtitle {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1.666em;
+	margin-top: 0em;
+}
+
+*.guidetitleauthor {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-weight: bold;
+	margin-bottom: 0em;
+}
+
+*.guideversion,*.guidedate {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-size: 0.8em;
+}
+
+*.guidecopyright {
+	font-family: "Helvetica","Arial",sans-serif;
+	font-size: 0.666em;
+}
+
+*.guidetitleemail {
+	font-family: "Courier New","Courier",monospace; 
+	font-weight: bold;
+	font-size: 0.8em;
+}
+
+*.mainsectbreak {
+	margin-top: 1em;
+	color: #000;
+	border: 0px;
+	background-color: #000;
+	height: 1px;
+}
+
+*.mainsecthr {
+	color: #000;
+	border: 0px;
+	background-color: #000;
+	height: 0.2em;
+}
+
+*.floatleft {
+	float:left;
+}
+
+*.floatright {
+	float:right;
+}
+
+*.padfive {
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+	padding-bottom:5px;
+}
+
+*.type,*.const,*.var,*.email,*.func,*.tt,*.operator {
+	font-family: "Courier New","Courier",monospace; 
+	font-size: 0.9em;
+}
+
+*.code,*.screen {
+	font-family: "Courier New","Courier",monospace; 
+	font-size: 0.765em;
+}
+
+*.em1 {
+	font-size: 1em;
+}
+
+*.com {
+	font-weight: bold;
+}
+
+*.var {
+	font-style: oblique;
+}
+
+*.func {
+	font-weight: bold;
+}
+
+*.titlefunc {
+	font-family: "Courier New","Courier",monospace; 
+	font-weight: bold;
+}
+
+*.titletype {
+	font-family: "Courier New","Courier",monospace; 
+	font-weight: bold;
+}
+
+*.titlevar {
+	font-style: oblique;
+	font-weight: bold;
+}
+
+*.command {
+	font-family: "Courier New","Courier",monospace; 
+	font-weight:bold;
+}
+
+*.singleborder {
+	border: #000,solid,2px;
+	border-color: #222;
+	border-style: solid;
+	border-width: 1px;
+	margin: 1em;
+	padding: 1em;
+}
+
+pre.code {
+	background-color: #e7e7e7;
+	border-color: #000;
+	border-style: solid;
+	border-width: 1px;
+	border-right-width: 2px;
+	border-bottom-width: 2px;
+	margin: 0.2em;
+	padding: 0.2em;
+}
+
+pre.screen {
+	font-weight: bold;
+	background-color: #e0e0e0;
+	border-color: #000;
+	border-style: solid;
+	border-right-style: dashed;
+	border-bottom-style: dashed;
+	border-width: 1px;
+	margin: 0.2em;
+	padding: 0.2em;
+}

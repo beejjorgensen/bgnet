@@ -1,0 +1,1882 @@
+#!/usr/bin/python2
+#
+# bg2fo -- convert bg to Formatting Object XML
+#
+# Release 1: FO support (based on bgconv)
+#
+# Copyright (c) 2007  Brian "Beej Jorgensen" Hall <beej@beej.us>
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# TODO:
+#  floating images when FOP supports it
+#  make proper indexing an option when FOP supports it
+#  fix widows and orphans on screen/code when FOP supports it
+#  import SVGs instead of bitmaps when FOP supports it properly
+#
+
+import sys
+import re
+import os
+import os.path
+import string
+import bxc
+import index
+import xml.dom
+import xml.dom.minidom
+import xml.sax
+import xml.sax.handler
+
+#---------------------------------------------------------------------
+class FOConverter(bxc.Converter):
+	def __init__(self, ac):
+		(bxc.Converter).__init__(self, ac)  # call super constructor
+
+		self.inTOC = False
+		self.inCode = False
+
+		self.sect1Count = 0
+		self.sect2Count = 0
+		self.sect3Count = 0
+
+		self.index = index.Index(self.getIndexInfoNode())
+		self.nextIndexId = 0
+
+		self.newLineToBreak = False
+
+		self.contentsPage = None
+
+		self.findNodeIDs()
+
+		self.uniqueIDCounter = 0
+
+		self.paragraphSpacing = None
+
+		self.numlistCount = 0
+
+		self.quoteCount = 0
+
+		self.columnNum = None
+		self.borderStr = None
+		self.cellPadding = None
+
+		self.footnoteCount = 0 # beej remove this
+
+		self.figureCount = 0
+
+		self.indexId = "index23579002497"
+
+		self.indentSize = 2
+		self.indentUnit = 'em'
+
+		codeFont = self.ac.font['mono'] # code font
+		csf = 0.9  # courier shrink factor
+		codesf = csf * 0.89 # even smaller
+
+		courierShrink = '%fem' % csf
+		codeShrink = '%fem' % codesf
+
+		self.__fontInfoList = { \
+			'func':'font-family="%s" font-weight="bold" font-size="%s"' % (codeFont,courierShrink), \
+			'type':'font-family="%s" font-size="%s"' % (codeFont,courierShrink), \
+			'tt':'font-family="%s" font-size="%s"' % (codeFont,courierShrink), \
+			'operator':'font-family="%s" font-weight="bold" font-size="%s"' % (codeFont,courierShrink), \
+			'var':'font-family="%s" font-style="oblique" font-size="%s"' % (codeFont,courierShrink), \
+			'titlefunc':'font-family="%s" font-weight="bold"' % (codeFont), \
+			'titlevar':'font-family="%s" font-style="oblique"' % (codeFont), \
+			'titletype':'font-family="%s"' % (codeFont), \
+			'titleoperator':'font-family="%s" font-weight="bold"' % (codeFont), \
+			'titleconst':'font-family="%s"' % (codeFont), \
+			'codefunc':'font-family="%s" font-weight="bold"' % (codeFont), \
+			'codevar':'font-family="%s" font-style="oblique"' % (codeFont), \
+			'codetype':'font-family="%s"' % (codeFont), \
+			'codeoperator':'font-family="%s" font-weight="bold"' % (codeFont), \
+			'codeconst':'font-family="%s"' % (codeFont), \
+			'com':'font-weight="bold"', \
+			'const':'font-family="%s" font-size="%s"' % (codeFont,courierShrink), \
+			'emp':'font-style="italic"', \
+			'foreign':'font-style="italic"', \
+			'booktitle':'font-style="italic"', \
+			'b':'font-weight="bold"', \
+			'smiley':'font-family="%s" font-size="0.8em"' % self.ac.font['mono'], \
+			'code':'font-family="%s" font-size="%s"' % (codeFont,codeShrink), \
+			'screen':'font-weight="bold" font-family="%s" font-size="%s"' % (codeFont,codeShrink), \
+		}
+
+		#                           (right page) (left page)
+		#                   normal       odd         even
+		self.margin = { \
+			'a4': { \
+				'left':  ((2.3,'cm'), (2.3,'cm'), (2.3,'cm')), \
+				'right': ((2.3,'cm'), (2.3,'cm'), (2.3,'cm')), \
+				'top':   ((2.3,'cm'), (2.3,'cm'), (2.3,'cm')), \
+				'bottom':((2.3,'cm'), (2.3,'cm'), (2.3,'cm')), \
+			}, \
+			'US': { \
+				'left':  ((0.9,'in'), (0.9,'in'), (0.9,'in')), \
+				'right': ((0.9,'in'), (0.9,'in'), (0.9,'in')), \
+				'top':   ((0.9,'in'), (0.9,'in'), (0.9,'in')), \
+				'bottom':((0.9,'in'), (0.9,'in'), (0.9,'in')), \
+			}, \
+			'tech': { \
+				'left':  ((0.65,'in'), (0.88,'in'), (0.65,'in')), \
+				'right': ((0.65,'in'), (0.65,'in'), (0.88,'in')), \
+				'top':   ((0.8,'in'), (0.8,'in'), (0.8,'in')), \
+				'bottom':((0.65,'in'), (0.65,'in'), (0.65,'in')), \
+			}, \
+			'crownquattro': { \
+				'left':  ((0.675,'in'), (1.05,'in'), (0.675,'in')), \
+				'right': ((0.675,'in'), (0.675,'in'), (1.05,'in')), \
+				'top':   ((0.9,'in'), (0.9,'in'), (0.9,'in')), \
+				'bottom':((0.65,'in'), (0.65,'in'), (0.65,'in')), \
+			}, \
+		}
+				# min tech margins:
+				#'left':  ((0.5,'in'), (0.88,'in'), (0.5,'in')), \
+				#'right': ((0.5,'in'), (0.5,'in'), (0.88,'in')), \
+				#'top':   ((0.8,'in'), (0.8,'in'), (0.8,'in')), \
+				#'bottom':((0.5,'in'), (0.5,'in'), (0.5,'in')), \
+
+		self.pagedim = { \
+			'a4': ((210.0,'mm'), (297.0,'mm')), \
+			'US': ((8.5,'in'), (11.0,'in')), \
+			'tech': ((7.5,'in'), (9.25,'in')), \
+			'crownquattro': ((7.444,'in'), (9.681,'in')), \
+		}
+
+	def getIndexInfoNode(self):
+		ii = self.ac.dom.documentElement.getElementsByTagName('indexinfo')
+		if ii == []: return None
+		return ii[0]
+
+	def getHeaderPaddingTop(self, scalar=1.0):
+		return "%fcm" % (1.25*scalar)
+
+	def getIndent(self, scalar=1.0):
+		return "%f%s" % (self.indentSize * scalar, self.indentUnit)
+
+	def findNodeIDs(self):
+		def __findNodeIDsR(node):
+			if node.nodeType != xml.dom.Node.ELEMENT_NODE: return
+
+			v = node.getAttribute("id")
+
+			# autoid some nodes
+			if v == None or v == "":
+				if node.nodeName in ('sect1', 'sect2', 'sect3', 'manpage'):
+					idAttr = self.ac.dom.documentElement.createAttribute('id')
+					node.setAttributeNode(idAttr)
+					node.setAttribute('id', 'bgnid%04d' % self.uniqueIDCounter)
+					self.uniqueIDCounter += 1
+
+			if v != None and v != "":
+				if self.nodeID.has_key(v):
+					sys.stderr.write("%s: duplicate id \"%s\"\n" % \
+						(self.ac.scriptname, v))
+
+				self.nodeID[v] = node
+
+			for a in node.childNodes: __findNodeIDsR(a)
+
+		self.nodeID = {}
+		__findNodeIDsR(self.ac.dom.documentElement)  # root
+
+	def findLinkDest(self, id):
+		if not self.nodeID.has_key(id):
+			sys.stderr.write("%s: link to unknown dest id \"%s\"\n" % \
+				(self.ac.scriptname, id))
+			return (None, None)
+
+		n = self.nodeID[id]
+
+		# link directly to single pages
+		if n.nodeName == "sect1" or n.nodeName == "manpage":
+			return (id, None)
+		else:
+			n = n.parentNode
+			while n.nodeName != "sect1" and n.nodeName != "manpage":
+				n = n.parentNode
+			if n == None:
+				errorExit("internal error: found id node with no sect1" \
+					"or manpage parent.")
+			return (n.getAttribute("id"), id)
+
+	def fixAmpGtLt(self, s):
+		s = re.sub("&", "&amp;", s)
+		s = re.sub("<", "&lt;", s)
+		s = re.sub(">", "&gt;", s)
+
+		return s
+
+	def getFontInfo(self,id):
+		return self.__fontInfoList[id]
+
+	def getCodeSpacing(self):
+		if self.ac.fat:
+			return 'space-before="1em" space-after="1em"'
+		else:
+			return ''
+
+	def getPaperType(self):
+		if self.ac.papertype == self.ac.PAPER_A4:
+			return 'a4'
+		elif self.ac.papertype == self.ac.PAPER_TECH:
+			return 'tech'
+		elif self.ac.papertype == self.ac.PAPER_CROWNQUATTRO:
+			return 'crownquattro'
+		else:
+			return 'US'
+
+	def getMarginComponents(self, whichMargin, type):
+		return self.margin[self.getPaperType()][whichMargin][type]
+
+	def getMargin(self, whichMargin, type):
+		(val,units) = self.getMarginComponents(whichMargin, type)
+		#if self.getPaperType() == 'tech' and whichMargin == 'left' and type == 2:
+		#sys.stderr.write('%s %s %s -> %s %s\n' % (self.getPaperType(), whichMargin, type, val, units))
+
+		return str(val) + units
+
+	def getPageDim(self):
+		(w,h) = self.pagedim[self.getPaperType()]
+		return (str(w[0])+w[1], str(h[0])+h[1])
+
+	def getPageDimStr(self, type=0, cols=None):
+		if cols != None:
+			colstr = ' column-count="%s"' % cols
+		else:
+			colstr = ''
+
+		(width, height) = self.getPageDim()
+		margintop = self.getMargin('top', type)
+		marginbottom = self.getMargin('bottom', type)
+		marginleft = self.getMargin('left', type)
+		marginright = self.getMargin('right', type)
+
+		return '	    page-height="%s"\n' \
+			'		page-width="%s">\n' \
+			'		<fo:region-body \n' \
+			'			margin-top="%s"\n' \
+			'			margin-bottom="%s"\n' \
+			'			margin-left="%s"\n' \
+			'			margin-right="%s" %s/>\n' \
+			% (height, width, margintop, marginbottom, marginleft, \
+			marginright, colstr)
+
+
+	def foHeader(self):
+		self.out('<?xml version="1.0" encoding="utf-8"?>\n' \
+			'<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">\n\n' \
+			'<!-- FO generated by Beej\'s bg2fo Python script -->\n\n' \
+			'<fo:layout-master-set>\n')
+
+		self.out('	<fo:simple-page-master master-name="title"\n')
+		self.out(self.getPageDimStr())
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="title2side"\n')
+		self.out(self.getPageDimStr(type=1))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="col2first"\n')
+		self.out(self.getPageDimStr(cols=2))
+		self.out('		<fo:region-before region-name="bg-normal-first-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-first-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="col2first2side"\n')
+		self.out(self.getPageDimStr(type=1, cols=2))
+		self.out('		<fo:region-before region-name="bg-normal-first-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-first-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="col2"\n')
+		self.out(self.getPageDimStr(cols=2))
+		self.out('		<fo:region-before region-name="bg-normal-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="col2even"\n')
+		self.out(self.getPageDimStr(type=2, cols=2))
+		self.out('		<fo:region-before region-name="bg-normal-even-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-even-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="col2odd"\n')
+		self.out(self.getPageDimStr(type=1, cols=2))
+		self.out('		<fo:region-before region-name="bg-normal-odd-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-odd-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="normalfirst"\n')
+		self.out(self.getPageDimStr())
+		self.out('		<fo:region-before region-name="bg-normal-first-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-first-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="normalfirst2side"\n')
+		self.out(self.getPageDimStr(type=1))
+		self.out('		<fo:region-before region-name="bg-normal-first-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-first-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="normal"\n')
+		self.out(self.getPageDimStr())
+		self.out('		<fo:region-before region-name="bg-normal-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="normaleven"\n')
+		self.out(self.getPageDimStr(type=2))
+		self.out('		<fo:region-before region-name="bg-normal-even-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-even-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="normalodd"\n')
+		self.out(self.getPageDimStr(type=1))
+		self.out('		<fo:region-before region-name="bg-normal-odd-header" extent="%s" />\n' % self.getMargin('top',0))
+		self.out('		<fo:region-after region-name="bg-normal-odd-footer" extent="%s" />\n' % self.getMargin('bottom',0))
+		self.out('	</fo:simple-page-master>\n')
+
+		self.out('	<fo:simple-page-master master-name="blank"\n')
+		self.out(self.getPageDimStr(type=1))
+		self.out('	</fo:simple-page-master>\n')
+
+		if self.ac.twosided:
+			self.out('	<fo:page-sequence-master master-name="contents">\n' \
+				'		<fo:repeatable-page-master-alternatives>\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" page-position="first" master-reference="normalfirst2side" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" odd-or-even="odd" master-reference="normalodd" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" odd-or-even="even" master-reference="normaleven" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="blank" master-reference="blank" />\n' \
+				'		</fo:repeatable-page-master-alternatives>\n')
+			self.out('	</fo:page-sequence-master>\n')
+		else: # one sided
+			self.out('	<fo:page-sequence-master master-name="contents">\n' \
+				'		<fo:repeatable-page-master-alternatives>\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" page-position="first" master-reference="normal" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" master-reference="normalodd" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="blank" master-reference="blank" />\n' \
+				'		</fo:repeatable-page-master-alternatives>\n')
+			self.out('	</fo:page-sequence-master>\n')
+
+		if self.ac.twosided:
+			self.out('	<fo:page-sequence-master master-name="chapter">\n' \
+				'		<fo:repeatable-page-master-alternatives>\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" page-position="first" master-reference="normalfirst2side" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" odd-or-even="odd" master-reference="normalodd" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" odd-or-even="even" master-reference="normaleven" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="blank" master-reference="blank" />\n' \
+				'		</fo:repeatable-page-master-alternatives>\n')
+			self.out('	</fo:page-sequence-master>\n')
+		else: # one sided
+			self.out('	<fo:page-sequence-master master-name="chapter">\n' \
+				'		<fo:repeatable-page-master-alternatives>\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" page-position="first" master-reference="normalfirst" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" master-reference="normal" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="blank" master-reference="blank" />\n' \
+				'		</fo:repeatable-page-master-alternatives>\n')
+			self.out('	</fo:page-sequence-master>\n')
+
+		if self.ac.twosided:
+			self.out('	<fo:page-sequence-master master-name="index">\n' \
+				'		<fo:repeatable-page-master-alternatives>\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" page-position="first" master-reference="col2first2side" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" odd-or-even="odd" master-reference="col2odd" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" odd-or-even="even" master-reference="col2even" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="blank" master-reference="blank" />\n' \
+				'		</fo:repeatable-page-master-alternatives>\n')
+			self.out('	</fo:page-sequence-master>\n')
+		else: # one sided
+			self.out('	<fo:page-sequence-master master-name="index">\n' \
+				'		<fo:repeatable-page-master-alternatives>\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" page-position="first" master-reference="col2first" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="not-blank" master-reference="col2" />\n' \
+				'			<fo:conditional-page-master-reference blank-or-not-blank="blank" master-reference="blank" />\n' \
+				'		</fo:repeatable-page-master-alternatives>\n')
+			self.out('	</fo:page-sequence-master>\n')
+
+		self.out('</fo:layout-master-set>\n')
+
+	def foFooter(self):
+		self.out('</fo:root>\n')
+
+	def foPdfBookmarks(self):
+		def __foPdfBookmarksR(node, indentLevel):
+			for a in node.childNodes:
+				if a.nodeName == "guide":
+					__foPdfBookmarksR(a, indentLevel)  # just dig deeper
+				elif a.nodeName in ('sect1', 'sect2', 'sect3', 'manpage'):
+					if a.nodeName == 'sect3':
+						startState = ' starting-state="hide"'
+					else:
+						startState = ''
+
+					if a.nodeName == 'sect1':
+						bold = ' font-weight="bold"'
+					else:
+						bold = ''
+
+					title = self.getTextFromPath(a, "title")
+					title = re.sub(r'\n\r?', ' ', title)
+
+					self.out('\t'*indentLevel + '<fo:bookmark%s internal-destination="%s">\n' % (startState, a.getAttribute('id')))
+					self.out('\t'*(indentLevel+1) + '<fo:bookmark-title%s>' % bold)
+					self.out('%s</fo:bookmark-title>\n' % title)
+					__foPdfBookmarksR(a, indentLevel+1)
+					self.out('\t'*indentLevel + '</fo:bookmark>\n')
+
+		self.out('\n<fo:bookmark-tree>\n')
+
+		# contents node
+		self.out('	<fo:bookmark internal-destination="contents237940">\n')
+		self.out('		<fo:bookmark-title font-weight="bold">')
+		self.out('Contents</fo:bookmark-title>\n')
+		self.out('	</fo:bookmark>\n')
+
+		# everything else
+		__foPdfBookmarksR(self.ac.dom.documentElement, 1)
+
+		# index node
+		if self.index.hasEntries():
+			self.out('	<fo:bookmark internal-destination="%s">\n' % self.indexId)
+			self.out('		<fo:bookmark-title font-weight="bold">')
+			self.out('Index</fo:bookmark-title>\n')
+			self.out('	</fo:bookmark>\n')
+
+		self.out('</fo:bookmark-tree>\n\n')
+
+
+	def generateTitlePage(self, thisElement):
+		if self.ac.twosided:
+			#breakBehavior = ' force-page-count="even"'  # if no legal page
+			breakBehavior = ''
+			masterref = 'title2side'
+		else:
+			breakBehavior = ''
+			masterref = 'title'
+
+		self.out('<fo:page-sequence master-reference="%s"%s>\n' % (masterref, breakBehavior))
+		self.out('<fo:flow font-family="%s" flow-name="xsl-region-body">\n' % (self.ac.font['sans']))
+		self.out('<fo:block font-family="%s" font-size="12pt" text-align="left" text-indent="0pt">\n' % (self.ac.font['sans']))
+		#self.out('<fo:block space-after="7cm" />\n')
+		self.out('<fo:block font-weight="bold" font-size="2em">')
+		self.process(self.walkPath(thisElement, "title"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block space-before="0.5em" font-family="%s" font-weight="bold" font-style="italic" font-size="1.666em" space-after="1em">' % (self.ac.font['sans']))
+		n = self.walkPath(thisElement, "subtitle")
+		if n != None: self.process(n)
+		self.out('</fo:block>\n')
+		self.out('<fo:block>')
+		self.process(self.walkPath(thisElement, "author/name"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block space-after="1em">')
+		self.process(self.walkPath(thisElement, "author/email"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block font-size="0.8em">')
+		self.process(self.walkPath(thisElement, "version"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block font-size="0.8em" space-after="1em">')
+		self.process(self.walkPath(thisElement, "date"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block font-size="0.66em">')
+		self.process(self.walkPath(thisElement, "copyright"))
+		self.out('</fo:block>\n')
+		self.out('</fo:block>\n')
+		self.out('</fo:flow>\n')
+		self.out('</fo:page-sequence>\n')
+
+
+	def generateBastardTitle(self, thisElement):
+		if self.ac.twosided:
+			breakBehavior = ' force-page-count="even"'
+			masterref = 'title2side'
+		else:
+			breakBehavior = ''
+			masterref = 'title'
+
+		self.out('<fo:page-sequence master-reference="%s"%s>\n' % (masterref, breakBehavior))
+		self.out('<fo:flow font-family="%s" flow-name="xsl-region-body">\n' % (self.ac.font['sans']))
+		self.out('<fo:block font-family="%s" font-size="12pt" text-align="left" text-indent="0pt">\n' % (self.ac.font['sans']))
+		self.out('<fo:block font-weight="bold" font-size="2em">')
+		self.process(self.walkPath(thisElement, "title"))
+		self.out('</fo:block>\n')
+		self.out('</fo:block>\n')
+		self.out('</fo:flow>\n')
+		self.out('</fo:page-sequence>\n')
+
+
+	def generateLegalDedication(self, thisElement):
+		if self.ac.twosided:
+			masterref = 'normaleven'
+		else:
+			masterref = 'normal'
+
+		blockspacing = "5em"
+
+		self.paragraphSpacing = "1em"
+		self.out('<fo:page-sequence master-reference="%s">\n' % (masterref))
+		self.out('<fo:flow font-family="%s" flow-name="xsl-region-body">\n' % (self.ac.font['serif']))
+		self.out('<fo:block font-family="%s" font-size="10pt" text-align="left" text-indent="0pt">\n' % (self.ac.font['serif']))
+		self.process(self.walkPath(thisElement, "dedication"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block space-before="%s" font-family="%s" font-size="10pt" text-align="left" text-indent="0pt">\n' % (blockspacing, self.ac.font['serif']))
+		self.process(self.walkPath(thisElement, "comment"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block space-before="%s" font-family="%s" font-size="9pt" text-align="left" text-indent="0pt">\n' % (blockspacing, self.ac.font['sans']))
+		self.process(self.walkPath(thisElement, "legal"))
+		self.out('</fo:block>\n')
+		self.out('<fo:block space-before="%s" font-family="%s" font-size="10pt" text-align="left" text-indent="0pt">\n' % (blockspacing, self.ac.font['serif']))
+		self.process(self.walkPath(thisElement, "copyright"))
+		self.out('</fo:block>\n')
+		self.out('</fo:flow>\n')
+		self.out('</fo:page-sequence>\n')
+		self.paragraphSpacing = None  # use default
+
+
+	def foFootnote(self, body, id=None):
+		if id == None:
+			self.footnoteCount += 1
+			id = self.footnoteCount
+
+		self.out('<fo:footnote>'\
+			'<fo:inline font-weight="normal" font-style="normal" font-size="0.5em" keep-with-previous="always" baseline-shift="super">%s</fo:inline>' \
+			'<fo:footnote-body>' \
+			'<fo:block start-indent="%s" text-indent="0pt" font-weight="normal" font-style="normal" font-size="0.83em" line-height="0.9em">%s. %s</fo:block>' \
+			#'<fo:list-block provisional-distance-between-starts="20pt" provisional-label-separation="5pt">' \
+			#'<fo:list-item>' \
+			#'<fo:list-item-label end-indent="label-end()">' \
+			#'<fo:block font-size="0.83em" line-height="0.9em">%s.' \
+			#'</fo:block>' \
+			#'</fo:list-item-label>' \
+			#'<fo:list-item-body start-indent="body-start()">' \
+			#'<fo:block font-size="0.83em" line-height="0.9em">%s</fo:block>' \
+			#'</fo:list-item-body>' \
+			#'</fo:list-item>' \
+			#'</fo:list-block>' \
+			'</fo:footnote-body>' \
+			'</fo:footnote>' % \
+			(id, self.getIndent(), id, body))
+
+	def generateIndex(self):
+		self.indexPrevChar = None
+
+		def walkIndex(ent, indentLevel=0):
+			if ent.parent != None:  # don't print out anything for root
+				indentTab = 1.0
+				indentAmount = indentLevel * indentTab
+
+				# print a blank line between letters
+				fullKey = ent.getFullKey()
+				l = fullKey[0].lower()
+				spacebefore = ''
+				if self.indexPrevChar != None:
+					if l != self.indexPrevChar:
+						spacebefore = ' space-before="1em"'
+				self.indexPrevChar = l
+
+				self.out('<fo:block ' \
+					'start-indent="%fem" ' \
+					'text-indent="-%fem"%s>' % \
+					(indentAmount, indentTab, spacebefore))
+
+				# write out the index key, or just use label if not found
+				ent = self.index.findEntryByKey(fullKey)
+				if ent == None:
+					sys.stderr.write("failed to find index entry " \
+						"for key \"%s\"\n" % fullKey)
+					sys.exit(1)
+				if ent.keynode == None:
+					self.out(ent.localkey)  # just use this
+				else:
+					self.process(ent.keynode)  # do formatting
+
+				self.out('<fo:leader leader-pattern="space" width="1em"/>')
+
+				if ent.seeonly != None:
+					k2 = self.index.findEntryByKey(ent.seeonly)
+					if k2 == None:
+						sys.stderr.write("failed to find seeonly entry " \
+							"for key \"%s\"\n" % ent.seeonly)
+						sys.exit(1)
+					self.out('see ')
+					if k2.keynode == None:
+						self.out(ent.seeonly)
+					else:
+						self.process(k2.keynode)
+					self.out('.')
+				else:
+					for p in ent.pages:
+						if p[2] == '>': # page range
+							rangeind = '-'
+						else:
+							if p != ent.pages[-1]:
+								rangeind = ', '
+							else:
+								rangeind = ''
+						self.out('<fo:basic-link internal-destination="%s">' \
+							'<fo:page-number-citation ref-id="%s"/>' \
+							'</fo:basic-link>%s' % (p[0], p[0], rangeind))
+
+					if ent.seealso != []:
+						self.out(" see also ")
+						for a in ent.seealso:
+							k2 = self.index.findEntryByKey(a)
+							if k2.keynode == None:
+								sys.stderr.write("indexinfo: non-existent " \
+									"seealso reference '%s' in %s\n" % \
+									(a, ent.getFullKey()))
+							else:
+								self.process(k2.keynode)
+								if a != ent.seealso[-1]:
+									self.out(', ')
+						self.out('.')
+
+				self.out('</fo:block>\n')
+
+			for e in ent.children:
+				walkIndex(e, indentLevel+1)
+
+		# start normal index processing
+		if self.ac.twosided:
+			breakBehavior = ' force-page-count="even"'
+		else:
+			breakBehavior = ''
+
+		self.out('<fo:page-sequence master-reference="index"%s>\n' % \
+				(breakBehavior))
+
+		self.topSectHeadersFooters(title="Index")
+
+		# region body
+		self.out('<fo:flow flow-name="xsl-region-body" ' \
+			'font-family="%s" ' \
+			'font-size="10pt" text-indent="0pt">\n' % self.ac.font['serif'])
+
+		self.out('<fo:block span="all">')
+		self.mainSectHeader(self.indexId, pagebreak=True)
+		self.out("Index")
+		self.mainSectFooter()
+		self.out('</fo:block>')
+
+		walkIndex(self.index)
+
+		self.out('</fo:flow>\n')
+		self.out('</fo:page-sequence>\n')
+
+	def generateTOC(self):
+		if self.ac.twosided:
+			breakBehavior = ' force-page-count="even"'
+		else:
+			breakBehavior = ' force-page-count="no-force"' # no auto-even on page number reset
+
+		self.out('<fo:page-sequence master-reference="contents" '
+			'format="i"%s>\n' % breakBehavior)
+
+		shrunkenHeaderFontPoints = float(self.ac.fontpoints) * 0.8 # em
+
+		self.out('<fo:static-content flow-name="bg-normal-first-footer">\n')
+		self.out('<fo:block font-family="%s" font-size="%spt" text-align="center" padding-top="1em"><fo:page-number/></fo:block>\n' % (self.ac.font['sans'], shrunkenHeaderFontPoints))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:static-content flow-name="bg-normal-footer">\n')
+		self.out('<fo:block font-family="%s" font-size="%spt" text-align="center" padding-top="1em"><fo:page-number/></fo:block>\n' % (self.ac.font['sans'], shrunkenHeaderFontPoints))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:static-content flow-name="bg-normal-even-footer">\n')
+		self.out('<fo:block font-family="%s" font-size="%spt" text-align="center" padding-top="1em"><fo:page-number/></fo:block>\n' % (self.ac.font['sans'], shrunkenHeaderFontPoints))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:static-content flow-name="bg-normal-odd-footer">\n')
+		self.out('<fo:block font-family="%s" font-size="%spt" text-align="center" padding-top="1em"><fo:page-number/></fo:block>\n' % (self.ac.font['sans'], shrunkenHeaderFontPoints))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:static-content flow-name="bg-normal-even-header">\n')
+		self.out('<fo:block text-align="left" font-family="%s" font-style="italic" ' \
+			'padding-top="%s" start-indent="%s">Contents</fo:block>' % \
+			(self.ac.font['sans'], self.getHeaderPaddingTop(), self.getMargin('left',2)))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:static-content flow-name="bg-normal-odd-header">\n')
+		self.out('<fo:block text-align="right" font-family="%s" font-style="italic" ' \
+			'padding-top="%s" end-indent="%s">Contents</fo:block>' % \
+			(self.ac.font['sans'], self.getHeaderPaddingTop(), self.getMargin('right',1)))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:flow flow-name="xsl-region-body" ' \
+			'font-family="%s" ' \
+			'font-size="%spt" text-indent="0pt">\n' % (self.ac.font['serif'], self.ac.fontpoints))
+
+		self.mainSectHeader("contents237940", pagebreak=True)
+		self.out("Contents")
+		self.mainSectFooter()
+
+		sect1Nodes = [ i for i in self.ac.dom.documentElement.childNodes \
+			if i.nodeName == "sect1" ]
+
+		count = 1
+
+		# don't set until after mainSectHeader, above:
+		self.inTOC = True
+
+		for n in sect1Nodes:
+			id = n.getAttribute('id')
+			self.out('<fo:block font-weight="bold" ' \
+				'text-align-last="justify" ' \
+				'keep-with-next="always">')
+
+			self.out('<fo:basic-link internal-destination="%s">' % id)
+			self.out('%d. ' % (count))
+			self.process(n, "title", self.special_IDENTITY)
+			self.out('</fo:basic-link>')
+
+			self.out('<fo:leader leader-pattern="dots"/>')
+
+			self.out('<fo:basic-link internal-destination="%s">' % id)
+			self.out('<fo:page-number-citation ref-id="%s"/>' % \
+				n.getAttribute('id'))
+			self.out('</fo:basic-link>')
+
+			self.out('</fo:block>\n')
+
+			sect2Nodes = [ i for i in n.childNodes \
+				if i.nodeName == "sect2"  or i.nodeName == "manpage" ]
+
+			subcount = 1
+
+			self.out('<fo:block space-after="0.8em" '
+				'start-indent="%s">\n' % self.getIndent())
+			for m in sect2Nodes:
+				id = m.getAttribute('id')
+				self.out('<fo:block text-align-last="justify">')
+
+				self.out('<fo:basic-link internal-destination="%s">' % id)
+				self.out('%d.%d. ' % (count, subcount))
+				self.process(m, "title", self.special_IDENTITY)
+				self.out('</fo:basic-link>')
+
+				self.out('<fo:leader leader-pattern="space"/>')
+				self.out('<fo:basic-link internal-destination="%s">' % id)
+				self.out('<fo:page-number-citation ref-id="%s"/>' % \
+					m.getAttribute('id'))
+				self.out('</fo:basic-link>')
+
+				self.out('</fo:block>\n')
+
+				subcount = subcount + 1
+			self.out('</fo:block>\n')
+			
+			count = count + 1
+
+			self.out("<fo:block> </fo:block>\n")
+
+		# index entry
+		if self.index.hasEntries():
+			self.out('<fo:block text-align-last="justify" font-weight="bold">')
+
+			self.out('<fo:basic-link internal-destination="%s">' % self.indexId)
+			self.out('Index');
+			self.out('</fo:basic-link>')
+
+			self.out('<fo:leader leader-pattern="space"/>')
+			self.out('<fo:basic-link internal-destination="%s">' % self.indexId)
+			self.out('<fo:page-number-citation ref-id="%s"/>' % self.indexId)
+			self.out('</fo:basic-link>')
+			self.out('</fo:block>\n')
+
+		self.inTOC = False
+
+		self.out('</fo:flow>\n')
+		self.out('</fo:page-sequence>\n\n')
+
+	def topSectHeadersFooters(self, thisElement=None, title=None):
+		if thisElement == None and title == None:
+			raise Exception("topSectHeadersFooters: one of thisElement " \
+				"or title must be specified")
+
+		guideTitle = self.getTextFromPath(self.ac.dom.documentElement, "guideinfo/title")
+		if title == None:
+			sectTitle = self.getTextFromPath(thisElement, "title")
+		else:
+			sectTitle = title
+
+		shrunkenHeaderFontPoints = float(self.ac.fontpoints) * 0.8 # em
+
+		# set up the headers and footers
+		self.out('<fo:static-content flow-name="bg-normal-first-footer">\n')
+		self.out('<fo:block text-align="center" font-family="%s" font-weight="bold" font-size="%spt" padding-top="1em"><fo:page-number/></fo:block>\n' % (self.ac.font['sans'], self.ac.fontpoints))
+		self.out('</fo:static-content>\n')
+
+		self.out('<fo:static-content flow-name="bg-normal-header">\n')
+		table = '<fo:table table-layout="fixed" width="100%%">\n' \
+			'	<fo:table-column column-number="1" column-width="50%%" />\n' \
+			'	<fo:table-column column-number="2" column-width="50%%" />\n' \
+			'	<fo:table-body>\n' \
+			'		<fo:table-row>\n' \
+			'			<fo:table-cell column-number="1" padding-left="%s" text-align="left">\n' \
+			'				<fo:block font-family="%s" font-size="%spt" font-style="italic">%s</fo:block>\n' \
+			'			</fo:table-cell>\n' \
+			'			<fo:table-cell column-number="2" padding-right="%s" text-align="right">\n' \
+			'				<fo:block font-family="%s" font-size="%spt" font-weight="bold"><fo:page-number/></fo:block>\n' \
+			'			</fo:table-cell>\n' \
+			'		</fo:table-row>\n' \
+			'	</fo:table-body>\n' \
+			'</fo:table>\n' % (self.getMargin('left', 0), self.ac.font['sans'], \
+			shrunkenHeaderFontPoints, guideTitle, \
+			self.getMargin('right', 0), self.ac.font['sans'], self.ac.fontpoints)
+		self.out('<fo:block padding-top="%s">%s</fo:block>\n' % \
+			(self.getHeaderPaddingTop(), table))
+		self.out('</fo:static-content>\n')
+
+		if self.ac.offsetHeaderNumbers:
+			(mval, munits) = self.getMarginComponents('left', 2)
+			mval2 = mval / 2.0
+			self.out('<fo:static-content flow-name="bg-normal-even-header">\n')
+			table = '<fo:table table-layout="fixed" width="100%%">\n' \
+				'	<fo:table-column column-number="1" column-width="%f%s" />\n' \
+				'	<fo:table-column column-number="2" column-width="%f%s" />\n' \
+				'	<fo:table-column column-number="3" />\n' \
+				'	<fo:table-body>\n' \
+				'		<fo:table-row>\n' \
+				'			<fo:table-cell column-number="1" text-align="left">\n' \
+				'				<fo:block font-family="%s" font-size="%spt"> </fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'			<fo:table-cell column-number="2" text-align="left">\n' \
+				'				<fo:block  font-family="%s" font-size="%spt" font-weight="bold"><fo:page-number/></fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'			<fo:table-cell text-align="left">\n' \
+				'				<fo:block  font-family="%s" font-size="%spt" font-style="italic">%s</fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'		</fo:table-row>\n' \
+				'	</fo:table-body>\n' \
+				'</fo:table>\n' % (mval2, munits, mval-mval2, munits, self.ac.font['sans'], \
+				shrunkenHeaderFontPoints, self.ac.font['sans'], shrunkenHeaderFontPoints, \
+				self.ac.font['sans'], shrunkenHeaderFontPoints, guideTitle)
+			self.out('<fo:block padding-top="%s">%s</fo:block>\n' % \
+				(self.getHeaderPaddingTop(), table))
+			self.out('</fo:static-content>\n')
+
+			(mval, munits) = self.getMarginComponents('right', 1)
+			mval2 = mval / 2.0
+			self.out('<fo:static-content flow-name="bg-normal-odd-header">\n')
+			table = '<fo:table table-layout="fixed" width="100%%">\n' \
+				'	<fo:table-column column-number="1" />\n' \
+				'	<fo:table-column column-number="2" column-width="%f%s" />\n' \
+				'	<fo:table-column column-number="3" column-width="%f%s" />\n' \
+				'	<fo:table-body>\n' \
+				'		<fo:table-row>\n' \
+				'			<fo:table-cell column-number="1" text-align="right">\n' \
+				'				<fo:block font-family="%s" font-size="%spt" font-style="italic">%s</fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'			<fo:table-cell column-number="2" text-align="right">\n' \
+				'				<fo:block font-family="%s" font-size="%spt" font-weight="bold"><fo:page-number/></fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'			<fo:table-cell font-family="%s" font-size="%spt" column-number="3" text-align="right">\n' \
+				'				<fo:block> </fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'		</fo:table-row>\n' \
+				'	</fo:table-body>\n' \
+				'</fo:table>\n' % (mval - mval2, munits, mval2, munits, self.ac.font['sans'], \
+				shrunkenHeaderFontPoints, sectTitle, self.ac.font['sans'], shrunkenHeaderFontPoints, \
+				self.ac.font['sans'], shrunkenHeaderFontPoints)
+			self.out('<fo:block padding-top="%s" text-align="right">%s</fo:block>\n' % \
+				(self.getHeaderPaddingTop(), table))
+			self.out('</fo:static-content>\n')
+
+		else: # not self.ac.offsetHeaderNumbers
+			self.out('<fo:static-content flow-name="bg-normal-even-header">\n')
+			table = '<fo:table table-layout="fixed" width="100%%">\n' \
+				'	<fo:table-column column-number="1" column-width="100%%" />\n' \
+				'	<fo:table-body>\n' \
+				'		<fo:table-row>\n' \
+				'			<fo:table-cell column-number="1" padding-left="%s" text-align="left">\n' \
+				'				<fo:block font-family="%s" font-size="%spt"><fo:inline font-size="%spt" font-weight="bold"><fo:page-number/></fo:inline>&#8195;&#8195;<fo:inline font-style="italic">%s</fo:inline></fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'		</fo:table-row>\n' \
+				'	</fo:table-body>\n' \
+				'</fo:table>\n' % (self.getMargin('left', 2), self.ac.font['sans'], \
+				shrunkenHeaderFontPoints, self.ac.fontpoints, guideTitle)
+			self.out('<fo:block padding-top="%s">%s</fo:block>\n' % \
+				(self.getHeaderPaddingTop(), table))
+			self.out('</fo:static-content>\n')
+
+			self.out('<fo:static-content flow-name="bg-normal-odd-header">\n')
+			table = '<fo:table table-layout="fixed" width="100%%">\n' \
+				'	<fo:table-column column-number="1" column-width="100%%" />\n' \
+				'	<fo:table-body>\n' \
+				'		<fo:table-row>\n' \
+				'			<fo:table-cell column-number="1" padding-right="%s" text-align="right">\n' \
+				'				<fo:block font-family="%s" font-size="%spt"><fo:inline font-style="italic">%s</fo:inline>&#8195;&#8195;<fo:inline font-size="%spt" font-weight="bold"><fo:page-number/></fo:inline></fo:block>\n' \
+				'			</fo:table-cell>\n' \
+				'		</fo:table-row>\n' \
+				'	</fo:table-body>\n' \
+				'</fo:table>\n' % (self.getMargin('right', 1), self.ac.font['sans'], \
+				shrunkenHeaderFontPoints, sectTitle, self.ac.fontpoints)
+			self.out('<fo:block padding-top="%s">%s</fo:block>\n' % \
+				(self.getHeaderPaddingTop(), table))
+			self.out('</fo:static-content>\n')
+
+
+	def mainSectHeader(self, id, prefix=None, pagebreak=False):
+		if pagebreak:
+			pb = ' break-before="page"'
+		else:
+			pb = ''
+
+		self.out('<fo:block%s text-indent="0pt" font-family="%s" '
+			'font-weight="bold" font-size="170%%" keep-with-next="always" '
+			'id="%s">' % (pb, self.ac.font['sans'], id))
+
+		if prefix != None:
+			self.out(prefix)
+	
+	def mainSectFooter(self):
+		self.out('</fo:block>\n')
+		self.out('<fo:block text-indent="0pt" space-after="0.5em" keep-with-next="always">')
+		self.out('<fo:leader leader-pattern="rule" rule-thickness="0.2em" leader-length="100%"/>')
+		self.out('</fo:block>\n')
+
+	def sect2Header(self, id=None, prefix=None):
+		self.sect32Header("116%", id, prefix)
+
+	def sect2Footer(self):
+		self.out('</fo:block>\n')
+
+	def sect3Header(self, id=None, prefix=None):
+		self.sect32Header("100%", id, prefix)
+
+	def sect3Footer(self):
+		self.out('</fo:block>\n')
+
+	def sect32Header(self, fontSize, id, prefix):
+		if id != None:
+			idStr = 'id="%s"' % id
+		else:
+			idStr = ''
+
+		if self.ac.fat:
+			spacing = 'space-before="1.5em" space-after="0.5em"'
+		else:
+			spacing = 'space-before="0.5em"'
+
+		self.out('<fo:block text-indent="0pt" font-family="%s" '
+			'font-weight="bold" font-size="%s" keep-with-next="always" '
+			'%s %s>' % (self.ac.font['sans'], fontSize, idStr, spacing))
+
+		if prefix != None:
+			self.out(prefix)
+
+	#--------------------------------------------------------------
+
+	def element_guide(self, thisElement):
+		self.ac.pushOutput(self.ac.outfilename)
+
+		self.foHeader()
+		self.foPdfBookmarks()
+		self.process(thisElement)
+		if self.index.hasEntries():
+			self.generateIndex()
+		self.foFooter()
+
+		self.ac.popOutput()
+
+	def element_guideinfo(self, thisElement):
+		if self.ac.bastard:
+			self.generateBastardTitle(thisElement)
+
+		self.generateTitlePage(thisElement)
+		self.generateLegalDedication(thisElement)
+		self.generateTOC()
+		# no subprocessing on this node
+
+	def element_indexinfo(self, thisElement):
+		pass  # we'll deal with this later
+
+	def element_indexinfo_key(self, thisElement):
+		self.process()
+
+	def element_sect1_title(self, thisElement):
+		self.quoteCount = 0
+		self.mainSectHeader(thisElement.parentNode.getAttribute("id"), \
+			"%d. " % self.sect1Count)
+
+		self.process(thisElement)
+
+		self.mainSectFooter()
+
+	def element_sect2_title(self, thisElement):
+		#self.out('<fo:block text-indent="0pt" font-family="%s" '
+		#	'font-weight="bold" font-size="116%%" keep-with-next="always" '
+		#	'id="%s" space-before="0.5em">' % (self.ac.font['sans'], thisElement.parentNode.getAttribute("id")))
+		#self.out("%d.%d. " % (self.sect1Count, self.sect2Count))
+		#self.process(thisElement)
+		#self.out('</fo:block>\n')
+
+		self.quoteCount = 0
+		self.sect2Header(thisElement.parentNode.getAttribute("id"), \
+			"%d.%d. " % (self.sect1Count, self.sect2Count))
+		self.process(thisElement)
+		self.sect2Footer()
+
+	def element_sect3_title(self, thisElement):
+		self.quoteCount = 0
+		self.sect3Header(thisElement.parentNode.getAttribute("id"), \
+			"%d.%d.%d. " % (self.sect1Count, self.sect2Count, self.sect3Count))
+		self.process(thisElement)
+		self.sect3Footer()
+
+	def element_guideinfo_title(self, thisElement):
+		self.quoteCount = 0
+		self.process(thisElement)
+
+	def element_figure_title(self, thisElement):
+		self.quoteCount = 0
+		self.out('<fo:block font-weight="bold" text-align="center" ' \
+			'keep-with-previous="always">')
+		#self.out('Figure %d. ' % self.figureCount)
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+
+	def element_subtitle(self, thisElement):
+		self.process(thisElement)
+
+	def element_version(self, thisElement):
+		self.process(thisElement)
+
+	def element_date(self, thisElement):
+		self.process(thisElement)
+
+	def element_copyright(self, thisElement):
+		self.process(thisElement)
+
+	def element_author(self, thisElement):
+		self.process(thisElement)
+
+	def element_name(self, thisElement):
+		self.process(thisElement)
+
+	def element_author_email(self, thisElement):
+		self.out('<fo:inline font-family="%s" font-weight="bold" font-size="0.8em">' % self.ac.font['mono'])
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_email(self, thisElement):
+		self.out('<fo:inline font-family="%s" font-size="0.8em">' % self.ac.font['mono'])
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_sect1(self, thisElement):
+		if self.sect1Count == 0:
+			reset = ' initial-page-number="1"'
+		else:
+			reset = ''
+
+		if self.ac.twosided:
+			breakBehavior = ' force-page-count="even"'
+		else:
+			breakBehavior = ''
+
+		self.sect1Count += 1
+		self.sect2Count = 0
+		self.sect3Count = 0
+
+		self.out('<fo:page-sequence master-reference="chapter"%s%s>\n' % \
+				(reset, breakBehavior))
+
+		self.topSectHeadersFooters(thisElement)
+
+		# region body
+		self.out('<fo:static-content flow-name="xsl-footnote-separator">\n'
+			'\t<fo:block>\n'
+			'\t\t<fo:leader leader-pattern="rule" leader-length="40%"/>\n'
+			'\t</fo:block>\n'
+			'</fo:static-content>\n')
+
+		self.out('<fo:flow flow-name="xsl-region-body" ' \
+			'id="%s" font-family="%s" ' \
+			'font-size="%spt" text-indent="%s">\n' % \
+			(thisElement.getAttribute('id'), self.ac.font['serif'], \
+			self.ac.fontpoints, self.getIndent()))
+		self.process(thisElement)
+		self.out('</fo:flow>\n')
+
+		self.out('</fo:page-sequence>\n')
+
+	def element_sect2(self, thisElement):
+		self.sect2Count += 1
+		self.sect3Count = 0
+		self.process(thisElement)
+
+	def element_sect3(self, thisElement):
+		self.sect3Count += 1
+		self.process(thisElement)
+
+	def element_p(self, thisElement):
+		self.quoteCount = 0
+		if self.paragraphSpacing != None:
+			self.out('<fo:block space-after="%s">' % self.paragraphSpacing)
+		else:
+			self.out('<fo:block>')
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+
+	def element_spaces(self, thisElement):
+		self.process(thisElement)
+		for i in range(int(thisElement.getAttribute("count"))):
+			#self.out("&nbsp;")
+			self.out("&#x20;")
+
+	def element_title_func(self, thisElement):  # don't shrink
+		self.quoteCount = 0
+		if self.inTOC:
+			# unless we're in the TOC, then please do shrink it
+			self.out('<fo:inline %s>' % self.getFontInfo('func'))
+		else:
+			self.out('<fo:inline %s>' % self.getFontInfo('titlefunc'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_func(self, thisElement):
+		if self.inCode:
+			self.out('<fo:inline %s>' % self.getFontInfo('codefunc'))
+		else:
+			self.out('<fo:inline %s>' % self.getFontInfo('func'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_title_type(self, thisElement):  # don't shrink
+		self.quoteCount = 0
+		if self.inTOC:
+			self.out('<fo:inline %s wrap-option="no-wrap">' % \
+				self.getFontInfo('type'))
+		else:
+			self.out('<fo:inline %s wrap-option="no-wrap">' % \
+				self.getFontInfo('titletype'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_type(self, thisElement):
+		if self.inCode:
+			self.out('<fo:inline %s wrap-option="no-wrap">' % \
+				self.getFontInfo('codetype'))
+		else:
+			self.out('<fo:inline %s wrap-option="no-wrap">' % \
+				self.getFontInfo('type'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_tt(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('tt'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_statement(self, thisElement):
+		self.process(thisElement)
+
+	def element_operator(self, thisElement):
+		if self.inCode:
+			self.out('<fo:inline %s>' % self.getFontInfo('codeoperator'))
+		else:
+			self.out('<fo:inline %s>' % self.getFontInfo('operator'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_var(self, thisElement):
+		if self.inCode:
+			self.out('<fo:inline %s>' % self.getFontInfo('codevar'))
+		else:
+			self.out('<fo:inline %s>' % self.getFontInfo('var'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_com(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('com'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_const(self, thisElement):
+		if self.inCode:
+			self.out('<fo:inline %s>' % self.getFontInfo('codeconst'))
+		else:
+			self.out('<fo:inline %s>' % self.getFontInfo('const'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_booktitle(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('foreign'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_foreign(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('foreign'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_emp(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('emp'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_b(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('b'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_super(self, thisElement):
+		self.out('<fo:inline font-size="0.5em" baseline-shift="super">')
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_param(self, thisElement):
+		self.element_var(thisElement)
+
+	def element_file(self, thisElement):
+		self.element_param(thisElement);
+
+	def element_br(self, thisElement):
+		self.out('<fo:block />')
+
+	def element_smiley(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('smiley'))
+		self.out(":-)")
+		self.out('</fo:inline>')
+
+	def element_winky(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('smiley'))
+		self.out(";-)")
+		self.out('</fo:inline>')
+
+	def element_evilwinky(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('smiley'))
+		self.out("};-)")
+		self.out('</fo:inline>')
+
+	def element_link(self, thisElement):
+		self.out('<fo:basic-link internal-destination="%s">' % \
+			thisElement.getAttribute('dest'))
+		self.process(thisElement)
+		self.out('</fo:basic-link>')
+
+	def element_ulink(self, thisElement):
+		url = thisElement.getAttribute('url')
+		url = self.fixAmpGtLt(url)
+		ignoreFootnote = thisElement.getAttribute('footnote').lower() == 'n'
+		if not ignoreFootnote:
+			keepWith = ' keep-with-next="always"'
+		else:
+			keepWith = ''
+		self.out('<fo:basic-link external-destination="%s"%s>' % (url, keepWith))
+		self.process(thisElement)
+		self.out('</fo:basic-link>')
+		if not ignoreFootnote:
+			self.foFootnote("".join(('<fo:inline font-family="%s">' % self.ac.font['mono'],url,'</fo:inline>')))
+
+	def element_code(self, thisElement):
+		self.inCode = True
+		self.out('<fo:block text-indent="0pt" margin="0.2em" ' \
+			'padding="0.2em" border-width="thin" border-style="solid" ' \
+			'border-bottom-width="medium" border-right-width="medium" ' \
+			'background-color="%s" ' \
+			'widows="2" orphans="2" ' \
+			'white-space="pre" %s %s>' % (self.ac.codebg, self.getFontInfo('code'), self.getCodeSpacing()))
+		self.process(thisElement)
+		self.out('</fo:block>')
+		self.inCode = False
+
+	def element_screen(self, thisElement):
+		self.inCode = True
+		self.out('<fo:block text-indent="0pt" margin="0.2em" ' \
+			'padding="0.2em" border-width="thin" border-style="solid" ' \
+			'border-right-style="dashed" border-bottom-style="dashed" ' \
+			'background-color="%s" ' \
+			'widows="2" orphans="2" ' \
+			'white-space="pre" %s %s>' % (self.ac.screenbg, self.getFontInfo('screen'), self.getCodeSpacing()))
+		self.process(thisElement)
+		self.out('</fo:block>')
+		self.inCode = False
+
+	def element_list(self, thisElement):
+		self.element_numlist(thisElement)
+
+	def element_numlist(self, thisElement):
+		self.numlistCount = 1 
+		self.out('<fo:list-block ' \
+			'provisional-distance-between-starts="4.0em" ' \
+			'space-before="1em" ' \
+			'space-after="1em" ' \
+			'start-indent="0cm">\n')
+		self.process(thisElement)
+		self.out('</fo:list-block>\n')
+
+	def element_li(self, thisElement):
+		if thisElement.parentNode.nodeName == "numlist":
+			label = "%d." % self.numlistCount
+		else:
+			label = "&#x2022;"  # bullet
+
+		self.out('	<fo:list-item space-after="0.5em">\n')
+		self.out('		<fo:list-item-label end-indent="label-end()-0em">\n')
+		self.out('			<fo:block text-align="right">%s</fo:block>\n' % label)
+		self.out('		</fo:list-item-label>\n')
+		self.out('		<fo:list-item-body start-indent="body-start()">\n')
+		self.out('			<fo:block text-indent="0em">')
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+		self.out('		</fo:list-item-body>\n')
+		self.out('	</fo:list-item>\n')
+
+		self.numlistCount += 1
+
+	def element_deflist(self, thisElement):
+		self.out('<fo:block text-indent="0pt" start-indent="%s" ' \
+			'space-before="0.5em" space-after="0.5em">\n' % self.getIndent())
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+
+	def element_def(self, thisElement):
+		self.process(thisElement)
+
+	def element_deftitle(self, thisElement):
+		self.out('<fo:block keep-with-next="always" text-indent="0pt">')
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+
+	def element_deftext(self, thisElement):
+		self.out('<fo:block start-indent="%s">\n' % self.getIndent(2))
+		self.paragraphSpacing = "0.5em"
+		self.process(thisElement)
+		self.paragraphSpacing = None # use default
+		self.out('</fo:block>\n')
+
+	def element_image(self, thisElement):
+		file = thisElement.getAttribute('printfile')
+		if file == '':
+			file = thisElement.getAttribute('file')
+
+		if file == '':
+			self.ac.warn('missing file attribute in <image> tag--ignoring')
+			return
+
+		width = thisElement.getAttribute('printwidth')
+		if width == '':
+			width = '10cm'
+
+		align = thisElement.getAttribute('align')
+		
+		# FOP apparently doesn't support float yet
+		#if align != '':
+		#	self.out('<fo:float float="%s">' % align)
+		self.out('<fo:block text-align="center">')
+		self.out('<fo:external-graphic content-width="%s" src="%s"/>' % (width, file))
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+		#if align != '':
+		#	self.out('</fo:float>')
+
+	def element_quote(self, thisElement):
+		self.process(thisElement)
+
+	def element_offsettext(self, thisElement):
+		self.process(thisElement)
+
+	def element_manpage(self, thisElement):
+		self.sect2Count += 1  # manpages act as sect2s from a numbering standpoint
+		self.sect3Count = 0
+		self.out('<fo:block break-before="page">\n')
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+
+	def element_manpage_title(self, thisElement):
+		self.quoteCount = 0
+		self.mainSectHeader(thisElement.parentNode.getAttribute("id"), \
+			"%d.%d. " % (self.sect1Count, self.sect2Count), True)
+		self.process(thisElement)
+		self.mainSectFooter()
+
+	def element_short(self, thisElement):
+		self.out('<fo:block text-indent="0pt">')
+		self.process(thisElement)
+		self.out('</fo:block>')
+
+	def element_prototypes(self, thisElement):
+		self.sect3Header(None, "Prototypes")
+		self.sect3Footer()
+		self.process(thisElement)
+
+	def element_description(self, thisElement):
+		self.sect3Header(None, "Description")
+		self.sect3Footer()
+		self.process(thisElement)
+
+	def element_rvalue(self, thisElement):
+		self.sect3Header(None, "Return Value")
+		self.sect3Footer()
+		self.process(thisElement)
+
+	def element_example(self, thisElement):
+		self.sect3Header(None, "Example")
+		self.sect3Footer()
+		self.process(thisElement)
+
+	def element_seealso(self, thisElement):
+		self.sect3Header(None, "See Also")
+		self.sect3Footer()
+		self.process(thisElement)
+
+	def element_copysym(self, thisElement):
+		self.out("&#xA9;")
+
+	def element_mu(self, thisElement):
+		self.out("&#x03BC;")
+
+	def special_PCDATA(self, thisElement):
+		s = thisElement.nodeValue
+		s = s.expandtabs(4)
+		s = self.fixAmpGtLt(s)
+
+		# print out the data, breaking translating other specials
+		quotetrans = (not self.findAncestorNamed(thisElement, 'code') \
+				and not self.findAncestorNamed(thisElement, 'screen') \
+				and not self.findAncestorNamed(thisElement, 'tt'))
+		if quotetrans:
+			Done = False
+			i = 0
+			while not Done:
+				i2 = s.find('"', i)
+				if i2 == -1:
+					self.out(s[i:])
+					Done = True
+				else:
+					self.out(s[i:i2])
+					i = i2 + 1
+					if (self.quoteCount&1) == 0:
+						self.out('&#x201C;')  # ``
+					else:
+						self.out('&#x201D;')  # ''
+					self.quoteCount += 1
+		else:
+			self.out(s)
+
+	def special_COMMENT(self, thisElement):
+		self.out("<!-- %s -->\n" % (thisElement.nodeValue))
+
+	def element_faq(self, thisElement):
+		self.process(thisElement)
+
+	def element_faqentry(self, thisElement):
+		self.process(thisElement)
+
+	def element_q(self, thisElement):
+		self.out('<fo:block text-indent="0pt" font-weight="bold" '
+			'space-after="0.3em" keep-with-next="always">')
+		self.process(thisElement)
+		self.out('</fo:block>')
+
+	def element_a(self, thisElement):
+		if self.ac.fat:
+			spacing = 'space-after="1.2em"'
+		else:
+			spacing = 'space-after="1em"'
+		self.out('<fo:block %s>' % (spacing))
+		self.process(thisElement)
+		self.out('</fo:block>')
+
+	def element_figure(self, thisElement):
+		self.figureCount += 1
+
+		id = thisElement.getAttribute("id")
+		if id != '': id = ' id="%s"' % id
+
+		self.out('<fo:block%s space-before="0.75em" space-after="0.75em">' % id)
+		self.process(thisElement)
+		self.out('</fo:block>')
+
+	def element_table(self, thisElement):
+		borderStrs = ( \
+			' border-style="none"', \
+			' border-style="solid" border-width="thin"', \
+			' border-style="solid" border-width="medium"', \
+			' border-style="solid" border-width="thick"', \
+		)
+
+		tableWidth = thisElement.getAttribute('width')
+		if tableWidth == '': tableWidth = '100%'
+
+		# need the numeric width of the table for centering
+		# TODO handle cases other than "%", like "em"
+		m = re.search(r'(\d*)(.*)', tableWidth)
+		if m != None:
+			try:
+				tableWidthPercent = int(m.group(1))
+			except:
+				tableWidthPercent = 100
+		else:
+			tableWidthPercent = 100
+
+		tablePadding = (100 - tableWidthPercent) / 2
+
+		self.cellPadding = thisElement.getAttribute('cellpadding')
+		if self.cellPadding == '':
+			self.cellPadding = "0.2em"
+
+		try:
+			border = int(thisElement.getAttribute('border'))
+			border = min(max(border,0),3)
+			self.borderStr = borderStrs[border]
+		except:
+			self.borderStr = borderStrs[0]
+
+		try:
+			outerBorder = int(thisElement.getAttribute('outerborder'))
+			outerBorder = min(max(outerBorder,0),3)
+			outerBorderStr = borderStrs[border]
+		except:
+			outerBorderStr = borderStrs[1]
+
+		tr1 = thisElement.getElementsByTagName('tr')[0]
+		colWidth = []
+		for td in tr1.getElementsByTagName('td'):
+			w = td.getAttribute('width')
+			if w == '':
+				self.ac.errorExit('<td> tags in the first <tr> MUST have width attributes')
+			colWidth.append(w)
+
+		# to get the table to center, we need an outer table
+		if self.ac.fat:
+			spacing = 'space-before="1.0em" space-after="1.0em"'
+		else:
+			spacing = 'space-before="0.5em" space-after="0.5em"'
+
+		self.out('<fo:table width="100%%" %s table-layout="fixed">\n' % spacing)
+		self.out('<fo:table-column column-width="%d%%" column-number="1"/>\n' % (tablePadding))
+		self.out('<fo:table-column column-width="%d%%" column-number="2"/>\n' % (tableWidthPercent))
+		self.out('<fo:table-body start-indent="0pt" text-align="start">\n')
+		self.out('<fo:table-row>\n')
+		self.out('<fo:table-cell column-number="1">\n') # this pushes the real cell over
+		self.out('<fo:block/>\n')
+		self.out('</fo:table-cell>\n')
+		self.out('<fo:table-cell column-number="2">\n') # real table goes in here
+
+		# inner "real" table
+		self.out('<fo:table width="100%%" table-layout="fixed" ' \
+			'space-before="0.5em" space-after="0.5em" text-indent="0pt"%s>\n' % \
+			(outerBorderStr))
+		for i in xrange(len(colWidth)):
+			self.out('	<fo:table-column column-width="%s" column-number="%d" />\n' % (colWidth[i], i+1))
+		self.out('	<fo:table-body start-indent="0pt" text-align="start">\n')
+		self.process(thisElement)
+		self.out('	</fo:table-body>\n')
+		self.out('</fo:table>\n')
+
+		# finish off outer table
+		self.out('</fo:table-cell>\n')
+		self.out('</fo:table-row>\n')
+		self.out('</fo:table-body>\n')
+		self.out('</fo:table>\n')
+
+	def element_tr(self, thisElement):
+		self.columnNum = 1
+		self.out('		<fo:table-row>\n')
+		self.process(thisElement)
+		self.out('		</fo:table-row>\n')
+
+	def element_td(self, thisElement):
+		self.out('			<fo:table-cell column-number="%d"%s ' \
+			'padding="%s">\n' % \
+			(self.columnNum, self.borderStr, self.cellPadding))
+		self.out('				<fo:block>')
+		self.paragraphSpacing = "0.5em"
+		self.process(thisElement)
+		self.paragraphSpacing = None
+		self.out('</fo:block>\n')
+		self.out('		    </fo:table-cell>\n')
+		self.columnNum += 1
+
+	def element_th(self, thisElement):
+		ul = thisElement.getAttribute('underline')
+		if ul == 'n' or ul == 'f':
+			ul = ''
+		else:
+			ul = ' text-decoration="underline"'
+
+		self.out('<fo:inline %s%s>' % (self.getFontInfo('b'), ul))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_nobr(self, thisElement):
+		self.out('<fo:inline wrap-option="no-wrap">')
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_referenceset(self, thisElement):
+		self.out('<fo:block space-before="0.7em" space-after="0.2em">')
+		self.process(thisElement)
+		self.out('</fo:block>')
+
+	def element_reference(self, thisElement):
+		self.out('<fo:block space-after="0.5em" start-indent="%s" ' \
+			'text-indent="%s">' % \
+			(self.getIndent(3.0), self.getIndent(-1.0)))
+		self.process(thisElement)
+		self.out('</fo:block>\n')
+
+	def element_reference_title(self, thisElement):
+		self.out('<fo:inline %s>' % self.getFontInfo('booktitle'))
+		self.process(thisElement)
+		self.out('</fo:inline>')
+
+	def element_ii(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <ii>\n");
+			sys.exit(1)
+
+		if self.ac.indexsuppression:
+			suppress = thisElement.getAttribute('suppress')  # a;b;c
+			if suppress != '': return
+
+		key = thisElement.getAttribute('key')  # a;b;c
+		if key == '':
+			sys.stderr.write("missing 'key' attribute on ii element\n");
+			sys.exit(1)
+
+		itemclass = thisElement.getAttribute('class')
+
+		# when fop supports this:
+		#if itemclass == '':
+		#	keystr = key
+		#else:
+		#	keystr = ";".join((key, itemclass))
+		#
+		#self.out('<fo:wrapper index-key="%s">' % keystr)
+		#self.process(thisElement)
+		#self.out('</fo:wrapper>')
+
+		indexId = self.index.getIndexId()
+		# first look for a seeonly entry for this particular key
+		e = self.index.findEntryByKey(key);
+		if e != None and e.seeonly != None:
+			# then redirect to this guy instead
+			key = e.seeonly
+
+		# now find (or create) the index entry for this key
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = index.IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+
+		# add this particular page to the index entry
+		e.addPage((indexId, itemclass, None))
+
+		self.out('<fo:wrapper id="%s">' % indexId)
+		self.process(thisElement)
+		self.out('</fo:wrapper>')
+
+	def element_indexrangestart(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <indexrangestart>\n");
+			sys.exit(1)
+
+		id = thisElement.getAttribute('id')
+		key = thisElement.getAttribute('key')
+		itemclass = thisElement.getAttribute('class')
+
+		# when fop supports this:
+		#if itemclass == '':
+		#	keystr = key
+		#else:
+		#	keystr = ";".join((key, itemclass))
+		#
+		#self.out('<fo:index-range-begin id="%s" index-key="%s"/>' % \
+		#	(id, keystr))
+
+		indexId = self.index.getIndexId(id)
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+		e.addPage((indexId, itemclass, ">"))
+
+		self.out('<fo:wrapper id="%s"/>' % indexId)
+
+	def element_indexrangeend(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <indexrangeend>\n");
+			sys.exit(1)
+
+		id = thisElement.getAttribute('id')
+
+		# when fop supports this:
+		#self.out('<fo:index-range-end ref-id="%s"/>' % id)
+
+		indexId = self.index.getIndexId(id)
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+		e.addPage((indexId, itemclass, "<"))
+
+		self.out('<fo:wrapper id="%s"/>' % indexId)
+
+######################################################################
+# App section
+######################################################################
+
+#---------------------------------------------------------------------
+class BGEntityResolver(xml.sax.handler.EntityResolver):
+	def resolveEntity(self, publicId, systemId):
+		return file(systemId)
+
+#---------------------------------------------------------------------
+class AppContext(bxc.AppContext):
+	"""Class for holding application info from the command line."""
+
+	PAPER_LETTER = 0
+	PAPER_A4 = 1
+	PAPER_TECH = 2
+	PAPER_CROWNQUATTRO = 3
+
+	htmlMode = 0
+	texMode = 1
+
+	def __init__(self, argv):
+		scriptname = os.path.basename(argv.pop(0))
+		(bxc.AppContext).__init__(self, scriptname)
+
+		self.usage = "usage: %s [options] infile\n" \
+			"  -2                        generate 2-sided output\n" \
+			"  -a4                       generate A4 pages\n" \
+			"  -tech                     generate tech manual pages\n" \
+			"  -crownquattro             generate crown quattro pages\n" \
+			"  -suppress                 enable index element suppression\n" \
+			"  -o outfileinfile          output file name\n" \
+			"  -serif fontname           set serif font name\n" \
+			"  -sans fontname            set sans serif font name\n" \
+			"  -mono fontname            set monospace font name\n" \
+			"  -fontpoints size          set general font size\n" \
+			"  -fat                      use larger whitespaces\n" \
+			"  -bastard                  generate bastard title\n" \
+			"  -bgcolor '#RRGGBB'        set the bg color for code and screen\n" \
+			"  -codebg '#RRGGBB'         set the bg color for code\n" \
+			"  -screenbg '#RRGGBB'       set the bg color for screen\n"
+
+		self.infilename = None
+		self.outfilename = None
+		self.twosided = False
+		self.papertype = self.PAPER_LETTER
+		self.indexsuppression = False
+		self.font = {'serif':'Times', 'sans':'Helvetica', 'mono':'Courier'}
+		self.fontpoints = 11
+		self.fat = False
+		self.bastard = False
+		self.offsetHeaderNumbers = False
+		self.codebg = '#E7E7E7'
+		self.screenbg = '#E0E0E0'
+	
+		while len(argv) > 0:
+
+			if argv[0] == "-help" or argv[0] == "--help" or \
+				argv[0] == "-h" or argv[0] == "-?":
+
+				self.errorExit()
+
+			elif argv[0] == "-2":
+				self.twosided = True
+
+			elif argv[0] == "-a4":
+				self.papertype = self.PAPER_A4
+
+			elif argv[0] == "-tech":
+				self.papertype = self.PAPER_TECH
+
+			elif argv[0] == "-crownquattro":
+				self.papertype = self.PAPER_CROWNQUATTRO
+
+			elif argv[0] == "-suppress":
+				self.indexsuppression = True
+
+			elif argv[0] == "-fat":
+				self.fat = True
+
+			elif argv[0] == "-bastard":
+				self.bastard = True
+
+			elif argv[0] == "-bgcolor":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.codebg = self.screenbg = argv[0]
+
+			elif argv[0] == "-codebg":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.codebg = argv[0]
+
+			elif argv[0] == "-screenbg":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.screenbg = argv[0]
+
+			elif argv[0] == "-o":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.outfilename = argv[0]
+
+			elif argv[0] == "-fontpoints":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.fontpoints = argv[0]
+
+			elif argv[0] == "-sans" or argv[0] == "-serif" or argv[0] == "-mono":
+				if len(argv) == 0: self.errorExit()
+				self.font[argv[0][1:]] = argv[1]
+				argv.pop(0)
+
+			else:
+				if self.infilename != None: self.errorExit()
+				self.infilename = argv[0]
+
+			argv.pop(0)  # next!
+
+		if self.infilename == None: self.errorExit()
+
+		# do our own parser to handle entities
+		parser = xml.sax.make_parser()
+		entityResolver = BGEntityResolver()
+		parser.setEntityResolver(entityResolver)
+
+		self.parseXMLFilename(self.infilename, parser)
+
+#---------------------------------------------------------------------
+def main(argv):
+	# get a new appContext
+	ac = AppContext(argv)
+
+	converter = FOConverter(ac)
+
+	# convert and do output!
+	converter.process(ac.dom)
+
+	# byeeeeeee
+	return 0
+
+#---------------------------------------------------------------------
+if __name__ == "__main__": sys.exit(main(sys.argv))
+

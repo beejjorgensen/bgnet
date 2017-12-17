@@ -1,0 +1,699 @@
+<html>
+<head>
+<title>Beej's Guide to Network Programming Errata</title>
+<meta charset="utf-8">
+<meta name="Description" content="Beej's Guide to Network Programming Errata">
+<meta name="Keywords" content="network programming sockets">
+<style type="text/css">
+<!--
+body {
+	font-family: Helvetica,Arial,sans-serif;
+	font-size: 12pt;
+}
+
+#adsense {
+	float: right;
+	margin: 10px;
+}
+
+*.maintitle {
+	font-weight:bold;
+	font-size: 2.0em;
+	margin-bottom: 0px;
+}
+
+
+*.subtitle {
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1.5em;
+	margin-top: 0px;
+}
+
+*.secttitle {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+*.subsecttitle {
+	font-weight: bold;
+}
+
+*.tableheader {
+	font-weight: bold;
+	font-style: italic;
+}
+
+*.email {
+	font-family: "Courier","Courier New",monospace;
+	font-weight: bold;
+}
+
+*.filename {
+	font-family: "Courier","Courier New",monospace;
+}
+
+*.command {
+	font-family: "Courier","Courier New",monospace;
+	font-weight: bold;
+}
+
+*.headerbar {
+	border: #000 solid 2px;
+	border-color: #000;
+	border-style: solid;
+	border-width: 2px;
+	background-color: #DDD;
+	margin: 1em;
+	padding: 1em;
+}
+
+*.beggartable {
+	border: #000,solid,2px;
+	border-color: #000;
+	border-style: solid;
+	border-width: 2px;
+	margin: 1em;
+	padding: 1em;
+}
+
+hr.singleline {
+	border: #000 solid 0px;
+	height: 1px;
+	background-color: #000;
+	border-color: #000;
+}
+
+*.strike {
+	text-decoration: line-through;
+}
+
+-->
+</style>
+</head>
+
+<body>
+
+<h1 class="maintitle">Beej's Guide to Network Programming Errata</h1>
+
+<p>I know I should have started this earlier than version 3.0.  I'm
+working on a time machine right now to help rectify the situation.</p>
+
+<hr class="singleline">
+<table border="0">
+
+<tr><td><i class="tableheader">Release</i></td>
+<td><i class="tableheader">Description of changes</i></td></tr>
+
+<!-- ================================================================ -->
+
+<tr><td valign="top"><b>3.0.8</b>, 2009-02-16</td>
+<td>getpeername() man page example [book v3.0.7 pp. 95-96]: replaced
+"&amp;amp;" with real ampersands (C doesn't like &amp;amp;&mdash;who
+knew) in call to getpeername().  Added address-of operators (&amp;)
+before the "s-&gt;sin_addr" and "s-&gt;sin6_addr" parameters to both
+calls to inet_ntop().  Thanks to Rafael for reporting these.
+
+<pre>
+getpeername(s, (struct sockaddr*)<strike class="strike">&amp;amp;</strike>addr, <strike class="strike">&amp;amp;</strike>len);
+getpeername(s, (struct sockaddr*)<b>&amp;</b>addr, <b>&amp;</b>len);
+
+inet_ntop(AF_INET, s->sin_addr, ipstr, sizeof ipstr);
+inet_ntop(AF_INET, <b>&amp;</b>s->sin_addr, ipstr, sizeof ipstr);
+
+inet_ntop(AF_INET, s->sin6_addr, ipstr, sizeof ipstr);
+inet_ntop(AF_INET, <b>&amp;</b>s->sin6_addr, ipstr, sizeof ipstr);
+</pre></td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.9</b>, 2009-02-18</td>
+<td>getpeername() man page example again (I know!) [book v3.0.7 p. 96]:
+replaced AF_INET with AF_INET6 where appropriate. How many bugs can I
+have in 10 lines of code?  I wrote a short program that counted exactly
+how many bugs I had, and it was this: -37!  Thanks again to Rafael who
+won't let me off the hook until I get it right. <tt>:)</tt>
+
+<pre>
+} else { // AF_INET6
+    <i>[... snip ...]</i>
+    inet_ntop(<strike class="strike">AF_INET</strike>, &amp;s->sin6_addr, ipstr, sizeof ipstr);
+    inet_ntop(<b>AF_INET6</b>, &amp;s->sin6_addr, ipstr, sizeof ipstr);
+</pre></td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.10</b>, 2009-02-23</td>
+<td>bind() man page example [book v3.0.7 p. 81]: need an address-of on
+myaddr.  (Thanks to Venkat for the report!)
+
+<pre>
+bind(s, (struct sockaddr*)myaddr, sizeof myaddr);
+bind(s, (struct sockaddr*)<b>&amp;</b>myaddr, sizeof myaddr);
+</pre>
+
+I also changed and added some comments in the same example [book v3.0.7
+pp. 80-81].  The "proper" way doesn't demonstrate error checking, so
+it's not very proper.
+
+<pre>
+// <strike class="strike">proper</strike> way of doing things with getaddrinfo()
+// <b>modern</b> way of doing things with getaddrinfo()
+
+<i>[... snip ...]</i>
+
+// make a socket:
+<b>// (you should actually walk the "res" linked list and error-check!)</b>
+</pre></td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.11</b>, 2009-02-24</td>
+<td>Section 5.2 socket() syscall example [book v3.0.7 p. 25]: forgot to
+declare the type of hints.  Also added a clarifying comment about the
+proper use of the getaddrinfo() results linked list. (This bug caught by
+Kaio&mdash;thanks, as always!)
+
+<pre>
+struct addrinfo *res;
+struct addrinfo <b>hints,</b> *res;
+</pre>
+
+and
+
+<pre>
+// do the lookup
+<b>// [pretend we already filled out the "hints" struct]</b>
+getaddrinfo("www.example.com", "http", &hints, &res);
+
+<b>// [again, you should do error-checking on getaddrinfo(), and walk
+// the "res" linked list looking for valid entries instead of just
+// assuming the first one is good (like many of these examples do.)
+// See the section on client/server for real examples.]</b>
+</pre></td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.12</b>, 2009-02-24</td>
+<td>And the hits just keep coming today!  These are from Mick&mdash;a
+couple of typos.
+
+<p>Section 3.1, "IP Addresses, versions 4 and 6" [book v3.0.7 p. 9]:</p>
+
+<pre>
+and was common written in "dots and numbers" form
+and was common<b>ly</b> written in "dots and numbers" form
+</pre>
+
+And, same section [book v3.0.7 p. 10]:
+
+<pre>
+That we need not just twice as many address, not a billion times as many
+That we need not just twice as many address<b>es</b>, not a billion times as many
+</pre></td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.13</b>, 2009-03-23</td>
+<td>A big batch today from Rainer Kupke: "&amp;amp;" removals and a
+quick note about using <tt>errno</tt> in multithreaded environments.
+couple of typos.  Hopefully this is all the stupid &amp;amp; errors caused
+by my lame indiscriminate use of CDATA in my source XML...
+
+<p>Section 9.2, "bind()" [book v3.0.7 p. 81]:</p>
+
+<pre>
+bind(s, (struct sockaddr*)myaddr, sizeof myaddr);
+bind(s, (struct sockaddr*)<b>&amp;</b>myaddr, sizeof myaddr);
+</pre>
+
+or
+
+<pre>
+bind(s, (struct sockaddr*)&amp;<strike class="strike">amp;</strike>myaddr, sizeof myaddr);
+bind(s, (struct sockaddr*)&amp;myaddr, sizeof myaddr);
+</pre>
+
+Section 9.18, "recv(), recvfrom()" [book v3.0.7 p. 116]:
+
+<pre>
+byte_count = recvfrom(sockfd, buf, sizeof buf, 0, &amp;<strike class="strike">amp;</strike>addr, &amp;<strike class="strike">amp;</strike>fromlen);
+byte_count = recvfrom(sockfd, buf, sizeof buf, 0, &amp;addr, &amp;fromlen);
+</pre>
+
+Section 9.19, "select()" [book v3.0.7 p. 118], lots of them bundled
+here... Gah, sorry!
+
+<pre>
+FD_ZERO(&amp;<strike class="strike">amp;</strike>readfds);
+FD_ZERO(&amp;readfds);
+
+FD_SET(s1, &amp;<strike class="strike">amp;</strike>readfds);
+FD_SET(s1, &amp;readfds);
+
+FD_SET(s2, &amp;<strike class="strike">amp;</strike>readfds);
+FD_SET(s2, &amp;readfds);
+
+rv = select(n, &amp;<strike class="strike">amp;</strike>readfds, NULL, NULL, &amp;<strike class="strike">amp;</strike>tv);
+rv = select(n, &amp;readfds, NULL, NULL, &amp;tv);
+
+if (FD_ISSET(s1, &amp;<strike class="strike">amp;</strike>readfds)) {
+if (FD_ISSET(s1, &amp;readfds)) {
+
+if (FD_ISSET(s2, &amp;<strike class="strike">amp;</strike>readfds)) {
+if (FD_ISSET(s2, &amp;readfds)) {
+</pre>
+
+Section 9.21, "send(), sendto()" [book v3.0.7 p. 122]:
+
+<pre>
+send(stream_socket, &amp;<strike class="strike">amp;</strike>temp, sizeof temp, 0);
+send(stream_socket, &amp;temp, sizeof temp, 0);
+
+sendto(dgram_socket, secret_message, strlen(secret_message)+1, 0,
+       (struct sockaddr*)&amp;<strike class="strike">amp;</strike>dest, sizeof dest);
+sendto(dgram_socket, secret_message, strlen(secret_message)+1, 0,
+       (struct sockaddr*)&amp;dest, sizeof dest);
+</pre>
+
+Section 5.2, "socket()&mdash;Get the file descriptor!" [book v3.0.7 p 25]:
+
+<pre>
+The global variable <i>errno</i> is set to the error's value (see the <strike class="strike">perror()</strike>
+man page.)
+
+The global variable <i>errno</i> is set to the error's value (see the <i>errno</i>
+man page <b>for more details, and a quick note on using <i>errno</i> in
+multithreaded programs</b>.)
+
+</pre>
+
+Section 9.10, "errno" [book v3.0.7 p 97], add the following paragraph to the
+end of the description:
+
+<pre>
+One thing to note, for you multithreading enthusiasts, is that on most systems
+<i>errno</i> is defined in a threadsafe manner.  (That is, it's not actually a
+global variable, but it behaves just like a global variable would in a
+single-threaded environment.)
+</pre></td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.14</b>, 2009-09-08</td>
+<td>A few changes, one substantial:
+
+<p>Section 6.3, "Datagram Sockets" [book v3.0.7 p 41]: type change in
+<tt class="filename">listener.c</tt> line 38:
+
+<pre>
+<strike class="strike">size_t</strike> addr_len;
+<b>socklen_t</b> addr_len;
+</pre>
+
+<p>Section 6.3, "select(): Synchronous I/O Multiplexing" [book v3.0.7 p
+XX]: added text:
+
+<pre>
+<b>This being said, in modern times <func>select()</func>, though very
+portable, is one of the slowest methods for monitoring sockets.  One
+possible alternative is libevent, or something similar, that
+encapsulates all the system-dependent stuff involved with getting socket
+notifications.</b>
+
+Without any further ado, I'll offer the synopsis of select():
+</pre>
+
+<p>Section 7.4, "Serialization&mdash;How to Pack Data" [book v3.0.7 pp.
+55-57]: addition and changes to <tt class="filename">ieee754.c</tt>:</p>
+
+<pre>
+#include &lt;inttypes.h&gt;
+</pre>
+
+<pre>
+<strike class="strike">long long</strike> pack754(long double f, unsigned bits, unsigned expbits)
+<b>uint64_t</b> pack754(long double f, unsigned bits, unsigned expbits)
+</pre>
+
+<pre>
+long double unpack754(<strike class="strike">long long</strike> i, unsigned bits, unsigned expbits)
+long double unpack754(<b>uint64_t</b> i, unsigned bits, unsigned expbits)
+</pre>
+
+<pre>
+printf("float encoded: 0x%08<strike class="strike">X</strike>\n", fi);
+printf("float encoded: 0x%08<b>" PRIx32 "</b>\n", fi);
+</pre>
+
+<pre>
+printf("double encoded: 0x%016<strike class="strike">llX</strike>\n", di);
+printf("double encoded: 0x%016<b>" PRIx64 "</b>\n", di);
+</pre>
+
+<p>Section 7.4, "Serialization&mdash;How to Pack Data" [book v3.0.7 pp.
+58-62]: multitude of changes, too many to list, to <tt
+class="filename">pack2.c</tt> to get it to function properly on 32-bit
+and 64-bit machines.  It now relies on C99 features, but it was the
+cleanest way to get it portable.  Modern <tt class="command">gcc</tt>
+should have no trouble.  (Thanks to Bruce L. for the catch and
+testing.)</p>
+
+<p>Section 7.4, "Serialization&mdash;How to Pack Data" [book v3.0.7 pp.
+XX-XX]: text added:</p>
+
+<pre>
+[THE END]
+
+<b>(Before I begin this section in earnest, I should tell you that there
+are libraries out there for doing this, and rolling your own and
+remaining portable and error-free is quite a challenge.  So hunt around
+and do your homework before deciding to implement this stuff yourself.
+I include the information here for those curious about how things like
+this work.)</b>
+
+Actually all the methods, above, have their drawbacks and advantages,
+</pre>
+
+<p>Section 7.4, "Serialization&mdash;How to Pack Data" [book v3.0.7 pp.
+XX-XX]: text added:</p>
+
+<pre>
+But if you want your source code to be portable, that's an assumption
+you can't necessarily make.  <b>(On the other hand, if you want things to
+be fast, you should optimize this out on platforms that don't need to do
+it!  That's what htons() and its ilk do.)</b>
+</pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.15</b>, 2012-07-03</td>
+
+<td>In the man page section for <tt>bind()</tt>:
+
+<pre>
+inet_pton(AF_INET, "63.161.169.137", &amp;myaddr.sin_addr.s_addr);
+inet_pton(AF_INET, "63.161.169.137", &amp;<b>(</b>myaddr.sin_addr<b>)</b><strike class="strike">.s_addr</strike>);
+</pre>
+
+<p>In Section 5.1, "<tt>getaddrinfo()</tt>&mdash;Prepare to launch!",
+the following was added to <tt>showip.c</tt>:
+
+<pre><b>#include &lt;netinet/in.h&gt;</b></pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.16</b>, 2015-08-11</td>
+
+<td>In Section 6.1, A Simple Stream Server, the error output for
+<tt>bind()</tt> should happen before the <tt>close()</tt> call:
+
+<pre>
+if (bind(sockfd, p-&gt;ai_addr, p-&gt;ai_addrlen) == -1) {
+    <b>perror("server: bind");
+    close(sockfd);</b>
+    continue;
+}
+</pre>
+
+<p>Also modify child reaper signal handler to not obliterate
+<tt>errno</tt>:
+
+<pre>
+void sigchld_handler(int s)
+{
+    <b>// waitpid() might overwrite errno, so we save and restore it:
+    int saved_errno = errno;</b>
+
+    while(waitpid(-1, NULL, WNOHANG) > 0);
+
+    <b>errno = saved_errno;</b>
+}
+</pre>
+
+<p>In Section 5.1, "<tt>getaddrinfo()</tt>&mdash;Prepare to launch!",
+the following was added to <tt>showip.c</tt>:
+
+<pre><b>#include &lt;netinet/in.h&gt;</b></pre>
+
+<p>In the setsockopt/getsockopt man page, the incorrect instructions
+about <tt>optval</tt> were corrected:</p>
+
+<pre>
+<b>The final parameter, <tt>optlen</tt>, should be set to the length
+of <tt>optval</tt>, probably <tt>sizeof(int)</tt>, but varies
+depending on the option. Note that in the case of
+<tt>getsockopt()</tt>, this is a pointer to a
+<tt>socklen_t</tt>, and it specifies the maximum size object that
+will be stored in <tt>optval</tt> (to prevent buffer overflows). And
+<tt>getsockopt()</tt> will modify the value of <tt>optlen</tt> to
+reflect the number of bytes actually set.</b>
+</pre>
+
+<p>In <tt>server.c</tt>, move the <tt>freeaddrinfo()</tt> call to before
+the error checking:
+
+<pre>
+<b>freeaddrinfo(servinfo); // all done with this structure</b>
+
+if (p == NULL)  {
+    fprintf(stderr, "server: failed to bind\n");
+    return 2;
+}
+</pre>
+
+<p>In Section 6.1, remove the "\n", since the code doesn't actually send
+that.
+
+<pre>
+All this server does is send the string <tt><b>"Hello, world!"</b></tt>
+out over a stream connection. All you need to do to test this server is
+run it in one window, and telnet to it from another with:
+</pre>
+
+<p>In 9.24 "struct sockaddr and pals", added missing <tt>#</tt> to
+<tt>include</tt>:
+
+<pre>
+<b>#</b>include &lt;netinet/in.h&gt;
+</pre>
+
+<p>
+In 3.1.1 Subnets, do proper math on 2<sup>24</sup>:
+
+<pre>
+And now for more outdated information! Ready? In the Ancient Times,
+there were "classes" of subnets, where the first one, two, or three
+bytes of the address was the network part. If you were lucky enough to
+have one byte for the network and three for the host, you could have 24
+bits-worth of hosts on your network (<b>16</b> million or so). That was
+a "Class A" network. On the opposite end was a "Class C", with three
+bytes of network, and one byte of host (256 hosts, minus a couple that
+were reserved.)
+</pre>
+
+<p>In 10.2 Web References, update <i>BSD Sockets: A Quick and Dirty
+Primer</i> URL to:
+
+<pre>
+<b>http://www.cis.temple.edu/~giorgio/old/cis307s96/readings/docs/sockets.html</b>
+</pre>
+
+<p>In 7.1 Blocking:
+
+<pre>
+If you try to read from a non-blocking socket and there's no data there,
+it's not allowed to block&mdash;it will return -1 and errno will be set to
+<b>EAGAIN or</b> EWOULDBLOCK.
+
+<b>(Wait&mdash;it can return EAGAIN or EWOULDBLOCK? Which do you check for?
+The specification doesn't actually specify which your system will
+return, so for portability, check them both.)</b>
+</pre>
+
+<p>In 3.4.1 Private (Or Disconnected) Networks, remove bad apostrophe:
+
+<pre>
+But if I ask my local computer what <b>its</b> IP address is, it says
+10.0.0.5.
+</pre>
+
+<p>In 9.19 select(), fix variable name in <tt>recv()</tt> call:
+
+<pre>
+if (FD_ISSET(s2, &amp;readfds)) {
+    recv(<b>s2</b>, buf2, sizeof buf2, 0);
+}
+</pre>
+
+<p>In 6.3 Datagram Sockets, fix error message in <tt>talker.c</tt>:
+
+<pre>
+    fprintf(stderr, "talker: failed to <b>create</b> socket\n");
+</pre>
+
+<p>In 3.4 IP Addresses, Part Deux, fix sample code IP address to match
+documentation IP address:
+
+<pre>
+inet_pton(AF_INET, "<b>10.12.110.57</b>", &(sa.sin_addr)); // IPv4
+</pre>
+
+<p>In 3.3 structs, added missing word:
+
+<pre>
+(Also, all the code written before struct addrinfo was invented
+<b>we</b> packed all this stuff by hand, so you'll see a lot of IPv4
+code out in the wild that does exactly that. You know, in old versions
+of this guide and so on.)
+</pre>
+
+<p>In 5.2 socket(), fix article:
+
+<pre>
+Now, get some milk and cookies, because it's times for a story. Once
+upon a time, a long time ago, it was thought that maybe a<b>n</b>
+address family
+</pre>
+
+<p>In 9.5 getaddrinfo(), fix typo:
+
+<pre>
+This is really where you get to define what the getadd<b>r</b>info()
+function is going to do.
+</pre>
+
+<p>In 9.14 inet_ntop(), fix the same typo:
+
+<pre>
+These functions don't do DNS lookups&mdash;you'll need getadd<b>r</b>info()
+for that.
+</pre>
+
+<p>In 9.24 struct sockaddr and pals, fix the same typo again:
+
+<pre>
+Often you'll use getadd<b>r</b>info() to fill these structures out, and
+then will read them when you have to.
+</pre>
+
+<p>In 7.4 Serialization, fix signed char unpacking in <tt>unpack()</tt>
+See, I told you not to roll your own!! <tt>:-)</tt>
+
+<pre>
+case 'c': // 8-bit
+    c = va_arg(ap, signed char*);
+    if (*buf &lt;= 0x7f) { *c = *<b>buf</b>;} // re-sign
+    else { *c = -1 - (unsigned char)(0xffu - *buf); }
+    <b>buf++;</b>
+    break;
+</pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.17</b>, 2015-09-23</td>
+
+<td><p>In 9.7 gethostbyname(), fixed typo:
+
+<pre>
+Returns a pointer to a resultant struct hostent <b>on</b> success, or NULL on
+error.
+</pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.18</b>, 2016-01-05</td>
+
+<td><p>In 9.5. getaddrinfo(), freeaddrinfo(), gai_strerror(); also in
+client.c: reversed <tt>close()</tt> and <tt>perror()</tt> calls so the
+<tt>perror</tt> would refer to the right syscall.
+
+<pre>
+<b>perror("connect");
+close(sockfd);</b>
+</pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.19</b>, 2016-02-08</td>
+
+<td><p>In 7.2. <tt>select()</tt>--Asynchronous I/O Multiplexing, added this
+paragraph to the end:
+
+<pre>
+<b>Quick note to all you Linux fans out there: sometimes, in rare
+circumstances, Linux's select() can return “ready-to-read” and then not
+actually be ready to read! This means it will block on the read() after
+the select() says it won't! Why you little—! Anyway, the workaround
+solution is to set the O_NONBLOCK flag on the receiving socket so it
+errors with EWOULDBLOCK (which you can just safely ignore if it occurs).
+See the fcntl() reference page for more info on setting a socket to
+non-blocking.</b>
+</pre>
+
+<p>In 9.19. <tt>select()</tt>, added this paragraph to the end:
+
+<pre>
+<b>Note for Linux users: Linux's select() can return “ready-to-read” and
+then not actually be ready to read, thus causing the subsequent read()
+call to block. You can work around this bug by setting O_NONBLOCK flag
+on the receiving socket so it errors with EWOULDBLOCK , then ignoring
+this error if it occurs. See the fcntl() reference page for more info on
+setting a socket to non-blocking.</b>
+</pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.20</b>, 2016-03-11</td>
+
+<td><p>In 9.17. <tt>poll()</tt>, added the <tt>fd</tt> field so that it
+works at all:
+
+<pre>ufds[1]<b>.fd</b> = s2;</pre>
+
+</td></tr>
+
+<!-- ================================================================ -->
+<tr><td><hr class="singlelineshort"/></td><td/></tr>
+
+<tr><td valign="top"><b>3.0.21</b>, 2016-06-08</td>
+
+<td><p>In 5.3, fixed example to be resistant to Solaris:
+
+<pre>if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&amp;yes,sizeof<b>(int)</b>)
+if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&amp;yes,sizeof<b> yes</b>)</pre>
+
+</td></tr>
+
+</table>
+
+<hr class="singleline">
+
+Contact Beej: <tt class="email"><a href="mailto:beej@beej.us">beej@beej.us</a></tt>
+
+</html>
+

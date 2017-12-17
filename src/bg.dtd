@@ -1,0 +1,111 @@
+<!-- DTD for Beej's Guides (bgnet edition) -->
+
+<!ENTITY % links "link|ulink">
+<!ENTITY % misc "smiley|winky|evilwinky|mu|copysym|spaces|nobr">
+<!ENTITY % lists "list|numlist|deflist">
+<!ENTITY % types "com|func|statement|var|type|operator|const|file|param|foreign">
+<!ENTITY % inlines "email|super|b|emp|tt|br|%types;|%links;|%misc;">
+<!ENTITY % p.contents "#PCDATA|ii|table|%lists;|%inlines;">
+<!ENTITY % sect.common "p|faq|figure|table|quote|offsettext|code|screen|%lists;|referenceset">
+<!ELEMENT guide (guideinfo,indexinfo?,sect1*)>
+<!ATTLIST guide id CDATA #REQUIRED>
+<!ELEMENT indexinfo (indexentry+)>
+<!ATTLIST indexinfo id CDATA #REQUIRED>
+<!ELEMENT indexentry (%p.contents;)*>
+<!ATTLIST indexentry id CDATA #REQUIRED>
+<!ATTLIST indexentry see CDATA #IMPLIED>
+<!ATTLIST indexentry seealso CDATA #IMPLIED>
+<!ELEMENT guideinfo (title,subtitle?,author?,version?,date?,copyright?,dedication?,legal?,comment?)>
+<!ELEMENT title (#PCDATA|%inlines;)*>
+<!ELEMENT subtitle (#PCDATA|%inlines;)*>
+<!ELEMENT version (#PCDATA|%inlines;)*>
+<!ELEMENT date (#PCDATA|%inlines;)*>
+<!ELEMENT author (name,email?)>
+<!ELEMENT name (#PCDATA|%inlines;)*>
+<!ELEMENT email (#PCDATA)>
+<!ELEMENT copyright (#PCDATA|%inlines;)*>
+<!ELEMENT dedication (#PCDATA|%sect.common;)*>
+<!ELEMENT comment (#PCDATA|%sect.common;)*>
+<!ELEMENT legal (#PCDATA|%sect.common;)*>
+<!ELEMENT p (%p.contents;)*>
+<!ELEMENT sect1 (title,(%sect.common;|sect2|manpage)*)>
+<!ATTLIST sect1 id CDATA #REQUIRED>
+<!ELEMENT sect2 (title,(%sect.common;|sect3)*)>
+<!ATTLIST sect2 id CDATA #REQUIRED>
+<!ELEMENT sect3 (title,(%sect.common;)*)>
+<!ATTLIST sect3 id CDATA #IMPLIED>
+<!ELEMENT manpage (title,short,prototypes?,description,rvalue?,example?,seealso?)>
+<!ATTLIST manpage id CDATA #REQUIRED>
+<!ELEMENT short (p*)>
+<!ELEMENT prototypes (code)>
+<!ELEMENT description (%sect.common;)*>
+<!ELEMENT rvalue (%sect.common;)*>
+<!ELEMENT example (p|code)+>
+<!ELEMENT seealso (%sect.common;)*>
+<!ELEMENT quote (p*)>
+<!ELEMENT offsettext (p*)>
+<!ELEMENT super (%p.contents;)*>
+<!ELEMENT code (%p.contents;)*>
+<!ELEMENT screen (%p.contents;)*>
+<!ELEMENT list (li+)>
+<!ELEMENT numlist (li+)>
+<!ELEMENT li (%p.contents;|p|code)*>
+<!ELEMENT deflist (def+)>
+<!ELEMENT def (deftitle,deftext)>
+<!ELEMENT deftitle (%p.contents;|p)*>
+<!ELEMENT deftext (%p.contents;|p)*>
+<!ELEMENT referenceset (reference+)>
+<!ELEMENT reference (%p.contents;|title)*>
+<!ELEMENT figure ((image,title?)|(title?,image))>
+<!ATTLIST figure id CDATA #IMPLIED>
+<!ELEMENT image EMPTY>
+<!ATTLIST image file CDATA #REQUIRED>
+<!ATTLIST image printfile CDATA #REQUIRED>
+<!ATTLIST image printwidth CDATA #REQUIRED>
+<!ATTLIST image alt CDATA #IMPLIED>
+<!ATTLIST image align CDATA #IMPLIED>
+<!ELEMENT ii EMPTY>
+<!ATTLIST ii key CDATA #REQUIRED>
+<!ATTLIST ii suppress CDATA #IMPLIED>
+<!ELEMENT faq (faqentry+)>
+<!ELEMENT faqentry ((q,a)+)>
+<!ELEMENT q (#PCDATA|ii|%inlines;|%sect.common;)*>
+<!ELEMENT a (%sect.common;)*>
+<!ELEMENT table (tr+)>
+<!ATTLIST table border CDATA #IMPLIED>
+<!ATTLIST table width CDATA #IMPLIED>
+<!ELEMENT tr (td+)>
+<!ELEMENT td (%sect.common;)*>
+<!ATTLIST td width CDATA #IMPLIED>
+<!ELEMENT link (%p.contents;)*>
+<!ATTLIST link dest CDATA #REQUIRED>
+<!ELEMENT ulink (%p.contents;)*>
+<!ATTLIST ulink url CDATA #REQUIRED>
+<!ATTLIST ulink footnote CDATA #IMPLIED>
+<!ELEMENT spaces EMPTY>
+<!ATTLIST spaces count CDATA #IMPLIED>
+<!ELEMENT b (#PCDATA|%inlines;)*>
+<!ELEMENT emp (#PCDATA|%inlines;)*>
+<!ELEMENT tt (#PCDATA|%inlines;)*>
+<!ELEMENT com (#PCDATA|%inlines;)*>
+<!ELEMENT func (#PCDATA|%inlines;)*>
+<!ELEMENT statement (#PCDATA|%inlines;)*>
+<!ELEMENT var (#PCDATA|%inlines;)*>
+<!ELEMENT type (#PCDATA|%inlines;)*>
+<!ELEMENT operator (#PCDATA|%inlines;)*>
+<!ELEMENT const (#PCDATA|%inlines;)*>
+<!ELEMENT file (#PCDATA|%inlines;)*>
+<!ELEMENT param (#PCDATA|%inlines;)*>
+<!ELEMENT foreign (#PCDATA|%inlines;)*>
+<!ELEMENT booktitle (#PCDATA|%inlines;)*>
+<!ELEMENT nobr (#PCDATA|%inlines;)*>
+<!ELEMENT br EMPTY>
+<!ELEMENT smiley EMPTY>
+<!ELEMENT winky EMPTY>
+<!ELEMENT evilwinky EMPTY>
+<!ELEMENT mu EMPTY>
+<!ELEMENT copysym EMPTY>
+
+<!ENTITY emdash "&#x2014;">
+<!ENTITY Eacute "&#xC9;">
+

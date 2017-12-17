@@ -1,0 +1,201 @@
+#!/usr/bin/python
+#
+# bgv -- Beej's Guide structure verifier
+#
+# Don't use this; you should use a real verification language like
+# RELAX NG or XML Schema.
+# 
+# Release 1: initial
+#
+# Copyright (c) 2007  Brian "Beej Jorgensen" Hall <beej@beej.us>
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+
+import sys
+import os.path
+import xml.dom
+import xml.dom.minidom
+import xml.sax
+import xml.sax.saxutils
+
+#--------------------------------------------------------------------------
+class SchemaException(Exception):
+	pass
+
+#--------------------------------------------------------------------------
+class Schema(object):
+	def __init__(self, filename):
+		self.dom = xml.dom.minidom.parse(filename)
+		self.eref = {}
+		self.gref = {}
+
+		bgdd = self.dom.documentElement
+
+		if bgdd.nodeName != 'bgdd':
+			raise SchemaException("no <bgdd> root element found")
+		rootName = bgdd.getAttribute("root")
+		if rootName == '': raise SchemaException("<bgdd> must specify 'root' attribute")
+
+		# inventory named elements at the root level
+		for n in bgdd.getElementsByTagName("element"):
+			self.eref[n.getAttribute('name')] = n
+
+		# inventory named groups at the root level
+		for n in bgdd.getElementsByTagName("group"):
+			self.gref[n.getAttribute('name')] = n
+
+		# set up root pointer to root element entry
+		self.setCurElement(self.resolveERef(rootName))
+
+	def getCurElement(self):
+		return self.curElement
+
+	def setCurElement(self, element):
+		#sys.stdout.write("Setting cur element to node %s\n" % element.getAttribute('name'))
+		self.curElement = element
+
+	def resolveERef(self, name):
+		if not self.eref.has_key(name):
+			raise SchemaException("element def '%s' not found" % name)
+		return self.eref[name]
+
+	def resolveGRef(self, name):
+		if not self.gref.has_key(name):
+			raise SchemaException("group def '%s' not found" % name)
+		return self.gref[name]
+
+	def __walkToChildR(self, childName, curNode, visitedGroups):
+		#sys.stdout.write("child node count: %s\n" % len(curNode.childNodes))
+		#print curNode.getAttribute('name'), '-->', childName, ' ',[ n.attributes['name'].value for n in curNode.childNodes if n.nodeType == xml.dom.Node.ELEMENT_NODE]
+		for n in curNode.childNodes:
+			#if n.nodeType == xml.dom.Node.ELEMENT_NODE:
+			#	sys.stdout.write("--- %s\n" % n.getAttribute('name'))
+
+			# see if we can find a straight-up element
+			if n.nodeName == "element":
+				name = n.getAttribute('name')
+				if name == '': raise SchemaException("<element> missing name attribute")
+				if name == childName:
+					self.setCurElement(n)
+					return n
+
+			# see if we can find an eref
+			if n.nodeName == "eref":
+				name = n.getAttribute('name')
+				if name == '': raise SchemaException("<eref> missing name attribute")
+				erefNode = self.resolveERef(name)
+				#sys.stdout.write("found eref node with name=%s\n" % erefNode.getAttribute('name'))
+				name = erefNode.getAttribute('name')
+				if name == '': raise SchemaException("<element> missing name attribute")
+				if name == childName:
+					self.setCurElement(erefNode)
+					return erefNode 
+
+			# recurse into groups to find something
+			if n.nodeName == "gref":
+				name = n.getAttribute('name')
+				if name not in visitedGroups:
+					visitedGroups.append(name)
+					r = self.__walkToChildR(childName, \
+						self.resolveGRef(name), visitedGroups)
+					if r != None: return r
+
+		return None
+
+
+	def walkToChild(self, childName):
+		return self.__walkToChildR(childName, self.curElement, [])
+
+#--------------------------------------------------------------------------
+class AppContext(object):
+	def __init__(self, argv):
+		self.scriptname = os.path.basename(argv.pop(0))
+
+		self.bddfile = None
+		self.xmlfile = None
+
+		while argv != []:
+			if argv[0] == "-h" or argv[0] == "-?" or argv[0] == "--help":
+				self.errorExit()
+
+			elif argv[0] == "-bdd":
+				argv.pop(0)
+				if argv == []: self.errorExit("-bdd must specify bdd file")
+				self.bddfile = argv[0]
+
+			elif self.xmlfile == None:
+				self.xmlfile = argv[0]
+
+			else:
+				self.errorExit()
+
+			argv.pop(0)
+
+		if self.bddfile == None or self.xmlfile == None:
+			self.errorExit()
+
+	def errorExit(self, message=None, status=1):
+		if message == None:
+			sys.stderr.write("usage: %s -bdd bddfile xmlfile\n" % \
+				self.scriptname)
+		else:
+			sys.stderr.write("%s: %s\n" % (self.scriptname, message))
+
+		sys.exit(status)
+
+#--------------------------------------------------------------------------
+def walkTree(node, schema, errorOccurred=False):  # the xml file
+	#print [ n.nodeName for n in node.childNodes if n.nodeType == xml.dom.Node.ELEMENT_NODE]
+	for n in node.childNodes:
+		if n.nodeType == xml.dom.Node.ELEMENT_NODE:
+			#sys.stdout.write("Testing node: %s\n" % n.nodeName)
+			schemaCur = schema.getCurElement()  # save pos
+			sn = schema.walkToChild(n.nodeName)
+			if sn == None:
+				sys.stderr.write("unexpected node <%s> found in <%s>\n" % \
+					(n.nodeName, node.nodeName))
+				#sys.stdin.readline()
+				errorOccurred = True
+				return errorOccurred
+			else:
+				errorOccurred = errorOccurred or walkTree(n, schema, errorOccurred)
+				schema.setCurElement(schemaCur)  # pop off
+				#return rv
+
+	return errorOccurred
+
+
+#--------------------------------------------------------------------------
+def main(argv):
+	ac = AppContext(argv)
+
+	s = Schema(ac.bddfile)
+	dom = xml.dom.minidom.parse(ac.xmlfile)
+
+	errorOccurred = walkTree(dom.documentElement, s)
+
+	if errorOccurred: return 1
+	return 0
+
+if __name__ == "__main__": sys.exit(main(sys.argv))
+

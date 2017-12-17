@@ -1,0 +1,1026 @@
+#!/usr/bin/python2
+#
+# bg2conv -- a semi-hardcoded parser for Beej's Guide XML files
+#
+# Release 1: HTML, single and multipage (based on bgconv)
+#
+# Copyright (c) 2007  Brian "Beej Jorgensen" Hall <beej@beej.us>
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+
+import sys
+import re
+import os
+import os.path
+import string
+import bxc
+import index
+import xml.dom
+import xml.dom.minidom
+import xml.sax
+import xml.sax.handler
+
+#---------------------------------------------------------------------
+class RoffConverter(bxc.Converter):
+	def __init__(self, ac):
+		(bxc.Converter).__init__(self, ac)  # call super constructor
+
+		self.inTOC = False
+		self.inCode = False
+		self.sect1Count = 0
+		self.sect2Count = 0
+		self.sect3Count = 0
+
+		self.setPageIds();  # contentsPageId, indexPageId
+
+		self.index = index.Index(self.getIndexInfoNode())
+
+		self.findNodeIDs()
+
+		if self.ac.multipage:
+			self.setupNavList()
+
+	def setPageIds(self):
+		id = self.ac.dom.documentElement.getAttribute('id')
+		if id == '':
+			self.contentsPageId = None
+		else:
+			self.contentsPageId = id
+
+		n = self.ac.dom.documentElement.getElementsByTagName('indexinfo')
+		if n == []:
+			self.indexPageId = None
+		else:
+			id = n[0].getAttribute('id')
+			if id == '':
+				self.indexPageId = None
+			else:
+				self.indexPageId = id
+
+	def __multiFileName(self, id):
+		name = id + ".html"
+		# in multifile mode, the outfile is the directory
+		return os.path.sep.join((self.ac.outfilename, name))
+
+	def writeAdSense(self):
+		self.out('<div id=\"adsense\">\n')
+		self.out('<script type="text/javascript"><!--\n')
+		self.out('google_ad_client = "pub-8191228291510015";\n')
+		self.out('google_ad_width = 160;\n')
+		self.out('google_ad_height = 600;\n')
+		self.out('google_ad_format = "160x600_as";\n')
+		self.out('google_ad_type = "text";\n')
+		self.out('//2007-05-05: bgnet\n')
+		self.out('google_ad_channel = "6194029036";\n')
+		self.out('google_color_border = "336699";\n')
+		self.out('google_color_bg = "FFFFFF";\n')
+		self.out('google_color_link = "0000FF";\n')
+		self.out('google_color_text = "000000";\n')
+		self.out('google_color_url = "008000";\n')
+		self.out('//-->\n')
+		self.out('</script>\n')
+		self.out('<script type="text/javascript"\n')
+		self.out('  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">\n')
+		self.out('</script>\n')
+		self.out('</div><br/>\n')
+
+	def setupNavList(self):
+		# sets up a "doubly-linked circular" dict (by id) for the nav menu
+		self.navList = {} # each contains [title, prevId, nextId], key==id
+
+		def setCurNode(curId, node):
+			id = node.getAttribute("id")
+			title = self.getTextFromPath(node, "title")
+			self.navList[id] = [title, curId, None]
+			self.navList[curId][2] = id  # curId.nextId
+
+			return id;
+
+		# contents page
+		curId = self.contentsPageId
+		self.navList[curId] = ["Contents", None, None]
+
+		# rest of sect1->sect2/manpage
+		for n in self.ac.dom.documentElement.childNodes:
+			if n.nodeName == 'sect1':
+				curId = setCurNode(curId, n);
+				for sn in n.childNodes:
+					if sn.nodeName == 'manpage':
+						curId = setCurNode(curId, sn);
+
+		# index page, or just wrap around
+		if self.index.hasEntries():
+			self.navList[curId][2] = self.indexPageId  #[2] == nextId
+			self.navList[self.indexPageId] = ["Index", curId, None]
+
+	def findNodeIDs(self):
+		def __findNodeIDsR(node):
+			if node.nodeType != xml.dom.Node.ELEMENT_NODE: return
+
+			v = node.getAttribute("id")
+			if v != None and v != "":
+				if self.nodeID.has_key(v):
+					sys.stderr.write("%s: duplicate id \"%s\"\n" % \
+						(self.ac.scriptname, v))
+
+				self.nodeID[v] = node
+
+			for a in node.childNodes: __findNodeIDsR(a)
+
+		self.nodeID = {}
+		__findNodeIDsR(self.ac.dom.documentElement)  # root
+
+	def findLinkDest(self, id):
+		if not self.nodeID.has_key(id):
+			sys.stderr.write("%s: link to unknown dest id \"%s\"\n" % \
+				(self.ac.scriptname, id))
+			return (None, None)
+
+		n = self.nodeID[id]
+
+		# link directly to single pages
+		if n.nodeName == "sect1" or n.nodeName == "manpage":
+			return (id, None)
+		else:
+			n = n.parentNode
+			while n.nodeName != "sect1" and n.nodeName != "manpage":
+				n = n.parentNode
+			if n == None:
+				errorExit("internal error: found id node with no sect1" \
+					"or manpage parent.")
+			return (n.getAttribute("id"), id)
+
+	def navMenu(self, id):
+		if not self.navList.has_key(id):
+			sys.stderr.write("navlist missing id '%s'\n" % id) 
+			sys.exit(2)
+
+		(title, prevId, nextId) = self.navList[id]
+
+		self.out("<table width=\"100%\" border=\"0\" cellspacing=\"0\"" \
+			"cellpadding=\"0\" class=\"navtable\">\n<tr>\n")
+			
+		# prev
+		self.out("<td align=\"left\">")
+		if prevId != None:
+			self.out("<a href=\"%s.html\">&lt;&lt;&nbsp;Prev</a>" % (prevId))
+		else:
+			self.out("<font color=\"#7f7f7f\">&lt;&lt;&nbsp;Prev</font>")
+		self.out("</td>\n")
+
+		# contents
+		self.out("<td align=\"center\"><a href=\"%s.html\">%s</a></td>" \
+			% (self.contentsPageId, self.ac.header))
+
+		# next
+		self.out("<td align=\"right\">")
+		if nextId != None:
+			self.out("<a href=\"%s.html\">Next&nbsp;&gt;&gt;</a>" % (nextId))
+		else:
+			self.out("<font color=\"#7f7f7f\">Next&nbsp;&gt;&gt;</font>")
+		self.out("</td>\n</tr></table>\n")
+
+	def htmlHeader(self, title, id):
+		self.out('<html>\n' \
+			'<head>\n' \
+			'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n' \
+			'<title>%s</title>\n' % (title))
+		if self.ac.stylesheet != None:
+			self.out("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % (self.ac.stylesheet))
+		self.out("</head>\n\n")
+		self.out("<body bgcolor=\"#ffffff\">\n")
+
+		if self.ac.multipage:
+			self.navMenu(id)
+
+	def htmlFooter(self, id):
+		if self.ac.multipage:
+			self.navMenu(id)
+
+		self.out("\n</body>\n</html>\n")
+
+	def getIndexInfoNode(self):
+		ii = self.ac.dom.documentElement.getElementsByTagName('indexinfo')
+		if ii == []: return None
+		return ii[0]
+
+	def getIndexPageNum(self):
+		# get the "page number" for later printing
+		pageNo = "%d.%d" % (self.sect1Count, self.sect2Count)
+		if self.sect3Count > 0:
+			pageNo = pageNo + ".%d" % self.sect3Count
+
+		return pageNo
+
+	def generateIndex(self):
+		self.indexPrevChar = None
+
+		def walkIndex(ent, indentLevel=0):
+			if ent.parent != None:  # don't print out anything for root
+				indentTab = 1.0
+				indentAmount = indentLevel * indentTab
+
+				# print a blank line between letters
+				fullKey = ent.getFullKey()
+				l = fullKey[0].lower()
+				spacebefore = ''
+				if self.indexPrevChar != None:
+					if l != self.indexPrevChar:
+						self.out('<p>')
+				self.indexPrevChar = l
+
+				# indent
+				self.out(("&nbsp;"*5)*indentLevel)
+
+				# write out the index key, or just use label if not found
+				ent = self.index.findEntryByKey(fullKey)
+				if ent == None:
+					sys.stderr.write("failed to find index entry " \
+						"for key \"%s\"\n" % fullKey)
+					sys.exit(1)
+				if ent.keynode == None:
+					self.out(ent.localkey)  # just use this
+				else:
+					self.process(ent.keynode)  # do formatting
+
+				self.out(': ')
+
+				if ent.seeonly != None:
+					k2 = self.index.findEntryByKey(ent.seeonly)
+					if k2 == None:
+						sys.stderr.write("failed to find seeonly entry " \
+							"for key \"%s\"\n" % ent.seeonly)
+						sys.exit(1)
+					self.out('see ')
+					if k2.keynode == None:
+						self.out(ent.seeonly)
+					else:
+						self.process(k2.keynode)
+					self.out('.')
+				else:
+					for p in ent.pages:
+						if p[2] == '>': # page range
+							rangeind = '-'
+						else:
+							if p != ent.pages[-1]:
+								rangeind = ', '
+							else:
+								rangeind = ''
+							self.out('<a href="%s">%s</a>%s' % \
+								(p[0], p[3], rangeind))
+
+					if ent.seealso != []:
+						self.out(" see also ")
+						for a in ent.seealso:
+							k2 = self.index.findEntryByKey(a)
+							if k2.keynode == None:
+								sys.stderr.write("indexinfo: non-existent " \
+									"seealso reference '%s' in %s\n" % \
+									(a, ent.getFullKey()))
+							else:
+								self.process(k2.keynode)
+								if a != ent.seealso[-1]:
+									self.out(', ')
+						self.out('.')
+
+				self.out('<br/>\n')
+
+			for e in ent.children:
+				walkIndex(e, indentLevel+1)
+
+		# start normal index processing
+		if self.ac.multipage:
+			self.ac.pushOutput(self.__multiFileName(self.indexPageId))
+			self.htmlHeader("Index", self.indexPageId)
+			if self.ac.adsense: self.writeAdSense()
+
+		if not self.ac.multipage:
+			self.out('<hr class="mainsectbreak"/>')
+
+		self.out('<h2 class="sect1title">Index<a name=\"%s\"/>' % \
+			self.indexPageId)
+		self.out('</h2>\n<hr class="mainsecthr"/>\n');
+
+		walkIndex(self.index)
+
+		self.out('<p/>\n') # one more blank line of space at the bottom
+
+		if self.ac.multipage:
+			self.htmlFooter(self.indexPageId)
+			self.ac.popOutput()
+
+	def generateTOC(self):
+		self.inTOC = True
+
+		self.out('<hr class="mainsectbreak"/>\n')
+		self.out('<h2 class="sect1title">Contents</h2>')
+		self.out('<hr class="mainsecthr"/>\n');
+
+		sect1Nodes = [ i for i in self.ac.dom.documentElement.childNodes \
+			if i.nodeName == "sect1" ]
+
+		count = 1
+
+		self.out("<dl>\n")
+
+		for n in sect1Nodes:
+			self.out("<dt>%d. " % (count))
+			if self.ac.multipage:
+				self.out("<a href=\"%s.html\">" % n.getAttribute("id"))
+				self.process(n, "title")
+				self.out("</a></dt>\n")
+			else:
+				self.out("<a href=\"#%s\">" % n.getAttribute("id"))
+				self.process(n, "title")
+				self.out("</a></dt>\n")
+
+			sect2Nodes = [ i for i in n.childNodes \
+				if i.nodeName == "sect2"  or i.nodeName == "manpage" ]
+
+			subcount = 1
+
+			for m in sect2Nodes:
+				self.out("<dd>%d.%d. " % (count, subcount))
+
+				if self.ac.multipage:
+					if m.nodeName == "sect2":
+						self.out("<a href=\"%s.html#%s\">" % \
+							(m.parentNode.getAttribute("id"), \
+							m.getAttribute("id")))
+						self.process(m, "title")
+						self.out("</a></dd>\n")
+					else: # must be a manpage
+						self.out("<a href=\"%s.html\">" % \
+							(m.getAttribute("id")))
+						self.process(m, "title")
+						self.out("</a></dd>\n")
+				else:
+					self.out("<a href=\"#%s\">" % m.getAttribute("id"))
+					self.process(m, "title")
+					self.out("</a></dd>\n")
+
+				subcount = subcount + 1
+			
+			count = count + 1
+
+			self.out("<p>")
+
+		if self.index.hasEntries():
+			if self.ac.multipage:
+				self.out("<a href=\"%s.html\">" % self.indexPageId)
+				self.out("Index</a></dt>\n")
+			else:
+				self.out("<a href=\"#%s\">" % self.indexPageId)
+				self.out("Index</a></dt>\n")
+
+		self.out("</dl><p>\n")
+
+		self.inTOC = False
+
+	def inCodeFontSize(self):
+		if self.inCode:
+			return ' em1'
+		else:
+			return ''
+
+	def element_guide(self, thisElement):
+		if self.ac.multipage:
+			id = thisElement.getAttribute("id")
+			self.ac.pushOutput(self.__multiFileName(id))
+		else:
+			self.ac.pushOutput(self.ac.outfilename)
+
+		self.out("<!-- HTML generated by Beej's bgconv Python script -->\n\n")
+
+		self.htmlHeader(self.getTextFromPath(thisElement, "guideinfo/title"), \
+			thisElement.getAttribute("id"))
+
+		self.process(thisElement)
+
+		if self.index.hasEntries(): self.generateIndex()
+
+		self.htmlFooter(thisElement.getAttribute("id"))
+
+		self.ac.popOutput()
+
+	def element_guideinfo(self, thisElement):
+		if self.ac.adsense: self.writeAdSense()
+		self.process(thisElement)
+		self.generateTOC()
+
+	def element_indexinfo(self, thisElement):
+		pass  # we'll deal with this later
+
+	def element_indexinfo_key(self, thisElement):
+		self.process()
+
+	def element_sect1_title(self, thisElement):
+		if self.inTOC:
+			self.process(thisElement)
+		else:
+			self.out("\n")
+			if not self.ac.multipage: self.out('<hr class="mainsectbreak"/>')
+			self.out('<h2 class="sect1title">%s. <a name="%s">' % \
+				(self.sect1Count, \
+				self.getAttrFromPath(thisElement, "id", "..")))
+			self.process(thisElement)
+			self.out('</a></h2><hr class="mainsecthr"/>\n');
+
+	def element_sect2_title(self, thisElement):
+		if self.inTOC:
+			self.process(thisElement)
+		else:
+			self.out('\n<h3 class="sect2title">%s.%s. <a name=\"%s\">' % \
+				(self.sect1Count, self.sect2Count, \
+				self.getAttrFromPath(thisElement, "id", "..")))
+			self.process(thisElement)
+			self.out("</a></h3>\n");
+
+	def element_sect3_title(self, thisElement):
+		if self.inTOC:
+			pass
+		else:
+			self.out('\n<h4 class="sect3title">%s.%s.%s. <a name=\"%s\">' % \
+				(self.sect1Count, self.sect2Count, self.sect3Count, \
+				self.getAttrFromPath(thisElement, "id", "..")))
+			self.process(thisElement)
+			self.out("</a></h4>\n");
+
+	def element_guideinfo_title(self, thisElement):
+		self.out('<h1 class="guidetitle">%s</h1>\n' % \
+			self.getText(thisElement))
+
+	def element_manpage_title(self, thisElement):
+		if self.inTOC:
+			self.process(thisElement)
+		else:
+			self.out("<p>")
+			if not self.ac.multipage:
+				self.out('<hr class="mainsectbreak"/>\n')
+			self.out('<h2 class="sect1title">%s.%s. <a name="%s">' %
+				(self.sect1Count, self.sect2Count, \
+				self.getAttrFromPath(thisElement, "id", "..")))
+			self.process(thisElement)
+			self.out("</a></h2></p>\n")
+
+	def element_figure_title(self, thisElement):
+		self.out("<p><b>")
+		self.process(thisElement)
+		self.out("</b></p>")
+
+	def element_subtitle(self, thisElement):
+		self.out('<h2 class="guidesubtitle">')
+		self.process(thisElement)
+		self.out("</h2>\n\n")
+
+	def element_version(self, thisElement):
+		self.out('<p/><span class="guideversion">%s</span><br/>\n' % \
+			self.getText(thisElement))
+
+	def element_date(self, thisElement):
+		self.out('<span class="guidedate">%s</span><br/>\n' % \
+			self.getText(thisElement))
+
+	def element_copyright(self, thisElement):
+		self.out('<p><small class="guidecopyright">')
+		self.process(thisElement)
+		self.out("</small></p>\n")
+
+	def element_author(self, thisElement):
+		self.process(thisElement)
+
+	def element_author_name(self, thisElement):
+		self.out('<p/><b class="guidetitleauthor">%s</b><br/>\n' % \
+			self.getText(thisElement))
+
+	def element_guideinfo_email(self, thisElement):
+		self.out('<tt class="guidetitleemail"><a href="mailto:%s">' %
+			self.getText(thisElement))
+		self.process(thisElement)
+		self.out("</a></tt><p/>\n")
+
+	def element_email(self, thisElement):
+		self.out("<tt class=\"email\"><a href=\"mailto:%s\">" %
+			self.getText(thisElement))
+		self.process(thisElement)
+		self.out("</a></tt>")
+
+	def element_sect1(self, thisElement):
+		if self.ac.multipage:
+			self.ac.pushOutput(self.__multiFileName(thisElement.getAttribute("id")))
+			self.htmlHeader(self.getTextFromPath(thisElement, "title"), \
+				thisElement.getAttribute("id"))
+			if self.ac.adsense: self.writeAdSense()
+
+		self.sect1Count += 1
+		self.sect2Count = 0
+		self.sect3Count = 0
+		self.process(thisElement)
+
+		if self.ac.multipage:
+			self.htmlFooter(thisElement.getAttribute("id"))
+			self.ac.popOutput()
+
+	def element_sect2(self, thisElement):
+		self.sect2Count += 1
+		self.sect3Count = 0
+		self.process(thisElement)
+
+	def element_sect3(self, thisElement):
+		self.sect3Count += 1
+		self.process(thisElement)
+
+	def element_p(self, thisElement):
+		self.out("<p>")
+		self.process(thisElement)
+		self.out("</p>")
+
+	def element_spaces(self, thisElement):
+		for i in range(int(thisElement.getAttribute("count"))):
+			self.out("&nbsp;")
+
+	def element_title_func(self, thisElement):
+		if self.inTOC:
+			self.element_func(thisElement)
+		else:
+			self.out('<b><tt class="titlefunc">')
+			self.process(thisElement)
+			self.out("</tt></b>")
+
+	def element_func(self, thisElement):
+		self.out('<b><tt class="func%s">' % self.inCodeFontSize())
+		self.process(thisElement)
+		self.out("</tt></b>")
+
+	def element_title_type(self, thisElement):
+		if self.inTOC:
+			self.element_type(thisElement)
+		else:
+			self.out('<nobr><b><tt class="titletype">')
+			self.process(thisElement)
+			self.out("</tt></b></nobr>")
+
+	def element_type(self, thisElement):
+		self.out('<nobr><tt class="type%s">' % self.inCodeFontSize())
+		self.process(thisElement)
+		self.out('</tt></nobr>')
+
+	def element_tt(self, thisElement):
+		self.out('<tt class="tt">')
+		self.process(thisElement)
+		self.out("</tt>")
+
+	def element_statement(self, thisElement):
+		self.element_func(thisElement)
+
+	def element_operator(self, thisElement):
+		self.out('<tt class="operator%s">' % self.inCodeFontSize())
+		self.process(thisElement)
+		self.out("</tt>")
+
+	def element_title_var(self, thisElement):
+		if self.inTOC:
+			self.element_var(thisElement)
+		else:
+			self.out('<i><tt class="titlevar">')
+			self.process(thisElement)
+			self.out("</tt></i>")
+
+	def element_var(self, thisElement):
+		self.out('<i><tt class="var%s">' % self.inCodeFontSize())
+		self.process(thisElement)
+		self.out("</tt></i>")
+
+	def element_com(self, thisElement):
+		self.out('<b class="com">')
+		self.process(thisElement)
+		self.out("</b>")
+
+	def element_const(self, thisElement):
+		self.out('<tt class="const%s">' % self.inCodeFontSize())
+		self.process(thisElement)
+		self.out("</tt>")
+
+	def element_foreign(self, thisElement):
+		self.out("<i>")
+		self.process(thisElement)
+		self.out("</i>")
+
+	def element_booktitle(self, thisElement):
+		self.out("<i>")
+		self.process(thisElement)
+		self.out("</i>")
+
+	def element_emp(self, thisElement):
+		self.out("<i>")
+		self.process(thisElement)
+		self.out("</i>")
+
+	def element_b(self, thisElement):
+		self.out("<b>")
+		self.process(thisElement)
+		self.out("</b>")
+
+	def element_super(self, thisElement):
+		self.out("<sup><small>")
+		self.process(thisElement)
+		self.out("</small></sup>")
+
+	def element_param(self, thisElement):
+		self.element_var(thisElement)
+
+	def element_file(self, thisElement):
+		self.element_param(thisElement);
+
+	def element_br(self, thisElement):
+		self.out("<br/>")
+
+	def element_smiley(self, thisElement):
+		self.out("<tt>:-)</tt>")
+
+	def element_winky(self, thisElement):
+		self.out("<tt>;-)</tt>")
+
+	def element_evilwinky(self, thisElement):
+		self.out("<tt>};-)</tt>")
+
+	def element_link(self, thisElement):
+		dest = thisElement.getAttribute("dest")
+		(filename,idnode) = self.findLinkDest(dest)
+		if self.ac.multipage:
+			self.out("<a href=\"%s.html" % (filename))
+			if idnode != None: self.out("#%s" % (idnode))
+			self.out("\">")
+		else:
+			self.out("<a href=\"#%s\">" % (dest))
+
+		self.process(thisElement)
+		self.out("</a>")
+
+	def element_ulink(self, thisElement):
+		self.out("<a href=\"%s\" target=\"_blank\">" % thisElement.getAttribute("url"))
+		self.process(thisElement)
+		self.out("</a>")
+
+	def element_code(self, thisElement):
+		self.out('<pre class="code">')
+		self.inCode = True
+		self.process(thisElement)
+		self.inCode = False
+		self.out("</pre>\n")
+
+	def element_screen(self, thisElement):
+		self.out('<pre class="screen">')
+		self.inCode = True
+		self.process(thisElement)
+		self.inCode = False
+		self.out("</pre>\n")
+
+	def element_list(self, thisElement):
+		self.out("<ul>\n")
+		self.process(thisElement)
+		self.out("</ul>\n")
+
+	def element_numlist(self, thisElement):
+		self.out("<ol>\n")
+		self.process(thisElement)
+		self.out("</ol>\n")
+
+	def element_li(self, thisElement):
+		self.out("<li>")
+		self.process(thisElement)
+		self.out("</li>\n")
+
+	def element_deflist(self, thisElement):
+		self.out("<dl compact=\"t\">")
+		self.process(thisElement)
+		self.out("</dl>\n")
+
+	def element_def(self, thisElement):
+		self.process(thisElement)
+
+	def element_deftitle(self, thisElement):
+		self.out("<dt><b>")
+		self.process(thisElement)
+		self.out("</b></dt>\n")
+
+	def element_deftext(self, thisElement):
+		self.out("<dd>")
+		self.process(thisElement)
+		self.out("</dd>\n")
+
+	def element_image(self, thisElement):
+		align = thisElement.getAttribute("align")
+		altText = thisElement.getAttribute("alt")
+		if altText != '': altText = ' alt="%s"' % altText
+		if align != '': align = ' class="float%s" class="padfive"' % align
+		self.out("<div%s><img src=\"%s\"%s/></div>\n" % \
+			(align, thisElement.getAttribute("file"), altText))
+
+	def element_quote(self, thisElement):
+		self.out("<blockquote>")
+		self.process(thisElement)
+		self.out("</blockquote>")
+
+	def element_offsettext(self, thisElement):
+		self.out("<dl><dt></dt><dd>")
+		self.process(thisElement)
+		self.out("</dd></dl>")
+
+	def element_manpage(self, thisElement):
+		if self.ac.multipage:
+			self.ac.pushOutput(self.__multiFileName(thisElement.getAttribute("id")))
+			self.htmlHeader(self.getTextFromPath(thisElement, "title"), \
+				thisElement.getAttribute("id"))
+			if self.ac.adsense: self.writeAdSense()
+
+		self.sect2Count += 1
+		self.sect3Count = 0
+
+		self.process(thisElement)
+
+		if self.ac.multipage:
+			self.htmlFooter(thisElement.getAttribute("id"))
+			self.ac.popOutput()
+
+	def element_short(self, thisElement):
+		self.process(thisElement)
+
+	def element_prototypes(self, thisElement):
+		self.out('<h3 class="sect2title">Prototypes</h3>\n')
+		self.process(thisElement)
+
+	def element_description(self, thisElement):
+		self.out('<h3 class="sect2title">Description</h3>\n')
+		self.process(thisElement)
+
+	def element_rvalue(self, thisElement):
+		self.out('<h3 class="sect2title">Return Value</h3>\n')
+		self.process(thisElement)
+
+	def element_example(self, thisElement):
+		self.out('<h3 class="sect2title">Example</h3>\n')
+		self.process(thisElement)
+
+	def element_seealso(self, thisElement):
+		self.out('<h3 class="sect2title">See Also</h3>\n')
+		self.process(thisElement)
+
+	def element_copysym(self, thisElement):
+		self.out("&#xA9;")
+
+	def element_mu(self, thisElement):
+		self.out("&#x03BC;")
+
+	def special_PCDATA(self, thisElement):
+		s = thisElement.nodeValue
+		#s = string.strip(s)
+		s = re.sub("\t", "    ", s)
+		s = re.sub("&", "&amp;", s)
+		s = re.sub("<", "&lt;", s)
+		s = re.sub(">", "&gt;", s)
+		self.out(s)
+
+	def special_COMMENT(self, thisElement):
+		self.out("<!-- %s -->\n" % (thisElement.nodeValue))
+
+	def element_faq(self, thisElement):
+		self.out("<dl>\n")
+		self.process(thisElement)
+		self.out("</dl>\n")
+
+	def element_faqentry(self, thisElement):
+		self.process(thisElement)
+
+	def element_q(self, thisElement):
+		self.out("<dt><b>")
+		self.process(thisElement)
+		self.out("</b></dt>\n")
+
+	def element_a(self, thisElement):
+		self.out("<dd>")
+		self.process(thisElement)
+		self.out("</dd>\n")
+
+	def element_figure(self, thisElement):
+		id = thisElement.getAttribute("id")
+		if id != '': self.out('<a name="%s" />' % id)
+
+		self.out("<center>")
+		self.process(thisElement)
+		self.out("</center>\n")
+
+	def element_table(self, thisElement):
+		try:
+			border = int(thisElement.getAttribute("border"));
+		except:
+			border = 0
+		self.out("<center><table cellpadding=\"10\" cellspacing=\"0\" " \
+			"border=\"%s\" class=\"joetable\">\n" % (border))
+		self.process(thisElement)
+		self.out("</table></center>\n")
+
+	def element_tr(self, thisElement):
+		self.out("<tr>")
+		self.process(thisElement)
+		self.out("</tr>\n")
+
+	def element_td(self, thisElement):
+		self.out("<td valign=\"top\" align=\"left\"")
+		width = thisElement.getAttribute("width")	
+		if width != "": self.out(" width=\"%s%%\">" % width)
+		else: self.out(">")
+		self.process(thisElement)
+		self.out("</td>\n")
+
+	def element_th(self, thisElement):
+		self.out("<b><u>")
+		self.process(thisElement)
+		self.out("</u></b>")
+
+	def element_nobr(self, thisElement):
+		self.out('<nobr>')
+		self.process(thisElement)
+		self.out('</nobr>')
+
+	def element_referenceset(self, thisElement):
+		self.process(thisElement)
+
+	def element_reference(self, thisElement):
+		self.out('<p>')
+		self.process(thisElement)
+		self.out('</p>\n')
+
+	def element_reference_title(self, thisElement):
+		self.out('<i>')
+		self.process(thisElement)
+		self.out('</i>')
+
+	def completeIndexId(self, indexId):
+		if self.ac.multipage:
+			return "%s#%s" % (self.ac.getOutputFileName(), indexId)
+		else:
+			return "#%s" % indexId
+
+	def element_ii(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <ii>\n");
+			sys.exit(1)
+
+		key = thisElement.getAttribute('key')  # a;b;c
+		if key == '':
+			sys.stderr.write("missing 'key' attribute on ii element\n");
+			sys.exit(1)
+
+		itemclass = thisElement.getAttribute('class')
+
+		indexId = self.index.getIndexId()
+		# first look for a seeonly entry for this particular key
+		e = self.index.findEntryByKey(key);
+		if e != None and e.seeonly != None:
+			# then redirect to this guy instead
+			key = e.seeonly
+
+		# now find (or create) the index entry for this key
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = index.IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+
+		# add this particular page to the index entry
+		e.addPage((self.completeIndexId(indexId), itemclass, None, \
+			self.getIndexPageNum()))
+
+		self.out('<a name="%s">' % indexId)
+		self.process(thisElement)
+		self.out('</a>')
+
+	def element_indexrangestart(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <indexrangestart>\n");
+			sys.exit(1)
+
+		id = thisElement.getAttribute('id')
+		key = thisElement.getAttribute('key')
+		itemclass = thisElement.getAttribute('class')
+
+		indexId = self.index.getIndexId(id)
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+		e.addPage((self.completeIndexId(indexId), itemclass, ">", \
+			self.getIndexPageNum()))
+
+		self.out('<a name="%s"/>' % indexId)
+
+	def element_indexrangeend(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <indexrangeend>\n");
+			sys.exit(1)
+		id = thisElement.getAttribute('id')
+
+		indexId = self.index.getIndexId(id)
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+		e.addPage((self.completeIndexId(indexId), itemclass, "<", \
+			self.getIndexPageNum()))
+
+		self.out('<a name="%s"/>' % indexId)
+
+######################################################################
+# App section
+######################################################################
+
+#---------------------------------------------------------------------
+class BGEntityResolver(xml.sax.handler.EntityResolver):
+	def resolveEntity(self, publicId, systemId):
+		#print "AAAAAAAAAAAA: " + str(publicId) + " -- " + str(systemId)
+		return file(systemId)
+
+#---------------------------------------------------------------------
+class AppContext(bxc.AppContext):
+	"""Class for holding application info from the command line."""
+
+	htmlMode = 0
+	texMode = 1
+
+	def __init__(self, argv):
+		scriptname = os.path.basename(argv.pop(0))
+		(bxc.AppContext).__init__(self, scriptname)
+
+		self.usage = "usage: %s [options] infile\n" \
+			"   -o outfile                output file name (or directory if multipage)\n"
+
+		self.multipage = False
+		self.infilename = None
+		self.outfilename = None
+		self.adsense = False
+		self.stylesheet = None
+		self.header = "Contents"
+	
+		while len(argv) > 0:
+
+			if argv[0] == "-help" or argv[0] == "--help" or \
+				argv[0] == "-h" or argv[0] == "-?":
+
+				self.errorExit()
+
+			elif argv[0] == "-o":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.outfilename = argv[0]
+
+			else:
+				if self.infilename != None: self.errorExit()
+				self.infilename = argv[0]
+
+			argv.pop(0)  # next!
+
+		if self.infilename == None: self.errorExit()
+
+		# do our own parser to handle entities
+		parser = xml.sax.make_parser()
+		#entityResolver = BGEntityResolver()
+		#parser.setEntityResolver(entityResolver)
+
+		self.parseXMLFilename(self.infilename, parser)
+
+#---------------------------------------------------------------------
+def main(argv):
+	# get a new appContext
+	ac = AppContext(argv)
+
+	converter = RoffConverter(ac)
+
+	# convert and do output!
+	converter.process(ac.dom)
+
+	# byeeeeeee
+	return 0
+
+#---------------------------------------------------------------------
+if __name__ == "__main__": sys.exit(main(sys.argv))
+
