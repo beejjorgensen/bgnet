@@ -4358,7 +4358,7 @@ void unpack(unsigned char *buf, char *format, ...)
 			s = va_arg(ap, char*);
 			len = unpacku16(buf);
 			buf += 2;
-			if (maxstrlen > 0 && len > maxstrlen) count = maxstrlen - 1;
+			if (maxstrlen > 0 && len >= maxstrlen) count = maxstrlen - 1;
 			else count = len;
 			memcpy(s, buf, count);
 			s[count] = '\0';
