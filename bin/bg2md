@@ -1,0 +1,832 @@
+#!/usr/bin/python2
+#
+# bg2md -- convert bg to Formatting Object XML
+#
+#
+# WARNING! This isn't for general use. It's a hacked-together
+# thing to be used as a one-off to convert the guide from XML
+# to Markdown. Full of bugs and incorrect comments and cruft
+# and badness.
+#
+#
+# Release 1: MD support (based on bgconv)
+#
+# Copyright (c) 2007  Brian "Beej Jorgensen" Hall <beej@beej.us>
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+#
+# TODO:
+#  floating images when FOP supports it
+#  make proper indexing an option when FOP supports it
+#  fix widows and orphans on screen/code when FOP supports it
+#  import SVGs instead of bitmaps when FOP supports it properly
+#
+
+import sys
+import re
+import os
+import os.path
+import string
+import bxc
+import index
+import xml.dom
+import xml.dom.minidom
+import xml.sax
+import xml.sax.handler
+
+#---------------------------------------------------------------------
+class MDConverter(bxc.Converter):
+	def __init__(self, ac):
+		(bxc.Converter).__init__(self, ac)  # call super constructor
+
+		self.title = None
+		self.author = None
+		self.email = None
+		self.version = None
+		self.date = None
+		self.copyright = None
+		self.nobr = False
+
+	def getIndexInfoNode(self):
+		ii = self.ac.dom.documentElement.getElementsByTagName('indexinfo')
+		if ii == []: return None
+		return ii[0]
+
+	def findNodeIDs(self):
+		def __findNodeIDsR(node):
+			if node.nodeType != xml.dom.Node.ELEMENT_NODE: return
+
+			v = node.getAttribute("id")
+
+			# autoid some nodes
+			if v == None or v == "":
+				if node.nodeName in ('sect1', 'sect2', 'sect3', 'manpage'):
+					idAttr = self.ac.dom.documentElement.createAttribute('id')
+					node.setAttributeNode(idAttr)
+					node.setAttribute('id', 'bgnid%04d' % self.uniqueIDCounter)
+					self.uniqueIDCounter += 1
+
+			if v != None and v != "":
+				if self.nodeID.has_key(v):
+					sys.stderr.write("%s: duplicate id \"%s\"\n" % \
+						(self.ac.scriptname, v))
+
+				self.nodeID[v] = node
+
+			for a in node.childNodes: __findNodeIDsR(a)
+
+		self.nodeID = {}
+		__findNodeIDsR(self.ac.dom.documentElement)  # root
+
+	def findLinkDest(self, id):
+		if not self.nodeID.has_key(id):
+			sys.stderr.write("%s: link to unknown dest id \"%s\"\n" % \
+				(self.ac.scriptname, id))
+			return (None, None)
+
+		n = self.nodeID[id]
+
+		# link directly to single pages
+		if n.nodeName == "sect1" or n.nodeName == "manpage":
+			return (id, None)
+		else:
+			n = n.parentNode
+			while n.nodeName != "sect1" and n.nodeName != "manpage":
+				n = n.parentNode
+			if n == None:
+				errorExit("internal error: found id node with no sect1" \
+					"or manpage parent.")
+			return (n.getAttribute("id"), id)
+
+	def generateMetaData(self, thisElement):
+		return  # We'll cat this in later
+		self.out("---\n")
+		self.out("title: ")
+		self.process(self.walkPath(thisElement, "title"))
+		self.out("\n")
+		self.out("subtitle: ")
+		self.process(self.walkPath(thisElement, "subtitle"))
+		self.out("\n")
+		self.out("author: ")
+		self.process(self.walkPath(thisElement, "author/name"))
+		self.out("\n")
+		self.out("date: ")
+		self.process(self.walkPath(thisElement, "date"))
+		self.out("\n")
+		self.out("sided: oneside\n")
+		self.out("papersize: letter\n")
+		self.out("---\n")
+
+
+	#--------------------------------------------------------------
+
+	def element_guide(self, thisElement):
+		self.ac.pushOutput(self.ac.outfilename)
+
+		self.process(thisElement)
+
+		self.ac.popOutput()
+
+	def element_guideinfo(self, thisElement):
+		self.process(thisElement)
+		self.generateMetaData(thisElement)
+
+	def element_guideinfo_title(self, thisElement):
+		self.title = self.getText(thisElement)
+
+	def element_guideinfo_subtitle(self, thisElement):
+		self.title += self.getText(thisElement)
+
+	def element_guideinfo_author_name(self, thisElement):
+		self.author = self.getText(thisElement)
+
+	def element_guideinfo_author_email(self, thisElement):
+		self.email = self.getText(thisElement)
+
+	def element_guideinfo_version(self, thisElement):
+		self.version = self.getText(thisElement)
+
+	def element_guideinfo_date(self, thisElement):
+		self.date = self.getText(thisElement)
+
+	def element_guideinfo_version(self, thisElement):
+		self.copyright = self.getText(thisElement)
+
+	def element_dedication(self, thisElement):
+		pass
+		#self.process(thisElement)
+
+	def element_legal(self, thisElement):
+		# TODO
+		pass
+
+	def element_comment(self, thisElement):
+		# TODO
+		pass
+
+	def element_indexinfo(self, thisElement):
+		pass  # we'll deal with this later
+
+	def element_indexinfo_key(self, thisElement):
+		self.process()
+
+	def element_sect1_title(self, thisElement):
+		self.out("# ")
+		self.process(thisElement)
+
+	def element_sect2_title(self, thisElement):
+		self.out("## ")
+		self.process(thisElement)
+
+	def element_sect3_title(self, thisElement):
+		self.out("### ")
+		self.process(thisElement)
+
+	def element_figure_title(self, thisElement):
+		self.process(thisElement)
+
+	def element_subtitle(self, thisElement):
+		self.process(thisElement)
+
+	def element_version(self, thisElement):
+		self.process(thisElement)
+
+	def element_date(self, thisElement):
+		self.process(thisElement)
+
+	def element_copyright(self, thisElement):
+		pass
+		#self.process(thisElement)
+
+	def element_author(self, thisElement):
+		self.process(thisElement)
+
+	def element_name(self, thisElement):
+		self.process(thisElement)
+
+	def element_author_email(self, thisElement):
+		self.process(thisElement)
+
+	def element_email(self, thisElement):
+		self.out('[`')
+		self.process(thisElement)
+		self.out('`](')
+		self.process(thisElement)
+		self.out(')')
+
+	def element_sect1(self, thisElement):
+		id = thisElement.getAttribute("id")
+		if id != '':
+			self.out('<a name="%s"></a>\n' % id)
+		self.process(thisElement)
+
+	def element_sect2(self, thisElement):
+		id = thisElement.getAttribute("id")
+		if id != '':
+			self.out('<a name="%s"></a>\n' % id)
+		self.process(thisElement)
+
+	def element_sect3(self, thisElement):
+		id = thisElement.getAttribute("id")
+		if id != '':
+			self.out('<a name="%s"></a>\n' % id)
+		self.process(thisElement)
+
+	def element_p(self, thisElement):
+		self.out("\n")
+		self.process(thisElement)
+
+	def element_spaces(self, thisElement):
+		self.process(thisElement)
+		for i in range(int(thisElement.getAttribute("count"))):
+			self.out("&#x20;")
+
+	def element_title_func(self, thisElement):  # don't shrink
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_func(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_title_type(self, thisElement):  # don't shrink
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_type(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_tt(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_statement(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_operator(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_var(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_screen_com(self, thisElement):
+		self.process(thisElement)
+
+	def element_com(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_const(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_booktitle(self, thisElement):
+		self.out('_')
+		self.process(thisElement)
+		self.out('_')
+
+	def element_foreign(self, thisElement):
+		self.out('_')
+		self.process(thisElement)
+		self.out('_')
+
+	def element_emp(self, thisElement):
+		self.out('_')
+		self.process(thisElement)
+		self.out('_')
+
+	def element_b(self, thisElement):
+		self.out('**')
+		self.process(thisElement)
+		self.out('**')
+
+	def element_super(self, thisElement):
+		self.out('<sup>')
+		self.process(thisElement)
+		self.out('</sup>')
+
+	def element_param(self, thisElement):
+		self.out('`')
+		self.process(thisElement)
+		self.out('`')
+
+	def element_file(self, thisElement):
+		self.out('`')
+		self.process(thisElement);
+		self.out('`')
+
+	def element_br(self, thisElement):
+		self.out('<br>')
+
+	def element_smiley(self, thisElement):
+		self.out('`')
+		self.out(":-)")
+		self.out('`')
+
+	def element_winky(self, thisElement):
+		self.out('`')
+		self.out(";-)")
+		self.out('`')
+
+	def element_evilwinky(self, thisElement):
+		self.out('`')
+		self.out("};-)")
+		self.out('`')
+
+	def element_link(self, thisElement):
+		self.out('[')
+		self.process(thisElement)
+		self.out('](#%s)' % thisElement.getAttribute('dest'))
+
+	def element_ulink(self, thisElement):
+		url = thisElement.getAttribute('url')
+		#url = self.fixAmpGtLt(url)
+		ignoreFootnote = thisElement.getAttribute('footnote').lower() == 'n'
+
+		if ignoreFootnote:
+			self.out('[')
+			self.process(thisElement)
+			self.out('](%s)' % url)
+		else:
+			self.out('[')
+			self.process(thisElement)
+			self.out('](%s)' % url)
+			self.out('^[%s]' % url)
+
+	def element_code(self, thisElement):
+		self.inCode = True
+		self.out('```c\n')
+		self.process(thisElement)
+		self.out('\n```')
+		self.inCode = False
+
+	def element_screen(self, thisElement):
+		self.inCode = True
+		self.out('```shell\n')
+		self.process(thisElement)
+		self.out('\n```')
+		self.inCode = False
+
+	def element_list(self, thisElement):
+		self.element_numlist(thisElement)
+
+	def element_numlist(self, thisElement):
+		self.numlistCount = 1 
+		self.process(thisElement)
+
+	def element_li(self, thisElement):
+		if thisElement.parentNode.nodeName == "numlist":
+			label = "%d. " % self.numlistCount
+		else:
+			label = "* "  # bullet
+
+		self.out(label)
+		self.process(thisElement)
+
+		self.numlistCount += 1
+
+	def element_deflist(self, thisElement):
+		self.process(thisElement)
+
+	def element_def(self, thisElement):
+		self.process(thisElement)
+
+	def element_deftitle(self, thisElement):
+		self.out('**')
+		self.process(thisElement)
+		self.out('**')
+
+	def element_deftext(self, thisElement):
+		self.process(thisElement)
+
+	def element_image(self, thisElement):
+		pass # handled in figure
+		#file = thisElement.getAttribute('printfile')
+		#if file == '':
+		#	file = thisElement.getAttribute('file')
+        #
+		#if file == '':
+		#	self.ac.warn('missing file attribute in <image> tag--ignoring')
+		#	return
+        #
+		## FOP apparently doesn't support float yet
+		##if align != '':
+		##	self.out('<fo:float float="%s">' % align)
+		#self.out('<fo:block text-align="center">')
+		#self.out('<fo:external-graphic content-width="%s" src="%s"/>' % (width, file))
+		#self.process(thisElement)
+		#self.out('</fo:block>\n')
+		##if align != '':
+		##	self.out('</fo:float>')
+
+	def element_quote(self, thisElement):
+		self.out("> ")
+		self.process(thisElement)
+
+	def element_offsettext(self, thisElement):
+		self.out("> ")
+		self.process(thisElement)
+
+	def element_manpage(self, thisElement):
+		self.process(thisElement)
+
+	def element_manpage_title(self, thisElement):
+		self.out("## ")
+		self.process(thisElement)
+
+	def element_short(self, thisElement):
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_prototypes(self, thisElement):
+		self.out("#### Synopsis\n\n")
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_prototypes_code_param(self, thisElement):
+		self.process(thisElement)
+
+	def element_prototypes_code_var(self, thisElement):
+		self.process(thisElement)
+
+	def element_description(self, thisElement):
+		self.out("#### Description \n\n")
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_rvalue(self, thisElement):
+		self.out("#### Return Value\n\n")
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_example(self, thisElement):
+		self.out("#### Example\n\n")
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_seealso(self, thisElement):
+		self.out("#### See Also\n\n")
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_copysym(self, thisElement):
+		self.out("&#xA9;")
+
+	def element_mu(self, thisElement):
+		self.out("&#x03BC;")
+
+	def special_PCDATA(self, thisElement):
+		s = thisElement.nodeValue
+
+		if self.nobr:
+			s = s.replace(" ", "&nbsp;")
+
+		s = s.expandtabs(4)
+
+		self.out(s)
+
+	def special_COMMENT(self, thisElement):
+		self.out("<!-- %s -->\n" % (thisElement.nodeValue))
+
+	def element_faq(self, thisElement):
+		self.process(thisElement)
+
+	def element_faqentry(self, thisElement):
+		self.process(thisElement)
+
+	def element_q(self, thisElement):
+		self.out('**')
+		self.process(thisElement)
+		self.out('**\n\n')
+
+	def element_a(self, thisElement):
+		self.process(thisElement)
+
+	def element_figure(self, thisElement):
+		#self.figureCount += 1
+
+		id = thisElement.getAttribute("id")
+		if id != '':
+			self.out('<a name="%s"></a>\n\n' % id)
+		title = self.walkPath(thisElement, "title")
+		image = self.walkPath(thisElement, "image")
+		self.out('![')
+		self.process(title)
+		self.out('](')
+		filename = image.getAttribute('printfile')
+		if filename == '':
+			filename = image.getAttribute('file')
+
+		# hack filename into md form
+		if filename == "dataencap-300-4.736.png":
+			filename = "dataencap.pdf"
+		elif filename == "cs-300-3.334.png":
+			filename = "cs.pdf"
+
+		self.out(filename)
+		self.out(' "')
+		self.out(image.getAttribute("alt"))
+		self.out('")')
+
+	def element_table(self, thisElement):
+		self.out("\n")
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_tr(self, thisElement):
+		self.columnNum = 1
+		self.process(thisElement)
+		self.out("\n")
+
+	def element_td(self, thisElement):
+		self.out("|")
+		self.process(thisElement)
+		if self.columnNum != 1:
+			self.out("|")
+		self.columnNum += 1
+
+	def element_th(self, thisElement):
+		#ul = thisElement.getAttribute('underline')
+		#if ul == 'n' or ul == 'f':
+		#	ul = ''
+		#else:
+		#	ul = ' text-decoration="underline"'
+
+		#self.out('<fo:inline %s%s>' % (self.getFontInfo('b'), ul))
+		self.process(thisElement)
+		#self.out('</fo:inline>')
+
+	def element_nobr(self, thisElement):
+		self.nobr = True
+		self.process(thisElement)
+		self.nobr = False
+
+	def element_referenceset(self, thisElement):
+		self.process(thisElement)
+
+	def element_reference(self, thisElement):
+		self.process(thisElement)
+
+	def element_reference_title(self, thisElement):
+		self.out("**")
+		self.process(thisElement)
+		self.out("**\n")
+
+	def element_ii(self, thisElement):
+		key = thisElement.getAttribute('key')  # a;b;c
+		if key == '':
+			sys.stderr.write("missing 'key' attribute on ii element\n");
+			sys.exit(1)
+
+		keys = key.split(';')
+
+		multi = len(keys) > 1
+		function = keys[-1][-2:] == '()'
+		need_trailer = function and multi
+
+		keys_norm = []
+		for k in keys:
+			if k.find('_') != -1:
+				function = True
+
+			if k[:3] == "SIG":
+				function = True
+
+			keys_norm.append(k.replace('_','\\_')) # latex style
+
+		self.out('\index{')
+		self.out('!'.join(keys_norm))
+
+		if need_trailer:
+			self.out('!x')
+
+		if function:
+			self.out('@\\texttt{%s}' % keys_norm[-1])
+
+		self.out('} ')
+
+		self.process(thisElement)
+
+	def element_indexrangestart(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <indexrangestart>\n");
+			sys.exit(1)
+
+		id = thisElement.getAttribute('id')
+		key = thisElement.getAttribute('key')
+		itemclass = thisElement.getAttribute('class')
+
+		# when fop supports this:
+		#if itemclass == '':
+		#	keystr = key
+		#else:
+		#	keystr = ";".join((key, itemclass))
+		#
+		#self.out('<fo:index-range-begin id="%s" index-key="%s"/>' % \
+		#	(id, keystr))
+
+		indexId = self.index.getIndexId(id)
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+		e.addPage((indexId, itemclass, ">"))
+
+		self.out('<fo:wrapper id="%s"/>' % indexId)
+
+	def element_indexrangeend(self, thisElement):
+		if not self.index.hasEntries():
+			sys.stderr.write("you must specify <indexinfo> if you want to use <indexrangeend>\n");
+			sys.exit(1)
+
+		id = thisElement.getAttribute('id')
+
+		# when fop supports this:
+		#self.out('<fo:index-range-end ref-id="%s"/>' % id)
+
+		indexId = self.index.getIndexId(id)
+		e = self.index.findEntryByKey(key)
+		if e == None:
+			e = IndexEntry(key=key)
+			self.index.insertEntry(e, key)
+		e.addPage((indexId, itemclass, "<"))
+
+		self.out('<fo:wrapper id="%s"/>' % indexId)
+
+######################################################################
+# App section
+######################################################################
+
+#---------------------------------------------------------------------
+class BGEntityResolver(xml.sax.handler.EntityResolver):
+	def resolveEntity(self, publicId, systemId):
+		return file(systemId)
+
+#---------------------------------------------------------------------
+class AppContext(bxc.AppContext):
+	"""Class for holding application info from the command line."""
+
+	PAPER_LETTER = 0
+	PAPER_A4 = 1
+	PAPER_TECH = 2
+	PAPER_CROWNQUATTRO = 3
+
+	htmlMode = 0
+	texMode = 1
+
+	def __init__(self, argv):
+		scriptname = os.path.basename(argv.pop(0))
+		(bxc.AppContext).__init__(self, scriptname)
+
+		self.usage = "usage: %s [options] infile\n" \
+			"  -2                        generate 2-sided output\n" \
+			"  -a4                       generate A4 pages\n" \
+			"  -tech                     generate tech manual pages\n" \
+			"  -crownquattro             generate crown quattro pages\n" \
+			"  -suppress                 enable index element suppression\n" \
+			"  -o outfileinfile          output file name\n" \
+			"  -serif fontname           set serif font name\n" \
+			"  -sans fontname            set sans serif font name\n" \
+			"  -mono fontname            set monospace font name\n" \
+			"  -fontpoints size          set general font size\n" \
+			"  -fat                      use larger whitespaces\n" \
+			"  -bastard                  generate bastard title\n" \
+			"  -bgcolor '#RRGGBB'        set the bg color for code and screen\n" \
+			"  -codebg '#RRGGBB'         set the bg color for code\n" \
+			"  -screenbg '#RRGGBB'       set the bg color for screen\n"
+
+		self.infilename = None
+		self.outfilename = None
+		self.twosided = False
+		self.papertype = self.PAPER_LETTER
+		self.indexsuppression = False
+		self.font = {'serif':'Times', 'sans':'Helvetica', 'mono':'Courier'}
+		self.fontpoints = 11
+		self.fat = False
+		self.bastard = False
+		self.offsetHeaderNumbers = False
+		self.codebg = '#E7E7E7'
+		self.screenbg = '#E0E0E0'
+	
+		while len(argv) > 0:
+
+			if argv[0] == "-help" or argv[0] == "--help" or \
+				argv[0] == "-h" or argv[0] == "-?":
+
+				self.errorExit()
+
+			elif argv[0] == "-2":
+				self.twosided = True
+
+			elif argv[0] == "-a4":
+				self.papertype = self.PAPER_A4
+
+			elif argv[0] == "-tech":
+				self.papertype = self.PAPER_TECH
+
+			elif argv[0] == "-crownquattro":
+				self.papertype = self.PAPER_CROWNQUATTRO
+
+			elif argv[0] == "-suppress":
+				self.indexsuppression = True
+
+			elif argv[0] == "-fat":
+				self.fat = True
+
+			elif argv[0] == "-bastard":
+				self.bastard = True
+
+			elif argv[0] == "-bgcolor":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.codebg = self.screenbg = argv[0]
+
+			elif argv[0] == "-codebg":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.codebg = argv[0]
+
+			elif argv[0] == "-screenbg":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.screenbg = argv[0]
+
+			elif argv[0] == "-o":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.outfilename = argv[0]
+
+			elif argv[0] == "-fontpoints":
+				if len(argv) == 0: self.errorExit()
+				argv.pop(0)
+				self.fontpoints = argv[0]
+
+			elif argv[0] == "-sans" or argv[0] == "-serif" or argv[0] == "-mono":
+				if len(argv) == 0: self.errorExit()
+				self.font[argv[0][1:]] = argv[1]
+				argv.pop(0)
+
+			else:
+				if self.infilename != None: self.errorExit()
+				self.infilename = argv[0]
+
+			argv.pop(0)  # next!
+
+		if self.infilename == None: self.errorExit()
+
+		# do our own parser to handle entities
+		parser = xml.sax.make_parser()
+		entityResolver = BGEntityResolver()
+		parser.setEntityResolver(entityResolver)
+
+		self.parseXMLFilename(self.infilename, parser)
+
+#---------------------------------------------------------------------
+def main(argv):
+	# get a new appContext
+	ac = AppContext(argv)
+
+	converter = MDConverter(ac)
+
+	# convert and do output!
+	converter.process(ac.dom)
+
+	# byeeeeeee
+	return 0
+
+#---------------------------------------------------------------------
+if __name__ == "__main__": sys.exit(main(sys.argv))
+
