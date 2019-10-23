@@ -1556,7 +1556,7 @@ want, "tcp" or "udp".)
 the `sin_family` field in your `struct sockaddr_in`. In fact, they're so closely
 related that they actually have the same value, and many programmers will call
 `socket()` and pass `AF_INET` as the first argument instead of `PF_INET`. Now,
-get some milk and cookies, because it's times for a story. Once upon a time, a
+get some milk and cookies, because it's time for a story. Once upon a time, a
 long time ago, it was thought that maybe an address family (what the "AF" in
 "`AF_INET`" stands for) might support several protocols that were referred to by
 their protocol family (what the "PF" in "`PF_INET`" stands for). That didn't
@@ -3865,7 +3865,7 @@ void unpack(unsigned char *buf, char *format, ...)
             s = va_arg(ap, char*);
             len = unpacku16(buf);
             buf += 2;
-            if (maxstrlen > 0 && len > maxstrlen) count = maxstrlen - 1;
+            if (maxstrlen > 0 && len >= maxstrlen) count = maxstrlen - 1;
             else count = len;
             memcpy(s, buf, count);
             s[count] = '\0';
