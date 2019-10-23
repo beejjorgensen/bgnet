@@ -1844,7 +1844,7 @@ In fact, they're so closely related that they actually have the same
 value, and many programmers will call <func>socket()</func> and pass
 <const>AF_INET</const> as the first argument instead of
 <func>PF_INET</func>.  Now, get some milk and cookies, because it's
-times for a story.  Once upon a time, a long time ago, it was thought
+time for a story.  Once upon a time, a long time ago, it was thought
 that maybe an address family (what the "AF" in "<const>AF_INET</const>"
 stands for) might support several protocols that were referred to by
 their protocol family (what the "PF" in "<const>PF_INET</const>" stands
@@ -4358,7 +4358,7 @@ void unpack(unsigned char *buf, char *format, ...)
 			s = va_arg(ap, char*);
 			len = unpacku16(buf);
 			buf += 2;
-			if (maxstrlen > 0 && len > maxstrlen) count = maxstrlen - 1;
+			if (maxstrlen > 0 && len >= maxstrlen) count = maxstrlen - 1;
 			else count = len;
 			memcpy(s, buf, count);
 			s[count] = '\0';
