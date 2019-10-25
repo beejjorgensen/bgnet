@@ -72,8 +72,16 @@ hr.singleline {
 	width: 50%
 }
 
+.w100p {
+	width: 100%
+}
+
 .center {
 	text-align: center;
+}
+
+.left {
+	text-align: left;
 }
 
 #suggestive-sell {
@@ -99,3 +107,9 @@ hr.singleline {
 .mb2ex {
 	margin-bottom: 2ex;
 }
+
+.ib800 {
+	display: inline-block;
+	max-width: 800px;
+}
+

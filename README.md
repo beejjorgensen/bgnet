@@ -13,33 +13,23 @@ can easily clone it.
 You'll need:
 
 * [Gnu make](https://www.gnu.org/software/make/)
-* [Python 2.4+](https://www.python.org/)
-* [Apache Xerces-C](https://xerces.apache.org/xerces-c/) (for
-  validation; see step 0, below)
-* [Apache FOP](https://xmlgraphics.apache.org/fop/) (or hack in some
-  other FO processor for print output)
-
-0. If you don't have Xerces-C, go to `bin/bgvalidate` and uncomment the
-   `disable=1` line to disable validation.
+* [Pandoc 2.7.3+](https://pandoc.org/)
 
 1. Type `make` from the top-level directory.
 
    If you have Gnu Make, it should work fine.  Other makes might work as
    well.  Windows users might want to check out Cygwin.
 
-2. Type `make buildcp` to copy all the build products and website to the
-   `build` directory.
+2. Type `make stage` to copy all the build products and website to the
+   `stage` directory.
 
 3. There is no step three.
 
-You can also `cd` to anywhere in the `builders` directory tree and
-`make`.
+You can also `cd` to the `src` directory and `make`.
 
 `make clean` cleans, and `make pristine` cleans to "original" state.
 
-To embed your own fonts in the PDFs, see the file
-`builders/print/fop.xconf` which already embeds the Liberation Fonts
-into the PDF.
+To embed your own fonts in the PDFs, see the `src/Makefile` for examples.
 
 The `upload` target in the root `Makefile` demonstrates the build steps
 for a complete release.  You'll need to change the `UPLOADDIR` macro in
@@ -60,18 +50,8 @@ have to consider any copyright issues when merging changes.
 * Multicast?
 * Event IO?
 
-### In `bg2fo`
+### Bug fixes
 
-* URL hyperlinks in PDF
-* Auto-manpage links in <func> tags.
-
-      <code file="..." />
-      <code annotate="y">  ]]><foo>blah</foo><![CDATA[
-
-### In `bg2html`
-
-* Auto-manpage links in <func> tags.
-
-      <code file="..." />
-      <code annotate="y">  ]]><foo>blah</foo><![CDATA[
+* When pandoc 2.8 comes up, switch all man page subheaders to h3 and supress
+  them from the table of contents.
 

@@ -1,5 +1,0 @@
-#!/bin/sh
-
-../../bin/fixpng *.png
-chmod 644 *.png
-

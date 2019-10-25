@@ -1,37 +1,33 @@
 PACKAGE=bgnet
-UPLOADDIR=beej71@alfalfa.dreamhost.com:~/beej.us/guide/$(PACKAGE)
-BUILDDIR=./build
+UPLOADDIR=beej71@alfalfa.dreamhost.com:~/beej.us/guidetest/$(PACKAGE)
+BUILDDIR=./stage
 
 .PHONY: all
 all:
-	$(MAKE) -C builders
+	$(MAKE) -C src
 
-.PHONY: buildcp
-buildcp:
-	mkdir -p $(BUILDDIR)/{pdf,html/single,html/multi,html/archive,translations,examples}
+.PHONY: stage
+stage:
+	mkdir -p $(BUILDDIR)/{pdf,html,translations,examples}
 	cp -v website/* $(BUILDDIR)
-	cp -v builders/print/*.pdf $(BUILDDIR)/pdf
-	cp -v builders/html/$(PACKAGE)*.{tgz,zip} $(BUILDDIR)/html/archive
-	cp -v builders/html/singlepage/*.{html,css,png} $(BUILDDIR)/html/single
-	cp -v builders/html/multipage/*.{html,css,png} $(BUILDDIR)/html/multi
+	cp -v src/bgnet*.pdf $(BUILDDIR)/pdf
+	cp -v src/bgnet.html $(BUILDDIR)/html/index.html
 	cp -v translations/*.pdf $(BUILDDIR)/translations 2>/dev/null || : 
 	cp -v examples/*.c $(BUILDDIR)/examples
 	cp -v examples/Makefile $(BUILDDIR)/examples
 
 .PHONY: upload
-upload: pristine all buildcp
-	rsync -rv -e ssh --delete build/* $(UPLOADDIR)
+upload: pristine all stage
+	rsync -rv -e ssh --delete ${BUILDDIR}/* $(UPLOADDIR)
 
 .PHONY: pristine
 pristine: clean
-	$(MAKE) -C builders $@
+	$(MAKE) -C src $@
 	$(MAKE) -C examples $@
 	rm -rf $(BUILDDIR)
-	rm -f lib/*.pyc
 
 .PHONY: clean
 clean:
-	$(MAKE) -C builders $@
+	$(MAKE) -C src $@
 	$(MAKE) -C examples $@
-	rm -f $(PACKAGE).valid
 
