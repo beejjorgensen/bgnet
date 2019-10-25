@@ -1,5 +1,5 @@
 PACKAGE=bgnet
-UPLOADDIR=beej71@alfalfa.dreamhost.com:~/beej.us/guidetest/$(PACKAGE)
+UPLOADDIR=beej71@alfalfa.dreamhost.com:~/beej.us/guide/$(PACKAGE)
 BUILDDIR=./stage
 
 .PHONY: all
