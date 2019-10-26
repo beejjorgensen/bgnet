@@ -9,7 +9,7 @@ all:
 .PHONY: stage
 stage:
 	mkdir -p $(BUILDDIR)/{pdf,html,translations,examples}
-	cp -v website/* $(BUILDDIR)
+	cp -v website/* website/.htaccess $(BUILDDIR)
 	cp -v src/bgnet*.pdf $(BUILDDIR)/pdf
 	cp -v src/bgnet.html $(BUILDDIR)/html/index.html
 	cp -v translations/*.pdf $(BUILDDIR)/translations 2>/dev/null || : 
