@@ -226,13 +226,13 @@ to need it.
 Another place that you might find problems is in the call to `setsockopt()`. The
 prototype differs from that on my Linux box, so instead of:
 
-```c
+```{.c}
 int yes=1;
 ```
 
 enter this:
 
-```c
+```{.c}
 char yes='1';
 ```
 
@@ -277,7 +277,7 @@ header files I mention in here. All you need to include is:
 
 \index{Winsock}
 
-```c
+```{.c}
 #include <winsock.h>
 ```
 
@@ -285,7 +285,7 @@ Wait! You also have to make a call to \index{WSAStartup()@\texttt{WSAStartup()}}
 `WSAStartup()` before doing anything else with the sockets library. The code to
 do that looks something like this:
 
-```c
+```{.c .numberLines}
 #include <winsock.h>
 
 {
@@ -922,7 +922,7 @@ are a real bear to figure out.
 First the easy one: a \index{socket descriptor} socket descriptor. A socket
 descriptor is the following type:
 
-```c
+```{.c}
 int
 ```
 
@@ -937,7 +937,7 @@ lookups, and service name lookups. That'll make more sense later when we get to
 actual usage, but just know for now that it's one of the first things you'll
 call when making a connection.
 
-```c
+```{.c}
 struct addrinfo {
     int              ai_flags;     // AI_PASSIVE, AI_CANONNAME, etc.
     int              ai_family;    // AF_INET, AF_INET6, AF_UNSPEC
@@ -985,7 +985,7 @@ which are what.
 Anyway, the `struct sockaddr` holds socket address information for many types of
 sockets.
 
-```c
+```{.c}
 struct sockaddr {
     unsigned short    sa_family;    // address family, AF_xxx
     char              sa_data[14];  // 14 bytes of protocol address
@@ -1009,7 +1009,7 @@ to a pointer to a `struct sockaddr` and vice-versa. So even though `connect()`
 wants a `struct sockaddr*`, you can still use a `struct sockaddr_in` and cast it
 at the last minute!
 
-```c
+```{.c}
 // (IPv4 only--see struct sockaddr_in6 for IPv6)
 
 struct sockaddr_in {
@@ -1033,7 +1033,7 @@ Let's dig deeper! You see the `sin_addr` field is a `struct in_addr`. What is
 that thing? Well, not to be overly dramatic, but it's one of the scariest unions
 of all time:
 
-```c
+```{.c}
 // (IPv4 only--see struct in6_addr for IPv6)
 
 // Internet address (a structure for historical reasons)
@@ -1051,7 +1051,7 @@ as I did above (this due to `#define`s.)
 
 What about \index{IPv6} IPv6? Similar `struct`s exist for it, as well:
 
-```c
+```{.c}
 // (IPv6 only--see struct sockaddr_in and struct in_addr for IPv4)
 
 struct sockaddr_in6 {
@@ -1080,7 +1080,7 @@ your `struct sockaddr` with an IPv4 or IPv6 address. So you pass in this
 parallel structure, very similar to `struct sockaddr` except larger, and then
 cast it to the type you need:
 
-```c
+```{.c}
 struct sockaddr_storage {
     sa_family_t  ss_family;     // address family
 
@@ -1111,7 +1111,7 @@ The function you want to use, \index{inet\_pton()@\texttt{inet\_pton()}}
 call it "printable to network" if that's easier to remember.)  The conversion
 can be made as follows:
 
-```c
+```{.c}
 struct sockaddr_in sa; // IPv4
 struct sockaddr_in6 sa6; // IPv6
 
@@ -1136,7 +1136,7 @@ you'll want to use the function \index{inet\_ntop()@\texttt{inet\_ntop()}}
 `inet_ntop()` ("ntop" means "network to presentation"—you can call it "network
 to printable" if that's easier to remember), like this:
 
-```c
+```{.c .numberLines}
 // IPv4:
 
 char ip4[INET_ADDRSTRLEN];  // space to hold the IPv4 string
@@ -1253,7 +1253,7 @@ applies to the guide.)
 5. Change `INADDR_ANY` assignments to `in6addr_any` assignments, which are
    slightly different:
 
-   ```c
+   ```{.c}
    struct sockaddr_in sa;
    struct sockaddr_in6 sa6;
    
@@ -1264,7 +1264,7 @@ applies to the guide.)
    Also, the value `IN6ADDR_ANY_INIT` can be used as an initializer when the
    `struct in6_addr` is declared, like so:
 
-   ```c
+   ```{.c}
    struct in6_addr ia6 = IN6ADDR_ANY_INIT;
    ```
 
@@ -1341,7 +1341,7 @@ besides!
 
 Let's take a look!
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -1370,7 +1370,7 @@ Here's a sample call if you're a server who wants to listen on your host's IP
 address, port 3490. Note that this doesn't actually do any listening or network
 setup; it merely sets up structures we'll use later:
 
-```c
+```{.c .numberLines}
 int status;
 struct addrinfo hints;
 struct addrinfo *servinfo;  // will point to the results
@@ -1416,7 +1416,7 @@ Here's a sample call if you're a client who wants to connect to a particular
 server, say "www.example.net" port 3490. Again, this doesn't actually connect,
 but it sets up the structures we'll use later:
 
-```c
+```{.c .numberLines}
 int status;
 struct addrinfo hints;
 struct addrinfo *servinfo;  // will point to the results
@@ -1439,7 +1439,7 @@ information. Let's write a quick demo program to show off this information.
 program](http://beej.us/guide/bgnet/examples/showip.c)^[http://beej.us/guide/bgnet/examples/showip.c]
 will print the IP addresses for whatever host you specify on the command line:
 
-```c
+```{.c .numberLines}
 /*
 ** showip.c -- show IP addresses for a host given on the command line
 */
@@ -1534,7 +1534,7 @@ network connection established! Keep reading!
 I guess I can put it off no longer—I have to talk about the
 \index{socket()@\texttt{socket()}} `socket()` system call. Here's the breakdown:
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -1568,7 +1568,7 @@ Anyway, enough of that. What you really want to do is use the values from the
 results of the call to `getaddrinfo()`, and feed them into `socket()` directly
 like this:
 
-```c
+```{.c .numberLines}
 int s;
 struct addrinfo hints, *res;
 
@@ -1608,7 +1608,7 @@ the server), this is probably be unnecessary. Read it anyway, just for kicks.
 
 Here is the synopsis for the `bind()` system call:
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -1624,7 +1624,7 @@ address.
 Whew. That's a bit to absorb in one chunk. Let's have an example that binds the
 socket to the host the program is running on, port 3490:
 
-```c
+```{.c .numberLines}
 struct addrinfo hints, *res;
 int sockfd;
 
@@ -1658,7 +1658,7 @@ Lots of old code manually packs the `struct sockaddr_in` before calling
 you from doing the same thing with IPv6, except that using `getaddrinfo()` is
 going to be easier, generally. Anyway, the old code looks something like this:
 
-```c
+```{.c .numberLines}
 // !!! THIS IS THE OLD WAY !!!
 
 int sockfd;
@@ -1694,7 +1694,7 @@ this:
 
 \index{setsockopt()@\texttt{setsockopt()}}\index{SO\_REUSEADDR@\texttt{SO\_REUSEADDR}} 
 
-```c
+```{.c .numberLines}
 int yes=1;
 //char yes='1'; // Solaris people use this
 
@@ -1728,7 +1728,7 @@ connect to a remote host. So read furiously onward! No time to lose!
 
 The `connect()` call is as follows:
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -1748,7 +1748,7 @@ Is this starting to make more sense? I can't hear you from here, so I'll just
 have to hope that it is. Let's have an example where we make a socket connection
 to "`www.example.com`", port `3490`:
 
-```c
+```{.c .numberLines}
 struct addrinfo hints, *res;
 int sockfd;
 
@@ -1794,7 +1794,7 @@ step: first you `listen()`, then you \index{accept()@\texttt{accept()}}
 
 The listen call is fairly simple, but requires a bit of explanation:
 
-```c
+```{.c}
 int listen(int sockfd, int backlog); 
 
 ```
@@ -1814,7 +1814,7 @@ Well, as you can probably imagine, we need to call `bind()` before we call
 able to tell your buddies which port to connect to!)  So if you're going to be
 listening for incoming connections, the sequence of system calls you'll make is:
 
-```c
+```{.c .numberLines}
 getaddrinfo();
 socket();
 bind();
@@ -1842,7 +1842,7 @@ more new connections, and the newly created one is finally ready to `send()` and
 
 The call is as follows:
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -1865,7 +1865,7 @@ didn't figure that.
 Like before, this is a bunch to absorb in one chunk, so here's a sample code
 fragment for your perusal:
 
-```c
+```{.c .numberLines}
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1924,7 +1924,7 @@ below.
 
 \index{send()@\texttt{send()}} The `send()` call:
 
-```c
+```{.c}
 int send(int sockfd, const void *msg, int len, int flags); 
 
 ```
@@ -1937,7 +1937,7 @@ concerning flags.)
 
 Some sample code might be:
 
-```c
+```{.c .numberLines}
 char *msg = "Beej was here!";
 int len, bytes_sent;
 .
@@ -1962,7 +1962,7 @@ returned on error, and `errno` is set to the error number.
 
 \index{recv()@\texttt{recv()}} The `recv()` call is similar in many respects:
 
-```c
+```{.c}
 int recv(int sockfd, void *buf, int len, int flags);
 ```
 
@@ -1991,7 +1991,7 @@ Since datagram sockets aren't connected to a remote host, guess which piece of
 information we need to give before we send a packet? That's right! The
 destination address! Here's the scoop:
 
-```c
+```{.c}
 int sendto(int sockfd, const void *msg, int len, unsigned int flags,
            const struct sockaddr *to, socklen_t tolen); 
 ```
@@ -2015,7 +2015,7 @@ Just like with `send()`, `sendto()` returns the number of bytes actually sent
 Equally similar are `recv()` and \index{recvfrom()@\texttt{recvfrom()}}
 `recvfrom()`. The synopsis of `recvfrom()` is:
 
-```c
+```{.c}
 int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
              struct sockaddr *from, int *fromlen); 
 ```
@@ -2056,7 +2056,7 @@ it. You're ready to close the connection on your socket descriptor. This is
 easy. You can just use the regular Unix file descriptor
 \index{close()@\texttt{close()}} `close()` function:
 
-```c
+```{.c}
 close(sockfd); 
 
 ```
@@ -2069,7 +2069,7 @@ use the \index{shutdown()@\texttt{shutdown()}} `shutdown()` function. It allows
 you to cut off communication in a certain direction, or both ways (just like
 `close()` does.) Synopsis:
 
-```c
+```{.c}
 int shutdown(int sockfd, int how); 
 
 ```
@@ -2111,7 +2111,7 @@ It's so easy, I almost didn't give it its own section. But here it is anyway.
 The function `getpeername()` will tell you who is at the other end of a
 connected stream socket. The synopsis:
 
-```c
+```{.c}
 #include <sys/socket.h>
 
 int getpeername(int sockfd, struct sockaddr *addr, int *addrlen); 
@@ -2148,7 +2148,7 @@ determine the \index{IP} IP address of your local machine.
 What could be more fun? I could think of a few things, but they don't pertain to
 socket programming. Anyway, here's the breakdown:
 
-```c
+```{.c}
 #include <unistd.h>
 
 int gethostname(char *hostname, size_t size); 
@@ -2204,7 +2204,7 @@ where `remotehostname` is the name of the machine you're running it on.
 
 [The server code](http://beej.us/guide/bgnet/examples/server.c)^[http://beej.us/guide/bgnet/examples/server.c]:
 
-```c
+```{.c .numberLines}
 /*
 ** server.c -- a stream socket server demo
 */
@@ -2363,7 +2363,7 @@ port 3490. It gets the string that the server sends.
 [The client
 source](http://beej.us/guide/bgnet/examples/client.c)^[http://beej.us/guide/bgnet/examples/client.c]:
 
-```c
+```{.c .numberLines}
 /*
 ** client.c -- a stream socket client demo
 */
@@ -2476,7 +2476,7 @@ machine, that contains whatever the user enters on the command line.
 Here is the [source for
 `listener.c`](http://beej.us/guide/bgnet/examples/listener.c)^[http://beej.us/guide/bgnet/examples/listener.c]:
 
-```c
+```{.c .numberLines}
 /*
 ** listener.c -- a datagram sockets "server" demo
 */
@@ -2580,7 +2580,7 @@ perks of using unconnected datagram sockets!
 
 \index{client!datagram} Next comes the [source for `talker.c`](http://beej.us/guide/bgnet/examples/talker.c)^[http://beej.us/guide/bgnet/examples/talker.c]:
 
-```c
+```{.c .numberLines}
 /*
 ** talker.c -- a datagram "client" demo
 */
@@ -2693,7 +2693,7 @@ the socket descriptor with `socket()`, the kernel sets it to blocking.
 \index{non-blocking sockets} If you don't want a socket to be blocking, you have
 to make a call to \index{fcntl()@\texttt{fcntl()}} `fcntl()`:
 
-```c
+```{.c .numberLines}
 #include <unistd.h>
 #include <fcntl.h>
 .
@@ -2749,7 +2749,7 @@ with getting socket notifications.
 
 Without any further ado, I'll offer the synopsis of `select()`:
 
-```c
+```{.c}
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -2791,7 +2791,7 @@ found any ready file descriptors, it'll return so you can continue processing.
 
 The `struct timeval` has the follow fields:
 
-```c
+```{.c}
 struct timeval {
     int tv_sec;     // seconds
     int tv_usec;    // microseconds
@@ -2822,7 +2822,7 @@ in the call to `select()`.
 snippet](http://beej.us/guide/bgnet/examples/select.c)^[http://beej.us/guide/bgnet/examples/select.c]
 waits 2.5 seconds for something to appear on standard input:
 
-```c
+```{.c .numberLines}
 /*
 ** select.c -- a select() demo
 */
@@ -2895,7 +2895,7 @@ acts like a simple multi-user chat server. Start it running in one window, then
 `telnet` to it ("`telnet hostname 9034`") from multiple other windows. When you
 type something in one `telnet` session, it should appear in all the others.
 
-```c
+```{.c .numberLines}
 /*
 ** selectserver.c -- a cheezy multiperson chat server
 */
@@ -3115,7 +3115,7 @@ out in one chunk, and now, my friend, it's up to you to get the data out there.
 \index{sendall()@\texttt{sendall()}} You could write a function like this to do
 it, too:
 
-```c
+```{.c .numberLines}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -3151,7 +3151,7 @@ but if there's an error, it gets back to you right away.
 
 For completeness, here's a sample call to the function:
 
-```c
+```{.c .numberLines}
 char buf[10] = "Beej!";
 int len;
 
@@ -3215,7 +3215,7 @@ almost always take up more space than the original number!
 Method two: passing the raw data. This one is quite easy (but dangerous!): just
 take a pointer to the data to send, and call send with it.
 
-```c
+```{.c}
 double d = 3490.15926535;
 
 send(s, &d, sizeof d, 0);  /* DANGER--non-portable! */
@@ -3223,7 +3223,7 @@ send(s, &d, sizeof d, 0);  /* DANGER--non-portable! */
 
 The receiver gets it like this:
 
-```c
+```{.c}
 double d;
 
 recv(s, &d, sizeof d, 0);  /* DANGER--non-portable! */
@@ -3259,7 +3259,7 @@ wire for decoding. For example, to pack `float`s, here's [something quick and
 dirty with plenty of room for
 improvement:](http://beej.us/guide/bgnet/examples/pack.c)^[http://beej.us/guide/bgnet/examples/pack.c]
 
-```c
+```{.c .numberLines}
 #include <stdint.h>
 
 uint32_t htonf(float f)
@@ -3295,7 +3295,7 @@ store the fractional portion of the number.
 
 Usage is fairly straightforward:
 
-```c
+```{.c .numberLines}
 #include <stdio.h>
 
 int main(void)
@@ -3333,7 +3333,7 @@ ilk do.)
 format](http://beej.us/guide/bgnet/examples/ieee754.c)^[http://beej.us/guide/bgnet/examples/ieee754.c].
 (Mostly—it doesn't encode NaN or Infinity, but it could be modified to do that.)
 
-```c
+```{.c .numberLines}
 #define pack754_32(f) (pack754((f), 32, 8))
 #define pack754_64(f) (pack754((f), 64, 11))
 #define unpack754_32(i) (unpack754((i), 32, 8))
@@ -3402,7 +3402,7 @@ data (`expbits` of which are reserved for the normalized number's exponent.)
 
 Here's sample usage:
 
-```c
+```{.c .numberLines}
 
 #include <stdio.h>
 #include <stdint.h> // defines uintN_t types
@@ -3488,7 +3488,7 @@ how such a thing can work.
 operate like the familiar `htons()` family, except they pack into a `char` array
 instead of another integer.)
 
-```c
+```{.c .numberLines}
 #include <stdio.h>
 #include <ctype.h>
 #include <stdarg.h>
@@ -3894,7 +3894,7 @@ prevent a buffer overrun, e.g. "`96s`". Be wary when unpacking data you get over
 the network—a malicious user might send badly-constructed packets in an effort
 to attack your system!
 
-```c
+```{.c .numberLines}
 #include <stdio.h>
 
 // various bits for floating point types--
@@ -4171,7 +4171,7 @@ one section that sets the `SO_BROADCAST` socket option. We'll call this program
 [
 `broadcaster.c`](http://beej.us/guide/bgnet/examples/broadcaster.c)^[http://beej.us/guide/bgnet/examples/broadcaster.c]:
 
-```c
+```{.c .numberLines}
 /*
 ** broadcaster.c -- a datagram "client" like talker.c, except
 **                  this one can broadcast
@@ -4394,7 +4394,7 @@ Naturally, this doesn't always work.
 My favorite solution to this involves a \index{goto@\texttt{goto}} `goto`
 statement. You know this irritates your professors to no end, so go for it!
 
-```c
+```{.c .numberLines}
 select_restart:
 if ((err = select(fdmax+1, &readfds, NULL, NULL, NULL)) == -1) {
     if (errno == EINTR) {
@@ -4417,7 +4417,7 @@ to control it. But I think the `goto` statement is actually cleaner.
 descriptors that you're looking to read from. Or, you could wrap the entire
 functionality in a single function, like this:
 
-```c
+```{.c .numberLines}
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -4538,7 +4538,7 @@ client sends "`rm -rf ~`"? It deletes everything in your account, that's what!
 So you get wise, and you prevent the client from using any except for a couple
 utilities that you know are safe, like the `foobar` utility:
 
-```c
+```{.c}
 if (!strncmp(str, "foobar", 6)) {
     sprintf(sysstr, "%s > /tmp/server.out", str);
     system(sysstr);
@@ -4718,7 +4718,7 @@ Accept an incoming connection on a listening socket
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -4761,7 +4761,7 @@ with it.
 
 #### Example
 
-```c
+```{.c .numberLines}
 struct sockaddr_storage their_addr;
 socklen_t addr_size;
 struct addrinfo hints, *res;
@@ -4803,7 +4803,7 @@ Associate a socket with an IP address and port number
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -4846,7 +4846,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 // modern way of doing things with getaddrinfo()
 
 struct addrinfo hints, *res;
@@ -4871,7 +4871,7 @@ sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 bind(sockfd, res->ai_addr, res->ai_addrlen);
 ```
 
-```c
+```{.c .numberLines}
 // example of packing a struct by hand, IPv4
 
 struct sockaddr_in myaddr;
@@ -4903,7 +4903,7 @@ Connect a socket to a server
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -4943,7 +4943,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 // connect to www.example.com port 80 (http)
 
 struct addrinfo hints, *res;
@@ -4979,7 +4979,7 @@ Close a socket descriptor
 
 #### Synopsis
 
-```c
+```{.c}
 #include <unistd.h>
 
 int close(int s);
@@ -5009,7 +5009,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 s = socket(PF_INET, SOCK_DGRAM, 0);
 .
 .
@@ -5034,7 +5034,7 @@ with the result.
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -5135,7 +5135,7 @@ the return value.
 
 #### Example
 
-```c
+```{.c .numberLines}
 // code for a client connecting to a server
 // namely a stream socket to www.example.com on port 80 (http)
 // either IPv4 or IPv6
@@ -5179,7 +5179,7 @@ if (p == NULL) {
 freeaddrinfo(servinfo); // all done with this structure
 ```
 
-```c
+```{.c .numberLines}
 // code for a server waiting for connections
 // namely a stream socket on port 3490, on this host's IP
 // either IPv4 or IPv6.
@@ -5236,7 +5236,7 @@ Returns the name of the system
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/unistd.h>
 
 int gethostname(char *name, size_t len);
@@ -5263,7 +5263,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 char hostname[128];
 
 gethostname(hostname, sizeof hostname);
@@ -5282,7 +5282,7 @@ Get an IP address for a hostname, or vice-versa
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/socket.h>
 #include <netdb.h>
 
@@ -5349,7 +5349,7 @@ used to.
 
 #### Example
 
-```c
+```{.c .numberLines}
 // THIS IS A DEPRECATED METHOD OF GETTING HOST NAMES
 // use getaddrinfo() instead!
 
@@ -5390,7 +5390,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-```c
+```{.c .numberLines}
 // THIS HAS BEEN SUPERCEDED
 // use getnameinfo() instead!
 
@@ -5423,7 +5423,7 @@ sockaddr`.
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/socket.h>
 #include <netdb.h>
 
@@ -5463,7 +5463,7 @@ it can be passed to `gai_strerror()` to get a human-readable string. See
 
 #### Example
 
-```c
+```{.c .numberLines}
 struct sockaddr_in6 sa; // could be IPv4 if you want
 char host[1024];
 char service[20];
@@ -5489,7 +5489,7 @@ Return address info about the remote side of the connection
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/socket.h>
 
 int getpeername(int s, struct sockaddr *addr, socklen_t *len);
@@ -5519,7 +5519,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 // assume s is a connected socket
 
 socklen_t len;
@@ -5558,7 +5558,7 @@ Holds the error code for the last system call
 
 #### Synopsis
 
-```c
+```{.c}
 #include <errno.h>
 
 int errno;
@@ -5592,7 +5592,7 @@ the code for "success" if the last action succeeded.
 
 #### Example
 
-```c
+```{.c .numberLines}
 s = socket(PF_INET, SOCK_STREAM, 0);
 if (s == -1) {
     perror("socket"); // or use strerror()
@@ -5623,7 +5623,7 @@ Control socket descriptors
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/unistd.h>
 #include <sys/fcntl.h>
 
@@ -5658,7 +5658,7 @@ your local `fcntl()` man page for more information.
 
 #### Example
 
-```c
+```{.c .numberLines}
 int s = socket(PF_INET, SOCK_STREAM, 0);
 
 fcntl(s, F_SETFL, O_NONBLOCK);  // set to non-blocking
@@ -5677,7 +5677,7 @@ Convert multi-byte integer types from host byte order to network byte order
 
 #### Synopsis
 
-```c
+```{.c}
 #include <netinet/in.h>
 
 uint32_t htonl(uint32_t hostlong);
@@ -5735,7 +5735,7 @@ Each function returns the converted value.
 
 #### Example
 
-```c
+```{.c .numberLines}
 uint32_t some_long = 10;
 uint16_t some_short = 20;
 
@@ -5757,7 +5757,7 @@ back
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -5814,7 +5814,7 @@ is why `inet_aton()` is better.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 struct sockaddr_in antelope;
 char *some_addr;
 
@@ -5840,7 +5840,7 @@ Convert IP addresses to human-readable form and back.
 
 #### Synopsis
 
-```c
+```{.c}
 #include <arpa/inet.h>
 
 const char *inet_ntop(int af, const void *src,
@@ -5893,7 +5893,7 @@ These functions don't do DNS lookups—you'll need `getaddrinfo()` for that.
 
 #### Example
 
-```c
+```{.c .numberLines}
 // IPv4 demo of inet_ntop() and inet_pton()
 
 struct sockaddr_in sa;
@@ -5908,7 +5908,7 @@ inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
 printf("%s\n", str); // prints "192.0.2.33"
 ```
 
-```c
+```{.c .numberLines}
 // IPv6 demo of inet_ntop() and inet_pton()
 // (basically the same except with a bunch of 6s thrown around)
 
@@ -5923,7 +5923,7 @@ inet_ntop(AF_INET6, &(sa.sin6_addr), str, INET6_ADDRSTRLEN);
 
 printf("%s\n", str); // prints "2001:db8:8714:3a90::12"
 ```
-```c
+```{.c .numberLines}
 // Helper function you can use:
 
 //Convert a struct sockaddr address to a string, IPv4 and IPv6:
@@ -5963,7 +5963,7 @@ Tell a socket to listen for incoming connections
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/socket.h>
 
 int listen(int s, int backlog);
@@ -5992,7 +5992,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 struct addrinfo hints, *res;
 int sockfd;
 
@@ -6030,7 +6030,7 @@ Print an error as a human-readable string
 
 #### Synopsis
 
-```c
+```{.c}
 #include <stdio.h>
 #include <string.h>   // for strerror()
 
@@ -6062,7 +6062,7 @@ variable `errno`.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 int s;
 
 s = socket(PF_INET, SOCK_STREAM, 0);
@@ -6091,7 +6091,7 @@ Test for events on multiple sockets simultaneously
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/poll.h>
 
 int poll(struct pollfd *ufds, unsigned int nfds, int timeout);
@@ -6114,7 +6114,7 @@ and contains the following fields:
 
 \index{struct pollfd@\texttt{struct pollfd}}
 
-```c
+```{.c}
 struct pollfd {
     int fd;         // the socket descriptor
     short events;   // bitmap of events we're interested in
@@ -6151,7 +6151,7 @@ them; this can be zero if the timeout occurred. Also returns `-1` on error (and
 
 #### Example
 
-```c
+```{.c .numberLines}
 int s1, s2;
 int rv;
 char buf1[256], buf2[256];
@@ -6210,7 +6210,7 @@ Receive data on a socket
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -6267,7 +6267,7 @@ rebel!
 
 #### Example
 
-```c
+```{.c .numberLines}
 // stream sockets and recv()
 
 struct addrinfo hints, *res;
@@ -6289,7 +6289,7 @@ printf("recv()'d %d bytes of data in buf\n", byte_count);
 
 ```
 
-```c
+```{.c .numberLines}
 // datagram sockets and recvfrom()
 
 struct addrinfo hints, *res;
@@ -6338,7 +6338,7 @@ Check if sockets descriptors are ready to read/write
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/select.h>
 
 int select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
@@ -6401,7 +6401,7 @@ are modified to show which sockets are ready.
 
 #### Example
 
-```c
+```{.c .numberLines}
 int s1, s2, n;
 fd_set readfds;
 struct timeval tv;
@@ -6456,7 +6456,7 @@ Set various options for a socket
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -6512,7 +6512,7 @@ Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
 
 #### Example
 
-```c
+```{.c .numberLines}
 int optval;
 int optlen;
 char *optval2;
@@ -6544,7 +6544,7 @@ Send data out over a socket
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -6591,7 +6591,7 @@ will get the signal `SIGPIPE`. (Unless `send()` was called with the
 
 #### Example
 
-```c
+```{.c .numberLines}
 int spatula_count = 3490;
 char *secret_message = "The Cheese is in The Toaster";
 
@@ -6635,7 +6635,7 @@ Stop further sends and receives on a socket
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/socket.h>
 
 int shutdown(int s, int how);
@@ -6672,7 +6672,7 @@ Returns zero on success, or `-1` on error (and
 
 #### Example
 
-```c
+```{.c .numberLines}
 int s = socket(PF_INET, SOCK_STREAM, 0);
 
 // ...do some send()s and stuff in here...
@@ -6693,7 +6693,7 @@ Allocate a socket descriptor
 
 #### Synopsis
 
-```c
+```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -6724,7 +6724,7 @@ The new socket descriptor to be used in subsequent calls, or `-1` on error (and
 
 #### Example
 
-```c
+```{.c .numberLines}
 struct addrinfo hints, *res;
 int sockfd;
 
@@ -6753,7 +6753,7 @@ Structures for handling internet addresses
 
 #### Synopsis
 
-```c
+```{.c}
 #include <netinet/in.h>
 
 // All pointers to socket address structures are often cast to pointers
@@ -6853,7 +6853,7 @@ is large enough to hold both types, unlike the original small `struct sockaddr`.
 
 #### Example
 
-```c
+```{.c .numberLines}
 // IPv4:
 
 struct sockaddr_in ip4addr;
@@ -6866,7 +6866,7 @@ inet_pton(AF_INET, "10.0.0.1", &ip4addr.sin_addr);
 s = socket(PF_INET, SOCK_STREAM, 0);
 bind(s, (struct sockaddr*)&ip4addr, sizeof ip4addr);
 ```
-```c
+```{.c .numberLines}
 // IPv6:
 
 struct sockaddr_in6 ip6addr;
