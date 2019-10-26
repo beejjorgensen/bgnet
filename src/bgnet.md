@@ -199,13 +199,19 @@ below.
 
 ## Official Homepage and Books For Sale
 
-This official location of this document is
-[`http://beej.us/guide/bgnet/`](http://beej.us/guide/bgnet/). There you will
-also find example code and translations of the guide into various languages.
+This official location of this document is:
 
-To buy nicely bound print copies (some call them "books"), visit
-[`http://beej.us/guide/url/bgbuy`](http://beej.us/guide/url/bgbuy). I'll
-appreciate the purchase because it helps sustain my document-writing lifestyle!
+* [`http://beej.us/guide/bgnet/`](http://beej.us/guide/bgnet/)
+
+There you will also find example code and translations of the guide into various
+languages.
+
+To buy nicely bound print copies (some call them "books"), visit:
+
+* [`http://beej.us/guide/url/bgbuy`](http://beej.us/guide/url/bgbuy)
+
+I'll appreciate the purchase because it helps sustain my document-writing
+lifestyle!
 
 
 ## Note for Solaris/SunOS Programmers {#solaris}
