@@ -105,6 +105,16 @@ bgnet_a4_bw_2.pdf: bgnet.md meta-a4-2.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
+bgnet_lulu.pdf: bgnet_lulu.md meta-crownquarto-2.yaml
+	#pandoc $(PANDOC_BOOK_OPTS) --no-highlight $^
+	pandoc $(PANDOC_BOOK_OPTS) $^
+	xelatex bgnet_temp.tex
+	makeindex bgnet_temp.idx
+	xelatex bgnet_temp.tex
+	xelatex bgnet_temp.tex
+	mv bgnet_temp.pdf $@
+	rm -f bgnet_temp.*
+
 clean:
 	rm -f bgnet_temp.*
 
