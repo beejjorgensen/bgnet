@@ -193,7 +193,7 @@ sense... `:-)`
 The code contained within this document was compiled on a Linux PC using Gnu's
 \index{compilers!gcc} `gcc` compiler. It should, however, build on just about
 any platform that uses `gcc`. Naturally, this doesn't apply if you're
-programming for Windows—see the [section on Windows programming](#windows),
+programming for Windows---see the [section on Windows programming](#windows),
 below.
 
 
@@ -236,7 +236,7 @@ enter this:
 char yes='1';
 ```
 
-As I don't have a Sun box, I haven't tested any of the above information—it's
+As I don't have a Sun box, I haven't tested any of the above information---it's
 just what people have told me through email.
 
 
@@ -269,7 +269,7 @@ these programs to compile unmodified.
 
 But some of you might want to do things the Pure Windows Way. That's very gutsy
 of you, and this is what you have to do: run out and get Unix immediately! No,
-no—I'm kidding. I'm supposed to be Windows-friendly(er) these days...
+no---I'm kidding. I'm supposed to be Windows-friendly(er) these days...
 
 This is what you'll have to do (unless you install
 [Cygwin](http://www.cygwin.com/)!): first, ignore pretty much all of the system
@@ -314,7 +314,7 @@ online help for details.
 
 Once you do that, the rest of the examples in this tutorial should generally
 apply, with a few exceptions. For one thing, you can't use `close()` to close a
-socket—you need to use \index{closesocket()@\texttt{closesocket()}}
+socket---you need to use \index{closesocket()@\texttt{closesocket()}}
 `closesocket()`, instead. Also, \index{select()@\texttt{select()}} `select()`
 only works with socket descriptors, not file descriptors (like `0` for `stdin`).
 
@@ -459,7 +459,7 @@ other programs using standard Unix \index{file descriptor} file descriptors.
 
 What?
 
-Ok—you may have heard some Unix hacker state, "Jeez, _everything_ in Unix is a
+Ok---you may have heard some Unix hacker state, "Jeez, _everything_ in Unix is a
 file!" What that person may have been talking about is the fact that when Unix
 programs do any sort of I/O, they do it by reading or writing to a file
 descriptor. A file descriptor is simply an integer associated with an open
@@ -619,7 +619,7 @@ Remember this for network class exams:
 * Physical
 
 The Physical Layer is the hardware (serial, Ethernet, etc.). The Application
-Layer is just about as far from the physical layer as you can imagine—it's the
+Layer is just about as far from the physical layer as you can imagine---it's the
 place where users interact with the network.
 
 Now, this model is so general you could probably use it as an automobile repair
@@ -826,8 +826,9 @@ Think of the IP address as the street address of a hotel, and the port number as
 the room number. That's a decent analogy; maybe later I'll come up with one
 involving the automobile industry.
 
-Say you want to have a computer that handles incoming mail AND web services—how
-do you differentiate between the two on a computer with a single IP address?
+Say you want to have a computer that handles incoming mail AND web
+services---how do you differentiate between the two on a computer with a single
+IP address?
 
 Well, different services on the Internet have different well-known port numbers.
 You can see them all in [the Big IANA Port
@@ -891,7 +892,7 @@ It's almost too easy...
 
 You can use every combination of "n", "h", "s", and "l" you want, not counting
 the really stupid ones. For example, there is NOT a `stolh()` ("Short to Long
-Host") function—not at this party, anyway. But there are:
+Host") function---not at this party, anyway. But there are:
 
 \index{htons()@\texttt{htons()}}\index{htonl()@\texttt{htonl()}}\index{ntohs()@\texttt{ntohs()}}\index{ntohl()@\texttt{ntohl()}}
 
@@ -930,7 +931,7 @@ Just a regular `int`.
 
 Things get weird from here, so just read through and bear with me.
 
-My First Struct™—`struct addrinfo`\index{struct addrinfo@\texttt{struct
+My First Struct™---`struct addrinfo`\index{struct addrinfo@\texttt{struct
 addrinfo}}. This structure is a more recent invention, and is used to prep the
 socket address structures for subsequent use. It's also used in host name
 lookups, and service name lookups. That'll make more sense later when we get to
@@ -960,7 +961,7 @@ You can force it to use IPv4 or IPv6 in the `ai_family` field, or leave it as
 `AF_UNSPEC` to use whatever. This is cool because your code can be IP
 version-agnostic.
 
-Note that this is a linked list: `ai_next` points at the next element—there
+Note that this is a linked list: `ai_next` points at the next element---there
 could be several results for you to choose from. I'd use the first result that
 worked, but you might have different business needs; I don't know everything,
 man!
@@ -1092,8 +1093,9 @@ struct sockaddr_storage {
 ```
 
 What's important is that you can see the address family in the `ss_family`
-field—check this to see if it's `AF_INET` or `AF_INET6` (for IPv4 or IPv6). Then
-you can cast it to a `struct sockaddr_in` or `struct sockaddr_in6` if you wanna.
+field---check this to see if it's `AF_INET` or `AF_INET6` (for IPv4 or IPv6).
+Then you can cast it to a `struct sockaddr_in` or `struct sockaddr_in6` if you
+wanna.
 
 
 ## IP Addresses, Part Deux
@@ -1107,9 +1109,9 @@ First, let's say you have a `struct sockaddr_in ina`, and you have an IP address
 The function you want to use, \index{inet\_pton()@\texttt{inet\_pton()}}
 `inet_pton()`, converts an IP address in numbers-and-dots notation into either a
 `struct in_addr` or a `struct in6_addr` depending on whether you specify
-`AF_INET` or `AF_INET6`. ("`pton`" stands for "presentation to network"—you can
-call it "printable to network" if that's easier to remember.)  The conversion
-can be made as follows:
+`AF_INET` or `AF_INET6`. ("`pton`" stands for "presentation to network"---you
+can call it "printable to network" if that's easier to remember.)  The
+conversion can be made as follows:
 
 ```{.c}
 struct sockaddr_in sa; // IPv4
@@ -1133,7 +1135,7 @@ representations. What about the other way around? What if you have a `struct
 in_addr` and you want to print it in numbers-and-dots notation?  (Or a `struct
 in6_addr` that you want in, uh, "hex-and-colons" notation.)  In this case,
 you'll want to use the function \index{inet\_ntop()@\texttt{inet\_ntop()}}
-`inet_ntop()` ("ntop" means "network to presentation"—you can call it "network
+`inet_ntop()` ("ntop" means "network to presentation"---you can call it "network
 to printable" if that's easier to remember), like this:
 
 ```{.c .numberLines}
@@ -1167,7 +1169,7 @@ historical function to do this conversion was called
 \index{inet\_ntoa()@\texttt{inet\_ntoa()}} `inet_ntoa()`. It's also obsolete and
 won't work with IPv6.)
 
-Lastly, these functions only work with numeric IP addresses—they won't do any
+Lastly, these functions only work with numeric IP addresses---they won't do any
 nameserver DNS lookup on a hostname, like "`www.example.com`". You will use
 `getaddrinfo()` to do that, as you'll see later on.
 
@@ -1221,10 +1223,10 @@ documentation, just like this guide! Wowzers!)
 `fdXX:` (or maybe in the future `fcXX:`), as per [RFC
 4193](http://tools.ietf.org/html/rfc4193)^[http://tools.ietf.org/html/rfc4193].
 NAT and IPv6 don't generally mix, however (unless you're doing the IPv6 to IPv4
-gateway thing which is beyond the scope of this document)—in theory you'll have
-so many addresses at your disposal that you won't need to use NAT any longer.
-But if you want to allocate addresses for yourself on a network that won't route
-outside, this is how to do it.
+gateway thing which is beyond the scope of this document)---in theory you'll
+have so many addresses at your disposal that you won't need to use NAT any
+longer. But if you want to allocate addresses for yourself on a network that
+won't route outside, this is how to do it.
 
 
 # Jumping from IPv4 to IPv6
@@ -1323,7 +1325,7 @@ addressed in the stand-alone programs, though, so use those as a
 model.)_
 
 
-## `getaddrinfo()`—Prepare to launch!
+## `getaddrinfo()`---Prepare to launch!
 
 \index{getaddrinfo()@\texttt{getaddrinfo()}} This is a real workhorse of a
 function with a lot of options, but usage is actually pretty simple. It helps
@@ -1529,9 +1531,9 @@ Now that we have that under control, we'll use the results we get from
 network connection established! Keep reading!
 
 
-## `socket()`—Get the File Descriptor! {#socket}
+## `socket()`---Get the File Descriptor! {#socket}
 
-I guess I can put it off no longer—I have to talk about the
+I guess I can put it off no longer---I have to talk about the
 \index{socket()@\texttt{socket()}} `socket()` system call. Here's the breakdown:
 
 ```{.c}
@@ -1594,12 +1596,12 @@ no good by itself, and you need to read on and make more system calls for it to
 make any sense.
 
 
-## `bind()`—What port am I on? {#bind}
+## `bind()`---What port am I on? {#bind}
 
 \index{bind()@\texttt{bind()}} Once you have a socket, you might have to
 associate that socket with a \index{ports} port on your local machine. (This is
 commonly done if you're going to \index{listen()@\texttt{listen()}} `listen()`
-for incoming connections on a specific port—multiplayer network games do this
+for incoming connections on a specific port---multiplayer network games do this
 when they tell you to "connect to 192.168.5.10 port 3490".)  The port number is
 used by the kernel to match an incoming packet to a certain process's socket
 descriptor. If you're going to only be doing a
@@ -1715,7 +1717,7 @@ if the socket is unbound, and will `bind()` it to an unused local port if
 necessary.
 
 
-## `connect()`—Hey, you! {#connect}
+## `connect()`---Hey, you! {#connect}
 
 \index{connect()@\texttt{connect()}} Let's just pretend for a few minutes that
 you're a telnet application. Your user commands you (just like in the movie
@@ -1723,7 +1725,7 @@ you're a telnet application. Your user commands you (just like in the movie
 `socket()`. Next, the user tells you to connect to "`10.12.110.57`" on port
 "`23`" (the standard telnet port.)  Yow! What do you do now?
 
-Lucky for you, program, you're now perusing the section on `connect()`—how to
+Lucky for you, program, you're now perusing the section on `connect()`---how to
 connect to a remote host. So read furiously onward! No time to lose!
 
 The `connect()` call is as follows:
@@ -1773,7 +1775,7 @@ Again, old-school programs filled out their own `struct sockaddr_in`s to pass to
 `connect()`. You can do that if you want to. See the similar note in the
 [`bind()` section](#bind), above.
 
-Be sure to check the return value from `connect()`—it'll return `-1` on error
+Be sure to check the return value from `connect()`---it'll return `-1` on error
 and set the variable `errno`.
 
 \index{bind()@\texttt{bind()}!implicit} Also, notice that we didn't call
@@ -1783,7 +1785,7 @@ and the site we connect to will automatically get this information from us. No
 worries.
 
 
-## `listen()`—Will somebody please call me? {#listen}
+## `listen()`---Will somebody please call me? {#listen}
 
 \index{listen()@\texttt{listen()}} Ok, time for a change of pace. What if you
 don't want to connect to a remote host. Say, just for kicks, that you want to
@@ -1828,17 +1830,17 @@ self-explanatory. (The code in the `accept()` section, below, is more complete.)
 The really tricky part of this whole sha-bang is the call to `accept()`.
 
 
-## `accept()`—"Thank you for calling port 3490."
+## `accept()`---"Thank you for calling port 3490."
 
-\index{accept()@\texttt{accept()}} Get ready—the `accept()` call is kinda weird!
-What's going to happen is this: someone far far away will try to `connect()` to
-your machine on a port that you are `listen()`ing on. Their connection will be
-queued up waiting to be `accept()`ed. You call `accept()` and you tell it to get
-the pending connection. It'll return to you a _brand new socket file descriptor_
-to use for this single connection! That's right, suddenly you have _two socket
-file descriptors_ for the price of one! The original one is still listening for
-more new connections, and the newly created one is finally ready to `send()` and
-`recv()`. We're there! 
+\index{accept()@\texttt{accept()}} Get ready---the `accept()` call is kinda
+weird! What's going to happen is this: someone far far away will try to
+`connect()` to your machine on a port that you are `listen()`ing on. Their
+connection will be queued up waiting to be `accept()`ed. You call `accept()` and
+you tell it to get the pending connection. It'll return to you a _brand new
+socket file descriptor_ to use for this single connection! That's right,
+suddenly you have _two socket file descriptors_ for the price of one! The
+original one is still listening for more new connections, and the newly created
+one is finally ready to `send()` and `recv()`. We're there! 
 
 The call is as follows:
 
@@ -1915,7 +1917,7 @@ Again, note that we will use the socket descriptor `new_fd` for all `send()` and
 on the same port, if you so desire.
 
 
-## `send()` and `recv()`—Talk to me, baby! {#sendrecv}
+## `send()` and `recv()`---Talk to me, baby! {#sendrecv}
 
 These two functions are for communicating over stream sockets or connected
 datagram sockets. If you want to use regular unconnected datagram sockets,
@@ -1951,14 +1953,14 @@ bytes_sent = send(sockfd, msg, len, 0);
 
 ```
 
-`send()` returns the number of bytes actually sent out—_this might be less than
-the number you told it to send!_  See, sometimes you tell it to send a whole gob
-of data and it just can't handle it. It'll fire off as much of the data as it
-can, and trust you to send the rest later. Remember, if the value returned by
-`send()` doesn't match the value in `len`, it's up to you to send the rest of
-the string. The good news is this: if the packet is small (less than 1K or so)
-it will _probably_ manage to send the whole thing all in one go. Again, `-1` is
-returned on error, and `errno` is set to the error number.
+`send()` returns the number of bytes actually sent out---_this might be less
+than the number you told it to send!_  See, sometimes you tell it to send a
+whole gob of data and it just can't handle it. It'll fire off as much of the
+data as it can, and trust you to send the rest later. Remember, if the value
+returned by `send()` doesn't match the value in `len`, it's up to you to send
+the rest of the string. The good news is this: if the packet is small (less than
+1K or so) it will _probably_ manage to send the whole thing all in one go.
+Again, `-1` is returned on error, and `errno` is set to the error number.
 
 \index{recv()@\texttt{recv()}} The `recv()` call is similar in many respects:
 
@@ -1981,7 +1983,7 @@ There, that was easy, wasn't it? You can now pass data back and forth on stream
 sockets! Whee! You're a Unix Network Programmer!
 
 
-## `sendto()` and `recvfrom()`—Talk to me, DGRAM-style {#sendtorecv}
+## `sendto()` and `recvfrom()`---Talk to me, DGRAM-style {#sendtorecv}
 
 \index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} "This is all fine and dandy," I hear
 you saying, "but where does this leave me with unconnected datagram sockets?"
@@ -2049,7 +2051,7 @@ packets still use UDP, but the socket interface will automatically add the
 destination and source information for you.
 
 
-## `close()` and `shutdown()`—Get outta my face!
+## `close()` and `shutdown()`---Get outta my face!
 
 Whew! You've been `send()`ing and `recv()`ing data all day long, and you've had
 it. You're ready to close the connection on your socket descriptor. This is
@@ -2091,7 +2093,7 @@ make the socket unavailable for further `send()` and `recv()` calls (remember
 that you can use these if you `connect()` your datagram socket.)
 
 It's important to note that `shutdown()` doesn't actually close the file
-descriptor—it just changes its usability. To free a socket descriptor, you need
+descriptor---it just changes its usability. To free a socket descriptor, you need
 to use `close()`.
 
 Nothing to it.
@@ -2102,7 +2104,7 @@ Nothing to it.
 `close()`.)
 
 
-## `getpeername()`—Who are you?
+## `getpeername()`---Who are you?
 
 \index{getpeername()@\texttt{getpeername()}} This function is so easy.
 
@@ -2137,7 +2139,7 @@ the scope of this document. Check out [RFC
 for more info.)
 
 
-## `gethostname()`—Who am I?
+## `gethostname()`---Who am I?
 
 \index{gethostname()@\texttt{gethostname()}} Even easier than `getpeername()` is
 the function `gethostname()`. It returns the name of the computer that your
@@ -2345,7 +2347,7 @@ feel) syntactic clarity. Feel free to split it into smaller functions if it
 makes you feel better.
 
 (Also, this whole \index{sigaction()@\texttt{sigaction()}} `sigaction()` thing
-might be new to you—that's ok. The code that's there is responsible for reaping
+might be new to you---that's ok. The code that's there is responsible for reaping
 \index{zombie process} zombie processes that appear as the `fork()`ed child
 processes exit. If you make lots of zombies and don't reap them, your system
 administrator will become agitated.)
@@ -2681,7 +2683,7 @@ might want to learn about sockets. Have at it!
 
 ## Blocking {#blocking}
 
-\index{blocking} Blocking. You've heard about it—now what the heck is it? In a
+\index{blocking} Blocking. You've heard about it---now what the heck is it? In a
 nutshell, "block" is techie jargon for "sleep". You probably noticed that when
 you run `listener`, above, it just sits there until a packet arrives. What
 happened is that it called `recvfrom()`, there was no data, and so `recvfrom()`
@@ -2709,11 +2711,11 @@ fcntl(sockfd, F_SETFL, O_NONBLOCK);
 
 By setting a socket to non-blocking, you can effectively "poll" the socket for
 information. If you try to read from a non-blocking socket and there's no data
-there, it's not allowed to block—it will return `-1` and `errno` will be set to
+there, it's not allowed to block---it will return `-1` and `errno` will be set to
 \index{EAGAIN@\texttt{EAGAIN}} `EAGAIN` or
 \index{EWOULDBLOCK@\texttt{EWOULDBLOCK}} `EWOULDBLOCK`.
 
-(Wait—it can return \index{EAGAIN@\texttt{EAGAIN}} `EAGAIN` _or_
+(Wait---it can return \index{EAGAIN@\texttt{EAGAIN}} `EAGAIN` _or_
 \index{EWOULDBLOCK@\texttt{EWOULDBLOCK}} `EWOULDBLOCK`? Which do you check for?
 The specification doesn't actually specify which your system will return, so for
 portability, check them both.)
@@ -2725,7 +2727,7 @@ there's data waiting to be read comes in the following section on
 \index{select()@\texttt{select()}} `select()`.
 
 
-## `select()`—Synchronous I/O Multiplexing {#select}
+## `select()`---Synchronous I/O Multiplexing {#select}
 
 \index{select()@\texttt{select()}} This function is somewhat strange, but it's
 very useful. Take the following situation: you are a server and you want to
@@ -2862,7 +2864,7 @@ If you're on a line buffered terminal, the key you hit should be RETURN or it
 will time out anyway.
 
 Now, some of you might think this is a great way to wait for data on a datagram
-socket—and you are right: it _might_ be. Some Unices can use select in this
+socket---and you are right: it _might_ be. Some Unices can use select in this
 manner, and some can't. You should see what your local man page says on the
 matter if you want to attempt it.
 
@@ -3090,7 +3092,7 @@ function.
 Quick note to all you Linux fans out there: sometimes, in rare circumstances,
 Linux's `select()` can return "ready-to-read" and then not actually be ready to
 read! This means it will block on the `read()` after the `select()` says it
-won't! Why you little—! Anyway, the workaround solution is to set the
+won't! Why you little---! Anyway, the workaround solution is to set the
 \index{O\_NONBLOCK@\texttt{O\_NONBLOCK}} `O_NONBLOCK` flag on the receiving
 socket so it errors with `EWOULDBLOCK` (which you can just safely ignore if it
 occurs). See the [`fcntl()` reference page](#fcntlman) for more info on setting
@@ -3171,7 +3173,7 @@ that from the [data encapsulation section](#lowlevel) way back there at the
 beginning?)  Read on for details!
 
 
-## Serialization—How to Pack Data {#serialization}
+## Serialization---How to Pack Data {#serialization}
 
 \index{serialization} It's easy enough to send text data across the network,
 you're finding, but what happens if you want to send some "binary" data like
@@ -3229,9 +3231,9 @@ double d;
 recv(s, &d, sizeof d, 0);  /* DANGER--non-portable! */
 ```
 
-Fast, simple—what's not to like? Well, it turns out that not all architectures
+Fast, simple---what's not to like? Well, it turns out that not all architectures
 represent a `double` (or `int` for that matter) with the same bit representation
-or even the same byte ordering! The code is decidedly non-portable. (Hey—maybe
+or even the same byte ordering! The code is decidedly non-portable. (Hey---maybe
 you don't need portability, in which case this is nice and fast.)
 
 When packing integer types, we've already seen how the
@@ -3315,9 +3317,10 @@ int main(void)
 ```
 
 On the plus side, it's small, simple, and fast. On the minus side, it's not an
-efficient use of space and the range is severely restricted—try storing a number
-greater-than 32767 in there and it won't be very happy! You can also see in the
-above example that the last couple decimal places are not correctly preserved.
+efficient use of space and the range is severely restricted---try storing a
+number greater-than 32767 in there and it won't be very happy! You can also see
+in the above example that the last couple decimal places are not correctly
+preserved.
 
 What can we do instead? Well, _The_ Standard for storing floating point numbers
 is known as \index{IEEE-754}
@@ -3331,7 +3334,8 @@ ilk do.)
 
 [Here's some code that encodes floats and doubles into IEEE-754
 format](http://beej.us/guide/bgnet/examples/ieee754.c)^[http://beej.us/guide/bgnet/examples/ieee754.c].
-(Mostly—it doesn't encode NaN or Infinity, but it could be modified to do that.)
+(Mostly---it doesn't encode NaN or Infinity, but it could be modified to do
+that.)
 
 ```{.c .numberLines}
 #define pack754_32(f) (pack754((f), 32, 8))
@@ -3891,7 +3895,7 @@ of the above code that packs some data into `buf` and then unpacks it into
 variables. Note that when calling `unpack()` with a string argument (format
 specifier "`s`"), it's wise to put a maximum length count in front of it to
 prevent a buffer overrun, e.g. "`96s`". Be wary when unpacking data you get over
-the network—a malicious user might send badly-constructed packets in an effort
+the network---a malicious user might send badly-constructed packets in an effort
 to attack your system!
 
 ```{.c .numberLines}
@@ -3991,14 +3995,14 @@ padded with `'\0'`. And then let's assume the data is variable length, up to a
 maximum of 128 characters. Let's have a look a sample packet structure that we
 might use in this situation:
 
-1. `len` (1 byte, unsigned)—The total length of the packet, counting the 8-byte
-   user name and chat data.
+1. `len` (1 byte, unsigned)---The total length of the packet, counting the
+   8-byte user name and chat data.
 
-2. `name` (8 bytes)—The user's name, NUL-padded if necessary.
+2. `name` (8 bytes)---The user's name, NUL-padded if necessary.
 
-3. `chatdata` (_n_-bytes)—The data itself, no more than 128 bytes. The length of
-   the packet should be calculated as the length of this data plus 8 (the length
-   of the name field, above).
+3. `chatdata` (_n_-bytes)---The data itself, no more than 128 bytes. The length
+   of the packet should be calculated as the length of this data plus 8 (the
+   length of the name field, above).
 
 Why did I choose the 8-byte and 128-byte limits for the fields? I pulled them
 out of the air, assuming they'd be long enough. Maybe, though, 8 bytes is too
@@ -4073,7 +4077,7 @@ Whew! Are you juggling that in your head yet? Well, here's the second of the
 one-two punch: you might have read past the end of one packet and onto the next
 in a single `recv()` call. That is, you have a work buffer with one complete
 packet, and an incomplete part of the next packet! Bloody heck. (But this is why
-you made your work buffer large enough to hold _two_ packets—in case this
+you made your work buffer large enough to hold _two_ packets---in case this
 happened!)
 
 Since you know the length of the first packet from the header, and you've been
@@ -4094,7 +4098,7 @@ practice and pretty soon it'll come to you naturally. By \index{Excalibur}
 Excalibur I swear it!
 
 
-## Broadcast Packets—Hello, World!
+## Broadcast Packets---Hello, World!
 
 So far, this guide has talked about sending data from one host to one other
 host. But it is possible, I insist, that you can, with the proper authority,
@@ -4104,7 +4108,7 @@ With \index{UDP} UDP (only UDP, not TCP) and standard IPv4, this is done through
 a mechanism called \index{broadcast} _broadcasting_. With IPv6, broadcasting
 isn't supported, and you have to resort to the often superior technique of
 _multicasting_, which, sadly I won't be discussing at this time.  But enough of
-the starry-eyed future—we're stuck in the 32-bit present.
+the starry-eyed future---we're stuck in the 32-bit present.
 
 But wait! You can't just run off and start broadcasting willy-nilly; You have to
 \index{setsockopt()@\texttt{setsockopt()}} set the socket option
@@ -4558,7 +4562,7 @@ things the client sends.
 1460 bytes at a time. But if I run it on my local machine, it receives all the
 data at the same time. What's going on?**
 
-You're hitting the \index{MTU} MTU—the maximum size the physical medium can
+You're hitting the \index{MTU} MTU---the maximum size the physical medium can
 handle. On the local machine, you're using the loopback device which can handle
 8K or more no problem. But on Ethernet, which can only handle 1500 bytes with a
 header, you hit that limit. Over a modem, with 576 MTU (again, with header), you
@@ -4585,10 +4589,10 @@ you any clues.
 
 If that doesn't work at all, ditch the `fork()`/`sigaction` stuff and replace it
 with the Win32 equivalent: \index{CreateProcess()@\texttt{CreateProcess()}}
-`CreateProcess()`. I don't know how to use `CreateProcess()`—it takes a
+`CreateProcess()`. I don't know how to use `CreateProcess()`---it takes a
 bazillion arguments, but it should be covered in the docs that came with VC++.
 
-**\index{firewall} I'm behind a firewall—how do I let people outside the
+**\index{firewall} I'm behind a firewall---how do I let people outside the
 firewall know my IP address so they can connect to my machine?**
 
 Unfortunately, the purpose of a firewall is to prevent people outside the
@@ -5312,7 +5316,7 @@ with the `AI_CANONNAME` flag.)
 `gethostbyname()` takes a string like "www.yahoo.com", and returns a `struct
 hostent` which contains tons of information, including the \index{IP address} IP
 address. (Other information is the official host name, a list of aliases, the
-address type, the length of the addresses, and the list of addresses—it's a
+address type, the length of the addresses, and the list of addresses---it's a
 general-purpose structure that's pretty easy to use for our specific purposes
 once you see how.)
 
@@ -5329,7 +5333,7 @@ host in question.
 | Field                | Description                                       |
 |----------------------|---------------------------------------------------|
 | `char *h_name`       | The real canonical host name.                     |
-| `char **h_aliases`   | A list of aliases that can be accessed with arrays—the last element is `NULL` |
+| `char **h_aliases`   | A list of aliases that can be accessed with arrays---the last element is `NULL` |
 | `int h_addrtype`     | The result's address type, which really should be `AF_INET` for our purposes. |
 | `int length`         | The length of the addresses in bytes, which is 4 for IP (version 4) addresses. |
 | `char **h_addr_list` | A list of IP addresses for this host. Although this is a `char**`, it's really an array of `struct in_addr*`s in disguise. The last array element is `NULL`. |
@@ -5787,7 +5791,7 @@ your local country.
 
 The function `inet_ntoa()` converts a network address in a `struct in_addr` to a
 dots-and-numbers format string. The "n" in "ntoa" stands for network, and the
-"a" stands for ASCII for historical reasons (so it's "Network To ASCII"—the
+"a" stands for ASCII for historical reasons (so it's "Network To ASCII"---the
 "toa" suffix has an analogous friend in the C library called `atoi()` which
 converts an ASCII string to an integer.)
 
@@ -5881,7 +5885,7 @@ IP address in printable form. Lastly the `dst` parameter points to where the
 result should be stored, which is probably a `struct in_addr` or `struct
 in6_addr`.
 
-These functions don't do DNS lookups—you'll need `getaddrinfo()` for that.
+These functions don't do DNS lookups---you'll need `getaddrinfo()` for that.
 
 #### Return Value
 
@@ -6141,7 +6145,7 @@ that event occur. Additionally, these other fields might be present:
 |------------|-------------------------------------------------------------|
 | `POLLERR`  | An error has occurred on this socket.                       |
 | `POLLHUP`  | The remote side of the connection hung up.                  |
-| `POLLNVAL` | Something was wrong with the socket descriptor `fd`—maybe it's uninitialized?|
+| `POLLNVAL` | Something was wrong with the socket descriptor `fd`---maybe it's uninitialized?|
 
 #### Return Value
 
@@ -6371,7 +6375,7 @@ The first parameter, `n` is the highest-numbered socket descriptor (they're just
 `int`s, remember?) plus one.
 
 Lastly, the \index{struct timeval@\texttt{struct timeval}} `struct timeval`,
-`timeout`, at the end—this lets you tell `select()` how long to check these sets
+`timeout`, at the end---this lets you tell `select()` how long to check these sets
 for. It'll return after the timeout, or when an event occurs, whichever is
 first. The `struct timeval` has two fields: `tv_sec` is the number of seconds,
 to which is added `tv_usec`, the number of microseconds (1,000,000 microseconds
@@ -6486,7 +6490,7 @@ options, but here are some of the most fun ones:
 |-------------------|------------------------------------------------------|
 | \index{SO\_BINDTODEVICE@\texttt{SO\_BINDTODEVICE}} `SO_BINDTODEVICE` | Bind this socket to a symbolic device name like `eth0` instead of using `bind()` to bind it to an IP address. Type the command `ifconfig` under Unix to see the device names.|
 | \index{SO\_REUSEADDR@\texttt{SO\_REUSEADDR}} `SO_REUSEADDR` | Allows other sockets to `bind()` to this port, unless there is an active listening socket bound to the port already. This enables you to get around those "Address already in use" error messages when you try to restart your server after a crash.|
-| \index{SO\_BROADCAST@\texttt{SO\_BROADCAST}} `SO_BROADCAST` | Allows UDP datagram (\index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM`) sockets to send and receive packets sent to and from the broadcast address. Does nothing—_NOTHING!!_—to TCP stream sockets! Hahaha!|
+| \index{SO\_BROADCAST@\texttt{SO\_BROADCAST}} `SO_BROADCAST` | Allows UDP datagram (\index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM`) sockets to send and receive packets sent to and from the broadcast address. Does nothing---_NOTHING!!_---to TCP stream sockets! Hahaha!|
 
 As for the parameter `optval`, it's usually a pointer to an `int` indicating the
 value in question. For booleans, zero is false, and non-zero is true. And that's
@@ -6975,92 +6979,93 @@ Sockets](http://en.wikipedia.org/wiki/Berkeley_sockets)^[http://en.wikipedia.org
 ## RFCs
 
 
-\index{RFCs} [RFCs](http://www.rfc-editor.org/)^[http://www.rfc-editor.org/]—the
-real dirt! These are documents that describe assigned numbers, programming APIs,
-and protocols that are used on the Internet. I've included links to a few of
-them here for your enjoyment, so grab a bucket of popcorn and put on your
-thinking cap:
+\index{RFCs}
+[RFCs](http://www.rfc-editor.org/)^[http://www.rfc-editor.org/]---the real dirt!
+These are documents that describe assigned numbers, programming APIs, and
+protocols that are used on the Internet. I've included links to a few of them
+here for your enjoyment, so grab a bucket of popcorn and put on your thinking
+cap:
 
 **[RFC 1](http://tools.ietf.org/html/rfc1)^[http://tools.ietf.org/html/rfc1]**
-—The First RFC; this gives you an idea of what the "Internet" was like just as
+---The First RFC; this gives you an idea of what the "Internet" was like just as
 it was coming to life, and an insight into how it was being designed from the
 ground up. (This RFC is completely obsolete, obviously!)
 
 \index{UDP} **[RFC
 768](http://tools.ietf.org/html/rfc768)^[http://tools.ietf.org/html/rfc768]**
-—The User Datagram Protocol (UDP)
+---The User Datagram Protocol (UDP)
 
 \index{IP} **[RFC
 791](http://tools.ietf.org/html/rfc791)^[http://tools.ietf.org/html/rfc791]**
-—The Internet Protocol (IP)
+---The Internet Protocol (IP)
 
 \index{TCP} **[RFC
 793](http://tools.ietf.org/html/rfc793)^[http://tools.ietf.org/html/rfc793]**
-—The Transmission Control Protocol (TCP)
+---The Transmission Control Protocol (TCP)
 
 \index{telnet} **[RFC
 854](http://tools.ietf.org/html/rfc854)^[http://tools.ietf.org/html/rfc854]**
-—The Telnet Protocol
+---The Telnet Protocol
 
 \index{FTP} **[RFC
 959](http://tools.ietf.org/html/rfc959)^[http://tools.ietf.org/html/rfc959]**
-—File Transfer Protocol (FTP)
+---File Transfer Protocol (FTP)
 
 \index{TFTP} **[RFC
 1350](http://tools.ietf.org/html/rfc1350)^[http://tools.ietf.org/html/rfc1350]**
-—The Trivial File Transfer Protocol (TFTP)
+---The Trivial File Transfer Protocol (TFTP)
 
 \index{IRC} **[RFC
 1459](http://tools.ietf.org/html/rfc1459)^[http://tools.ietf.org/html/rfc1459]**
-—Internet Relay Chat Protocol (IRC)
+---Internet Relay Chat Protocol (IRC)
 
 **[RFC
 1918](http://tools.ietf.org/html/rfc1918)^[http://tools.ietf.org/html/rfc1918]**
-—Address Allocation for Private Internets
+---Address Allocation for Private Internets
 
 \index{DHCP} **[RFC
 2131](http://tools.ietf.org/html/rfc2131)^[http://tools.ietf.org/html/rfc2131]**
-—Dynamic Host Configuration Protocol (DHCP)
+---Dynamic Host Configuration Protocol (DHCP)
 
 \index{HTTP protocol} **[RFC
 2616](http://tools.ietf.org/html/rfc2616)^[http://tools.ietf.org/html/rfc2616]**
-—Hypertext Transfer Protocol (HTTP)
+---Hypertext Transfer Protocol (HTTP)
 
 \index{SMTP} **[RFC
 2821](http://tools.ietf.org/html/rfc2821)^[http://tools.ietf.org/html/rfc2821]**
-—Simple Mail Transfer Protocol (SMTP)
+---Simple Mail Transfer Protocol (SMTP)
 
 **[RFC
 3330](http://tools.ietf.org/html/rfc3330)^[http://tools.ietf.org/html/rfc3330]**
-—Special-Use IPv4 Addresses
+---Special-Use IPv4 Addresses
 
 **[RFC
 3493](http://tools.ietf.org/html/rfc3493)^[http://tools.ietf.org/html/rfc3493]**
-—Basic Socket Interface Extensions for IPv6
+---Basic Socket Interface Extensions for IPv6
 
 **[RFC
 3542](http://tools.ietf.org/html/rfc3542)^[http://tools.ietf.org/html/rfc3542]**
-—Advanced Sockets Application Program Interface (API) for IPv6
+---Advanced Sockets Application Program Interface (API) for IPv6
 
 **[RFC
 3849](http://tools.ietf.org/html/rfc3849)^[http://tools.ietf.org/html/rfc3849]**
-—IPv6 Address Prefix Reserved for Documentation
+---IPv6 Address Prefix Reserved for Documentation
 
 \index{XMPP} **[RFC
 3920](http://tools.ietf.org/html/rfc3920)^[http://tools.ietf.org/html/rfc3920]**
-—Extensible Messaging and Presence Protocol (XMPP)
+---Extensible Messaging and Presence Protocol (XMPP)
 
 \index{NNTP} **[RFC
 3977](http://tools.ietf.org/html/rfc3977)^[http://tools.ietf.org/html/rfc3977]**
-—Network News Transfer Protocol (NNTP)
+---Network News Transfer Protocol (NNTP)
 
 **[RFC
 4193](http://tools.ietf.org/html/rfc4193)^[http://tools.ietf.org/html/rfc4193]**
-—Unique Local IPv6 Unicast Addresses
+---Unique Local IPv6 Unicast Addresses
 
 \index{XDR} **[RFC
 4506](http://tools.ietf.org/html/rfc4506)^[http://tools.ietf.org/html/rfc4506]**
-—External Data Representation Standard (XDR)
+---External Data Representation Standard (XDR)
 
 The IETF has a nice online tool for [searching and browsing
 RFCs](http://tools.ietf.org/rfc/)^[http://tools.ietf.org/rfc/].
