@@ -488,4 +488,9 @@ $include-after$
 
 $endfor$
 \printindex %beej
+$if(blanklastpage)$  % beej added this block
+\newpage
+\thispagestyle{empty}
+\mbox{}
+$endif$
 \end{document}
