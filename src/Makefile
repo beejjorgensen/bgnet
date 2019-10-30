@@ -43,7 +43,7 @@ ONESIDE=--variable classoption:oneside
 TWOSIDE=--variable classoption:twoside
 USLETTER=--variable papersize:letter
 A4=--variable papersize:a4
-CROWNQUARTO=--variable geometry:"paperwidth=7.44in,paperheight=9.68in,top=1in,bottom=1in,left=1in,right=1.5in" # Lulu press
+CROWNQUARTO=--variable geometry:"paperwidth=7.444in,paperheight=9.681in,top=1in,bottom=1in,left=1in,right=1.5in" # Lulu press
 BLANKLAST=--variable blanklastpage  # add a blank final page
 BW=--no-highlight  # black and white options
 
