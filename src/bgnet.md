@@ -726,10 +726,9 @@ show 'em!
 You're saying, "Beej, is that true? I have every reason to disbelieve large
 numbers."  Well, the difference between 32 bits and 128 bits might not sound
 like a lot; it's only 96 more bits, right? But remember, we're talking powers
-here: 32 bits represents some 4 billion numbers (2<sup>32</sup>), while 128 bits
-represents about 340 trillion trillion trillion numbers (for real,
-2<sup>128</sup>). That's like a million IPv4 Internets for _every single star in
-the Universe_.
+here: 32 bits represents some 4 billion numbers (2^32^), while 128 bits
+represents about 340 trillion trillion trillion numbers (for real, 2^128^).
+That's like a million IPv4 Internets for _every single star in the Universe_.
 
 Forget this dots-and-numbers look of IPv4, too; now we've got a hexadecimal
 representation, with each two-byte chunk separated by a colon, like this:
