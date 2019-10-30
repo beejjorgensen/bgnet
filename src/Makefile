@@ -1,3 +1,8 @@
+TITLE="Beej's Guide to Network Programming"
+SUBTITLE="Using Internet Sockets"
+AUTHOR='Brian "Beej Jorgensen" Hall'
+VERSION_DATE="v3.0.21, Copyright © June 8, 2016"
+
 PDF_MAINFONT="Liberation Serif"
 PDF_SANSFONT="Liberation Sans"
 PDF_MONOFONT="Liberation Mono"
@@ -9,32 +14,46 @@ USLETTER_COLOR=bgnet_usl_c_1.pdf bgnet_usl_c_2.pdf
 USLETTER_BW=bgnet_usl_bw_1.pdf bgnet_usl_bw_2.pdf
 A4_COLOR=bgnet_a4_c_1.pdf bgnet_a4_c_2.pdf
 A4_BW=bgnet_a4_bw_1.pdf bgnet_a4_bw_2.pdf
-BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR)
+BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR) bgnet_lulu.pdf
 
 HTML=bgnet.html
 
-PANDOC_BOOK_OPTS= \
+COMMON_OPTS= \
+	--variable title:$(TITLE) \
+	--variable subtitle:$(SUBTITLE) \
+	--variable author:$(AUTHOR) \
+	--variable date:$(VERSION_DATE) \
+	--toc
+
+PDF_OPTS= \
 	--template=bg-template.latex \
 	--pdf-engine=xelatex \
 	--variable mainfont=$(PDF_MAINFONT) \
 	--variable sansfont=$(PDF_SANSFONT) \
 	--variable monofont=$(PDF_MONOFONT) \
+	--variable geometry:"top=1in,bottom=1in" \
 	-V documentclass=book \
 	-o bgnet_temp.tex \
-	--toc
+	$(COMMON_OPTS)
+
+HTML_OPTS=$(COMMON_OPTS) \
+	--metadata title:$(TITLE)
+
+ONESIDE=--variable classoption:oneside
+TWOSIDE=--variable classoption:twoside
+USLETTER=--variable papersize:letter
+A4=--variable papersize:a4
+CROWNQUARTO=--variable geometry:"paperwidth=7.44in,paperheight=9.68in,top=1in,bottom=1in,left=1in,right=1.5in" # Lulu press
+BW=--no-highlight  # black and white options
 
 all: $(HTML) $(BOOKS)
 
-bgnet.html: bgnet.md meta-html.yaml bg-css.html
-	pandoc -s bgnet.md meta-html.yaml -o bgnet.html --toc -H bg-css.html
+bgnet.html: bgnet.md bg-css.html
+	pandoc $(HTML_OPTS) -s bgnet.md -o bgnet.html -H bg-css.html
 	sed -i 's/src="\(.*\)\.pdf"/src="\1.svg"/g' bgnet.html  # use svg images
 
-bgnet.pdf: bgnet.md meta-letter-1.yaml
-	# unused
-	pandoc --template=bg-template.latex --pdf-engine=xelatex --variable mainfont="DejaVu Serif" --variable sansfont=Arial -V documentclass=book bgnet.md meta-letter-1.yaml -o bgnet.pdf --toc
-
-bgnet_usl_c_1.pdf: bgnet.md meta-letter-1.yaml
-	pandoc $(PANDOC_BOOK_OPTS) $^
+bgnet_usl_c_1.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -42,8 +61,8 @@ bgnet_usl_c_1.pdf: bgnet.md meta-letter-1.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_usl_c_2.pdf: bgnet.md meta-letter-2.yaml
-	pandoc $(PANDOC_BOOK_OPTS) $^
+bgnet_usl_c_2.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -51,8 +70,8 @@ bgnet_usl_c_2.pdf: bgnet.md meta-letter-2.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_a4_c_1.pdf: bgnet.md meta-a4-1.yaml
-	pandoc $(PANDOC_BOOK_OPTS) $^
+bgnet_a4_c_1.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -60,8 +79,8 @@ bgnet_a4_c_1.pdf: bgnet.md meta-a4-1.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_a4_c_2.pdf: bgnet.md meta-a4-2.yaml
-	pandoc $(PANDOC_BOOK_OPTS) $^
+bgnet_a4_c_2.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -69,8 +88,8 @@ bgnet_a4_c_2.pdf: bgnet.md meta-a4-2.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_usl_bw_1.pdf: bgnet.md meta-letter-1.yaml
-	pandoc $(PANDOC_BOOK_OPTS) --no-highlight $^
+bgnet_usl_bw_1.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $(BW) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -78,8 +97,8 @@ bgnet_usl_bw_1.pdf: bgnet.md meta-letter-1.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_usl_bw_2.pdf: bgnet.md meta-letter-2.yaml
-	pandoc $(PANDOC_BOOK_OPTS) --no-highlight $^
+bgnet_usl_bw_2.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $(BW) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -87,8 +106,8 @@ bgnet_usl_bw_2.pdf: bgnet.md meta-letter-2.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_a4_bw_1.pdf: bgnet.md meta-a4-1.yaml
-	pandoc $(PANDOC_BOOK_OPTS) --no-highlight $^
+bgnet_a4_bw_1.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $(BW) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -96,8 +115,8 @@ bgnet_a4_bw_1.pdf: bgnet.md meta-a4-1.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_a4_bw_2.pdf: bgnet.md meta-a4-2.yaml
-	pandoc $(PANDOC_BOOK_OPTS) --no-highlight $^
+bgnet_a4_bw_2.pdf: bgnet.md
+	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $(BW) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -105,9 +124,8 @@ bgnet_a4_bw_2.pdf: bgnet.md meta-a4-2.yaml
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp.*
 
-bgnet_lulu.pdf: bgnet_lulu.md meta-crownquarto-2.yaml
-	#pandoc $(PANDOC_BOOK_OPTS) --no-highlight $^
-	pandoc $(PANDOC_BOOK_OPTS) $^
+bgnet_lulu.pdf: bgnet_lulu.md
+	pandoc $(PDF_OPTS) $(TWOSIDE) $(CROWNQUARTO) $^
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
