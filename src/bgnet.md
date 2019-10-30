@@ -102,6 +102,8 @@
         pandoc -D latex > latex-template.latex
     Then add BG specific stuff to the template.
 
+    When editing bgnet_lulu.md, use \newpage to force content onto the
+    next page.
 -->
 
 <!-- prevent hyphenation of the following words: -->
@@ -732,7 +734,10 @@ That's like a million IPv4 Internets for _every single star in the Universe_.
 
 Forget this dots-and-numbers look of IPv4, too; now we've got a hexadecimal
 representation, with each two-byte chunk separated by a colon, like this:
-`2001:0db8:c9d2:aee5:73e3:934a:a5ae:9551`.
+
+```
+2001:0db8:c9d2:aee5:73e3:934a:a5ae:9551
+```
 
 That's not all! Lots of times, you'll have an IP address with lots of zeros in
 it, and you can compress them between two colons. And you can leave off leading
