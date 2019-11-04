@@ -26,8 +26,8 @@ COMMON_OPTS= \
 	--toc
 
 PDF_OPTS= \
-	-H header_index.latex \
-	-A after_index.latex \
+	-H latex/header_index.latex \
+	-A latex/after_index.latex \
 	--pdf-engine=xelatex \
 	--variable mainfont=$(PDF_MAINFONT) \
 	--variable sansfont=$(PDF_SANSFONT) \
@@ -47,7 +47,7 @@ A4=--variable papersize:a4
 CROWNQUARTO=--variable geometry:"paperwidth=7.444in,paperheight=9.681in,top=1in,bottom=1in,left=1in,right=1.5in" # Lulu press
 CROWNQUARTO_AMAZON=--variable geometry:"paperwidth=7.444in,paperheight=9.681in,top=1in,bottom=1in,left=1.25in,right=1.25in" # Amazon
 SIZE_75x925_AMAZON=--variable geometry:"paperwidth=7.5in,paperheight=9.25in,top=1in,bottom=1in,left=1.125in,right=1.375in" # Amazon 7.25" x 9.5"
-BLANKLAST=-A after_blank.latex # add a blank last page
+BLANKLAST=-A latex/after_blank.latex # add a blank last page
 BW=--no-highlight  # black and white options
 
 all: $(HTML) $(BOOKS)
