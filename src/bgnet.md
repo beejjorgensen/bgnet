@@ -256,7 +256,7 @@ But I should really be fair and tell you that Windows has a huge install base
 and is obviously a perfectly fine operating system.
 
 They say absence makes the heart grow fonder, and in this case, I believe it to
-be true. (Or maybe it's age.)  But what I can say is that after a decade-plus
+be true. (Or maybe it's age.) But what I can say is that after a decade-plus
 of not using Microsoft OSes for my personal work, I'm much happier! As such, I
 can sit back and safely say, "Sure, feel free to use Windows!"  ...Ok yes, it
 does make me grit my teeth to say that.
@@ -533,10 +533,10 @@ How do stream sockets achieve this high level of data transmission quality?
 They use a protocol called "The Transmission Control Protocol", otherwise known
 as \index{TCP} "TCP" (see [RFC
 793](http://tools.ietf.org/html/rfc793)^[http://tools.ietf.org/html/rfc793] for
-extremely detailed info on TCP.)  TCP makes sure your data arrives sequentially
+extremely detailed info on TCP). TCP makes sure your data arrives sequentially
 and error-free. You may have heard "TCP" before as the better half of "TCP/IP"
 where \index{IP}  "IP" stands for "Internet Protocol" (see [RFC
-791](http://tools.ietf.org/html/rfc791)^[http://tools.ietf.org/html/rfc791].)
+791](http://tools.ietf.org/html/rfc791)^[http://tools.ietf.org/html/rfc791]).
 IP deals primarily with Internet routing and is not generally responsible for
 data integrity.
 
@@ -547,7 +547,7 @@ out of order. If it arrives, the data within the packet will be error-free.
 
 Datagram sockets also use IP for routing, but they don't use TCP; they use the
 "User Datagram Protocol", or \index{UDP} "UDP" (see [RFC
-768](http://tools.ietf.org/html/rfc768)^[http://tools.ietf.org/html/rfc768].)
+768](http://tools.ietf.org/html/rfc768)^[http://tools.ietf.org/html/rfc768]).
 
 Why are they connectionless? Well, basically, it's because you don't have to
 maintain an open connection as you do with stream sockets. You just build a
@@ -565,7 +565,7 @@ work when it arrives! What kind of dark magic is this?"
 Well, my human friend, `tftp` and similar programs have their own protocol on
 top of UDP. For example, the tftp protocol says that for each packet that gets
 sent, the recipient has to send back a packet that says, "I got it!" (an "ACK"
-packet.)  If the sender of the original packet gets no reply in, say, five
+packet). If the sender of the original packet gets no reply in, say, five
 seconds, he'll re-transmit the packet until he finally gets an ACK. This
 acknowledgment procedure is very important when implementing reliable
 `SOCK_DGRAM` applications.
@@ -599,7 +599,7 @@ Basically, it says this: a packet is born, the packet is wrapped
 ("encapsulated") in a \index{header} header (and rarely a \index{footer} footer)
 by the first protocol (say, the \index{TFTP} TFTP protocol), then the whole
 thing (TFTP header included) is encapsulated again by the next protocol (say,
-\index{UDP} UDP), then again by the next (\index{IP} IP), then again by the
+\index{UDP} UDP), then again by the next (\index{IP}IP), then again by the
 final protocol on the hardware (physical) layer (say, \index{Ethernet}
 Ethernet).
 
@@ -782,7 +782,7 @@ the IP address, and the remainder is the _host portion_.
 For instance, with IPv4, you might have `192.0.2.12`, and we could say that the
 first three bytes are the network and the last byte was the host. Or, put
 another way, we're talking about host `12` on network `192.0.2.0` (see how we
-zero out the byte that was the host.)
+zero out the byte that was the host).
 
 And now for more outdated information! Ready? In the Ancient Times, there were
 "classes" of subnets, where the first one, two, or three bytes of the address
@@ -790,7 +790,7 @@ was the network part. If you were lucky enough to have one byte for the network
 and three for the host, you could have 24 bits-worth of hosts on your network
 (16 million or so). That was a "Class A" network. On the opposite end was a
 "Class C", with three bytes of network, and one byte of host (256 hosts, minus a
-couple that were reserved.)
+couple that were reserved).
 
 So as you can see, there were just a few Class As, a huge pile of Class Cs, and
 some Class Bs in the middle.
@@ -1058,7 +1058,7 @@ riddance. So if you have declared `ina` to be of type `struct sockaddr_in`, then
 `ina.sin_addr.s_addr` references the 4-byte IP address (in Network Byte Order).
 Note that even if your system still uses the God-awful union for `struct
 in_addr`, you can still reference the 4-byte IP address in exactly the same way
-as I did above (this due to `#define`s.)
+as I did above (this due to `#define`s).
 
 What about \index{IPv6} IPv6? Similar `struct`s exist for it, as well:
 
@@ -1120,7 +1120,7 @@ The function you want to use, \index{inet\_pton()@\texttt{inet\_pton()}}
 `inet_pton()`, converts an IP address in numbers-and-dots notation into either a
 `struct in_addr` or a `struct in6_addr` depending on whether you specify
 `AF_INET` or `AF_INET6`. ("`pton`" stands for "presentation to network"---you
-can call it "printable to network" if that's easier to remember.)  The
+can call it "printable to network" if that's easier to remember.) The
 conversion can be made as follows:
 
 ```{.c}
@@ -1143,7 +1143,7 @@ messed up. So check to make sure the result is greater than 0 before using!
 All right, now you can convert string IP addresses to their binary
 representations. What about the other way around? What if you have a `struct
 in_addr` and you want to print it in numbers-and-dots notation?  (Or a `struct
-in6_addr` that you want in, uh, "hex-and-colons" notation.)  In this case,
+in6_addr` that you want in, uh, "hex-and-colons" notation.) In this case,
 you'll want to use the function \index{inet\_ntop()@\texttt{inet\_ntop()}}
 `inet_ntop()` ("ntop" means "network to presentation"---you can call it "network
 to printable" if that's easier to remember), like this:
@@ -1308,7 +1308,7 @@ _Et voila_!
 This is the section where we get into the system calls (and other
 library calls) that allow you to access the network functionality of a
 Unix box, or any box that supports the sockets API for that matter (BSD,
-Windows, Linux, Mac, what-have-you.)  When you call one of these
+Windows, Linux, Mac, what-have-you.) When you call one of these
 functions, the kernel takes over and does all the work for you
 automagically.
 
@@ -1599,7 +1599,7 @@ s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 `socket()` simply returns to you a _socket descriptor_ that you can use in later
 system calls, or `-1` on error. The global variable `errno` is set to the
 error's value (see the [`errno`](#errnoman) man page for more details, and a
-quick note on using `errno` in multithreaded programs.)
+quick note on using `errno` in multithreaded programs).
 
 Fine, fine, fine, but what good is this socket? The answer is that it's really
 no good by itself, and you need to read on and make more system calls for it to
@@ -1612,7 +1612,7 @@ make any sense.
 associate that socket with a \index{ports} port on your local machine. (This is
 commonly done if you're going to \index{listen()@\texttt{listen()}} `listen()`
 for incoming connections on a specific port---multiplayer network games do this
-when they tell you to "connect to 192.168.5.10 port 3490".)  The port number is
+when they tell you to "connect to 192.168.5.10 port 3490".) The port number is
 used by the kernel to match an incoming packet to a certain process's socket
 descriptor. If you're going to only be doing a
 \index{connect()@\texttt{connect()}} `connect()` (because you're the client, not
@@ -1687,7 +1687,7 @@ bind(sockfd, (struct sockaddr *)&my_addr, sizeof my_addr);
 ```
 
 In the above code, you could also assign `INADDR_ANY` to the `s_addr` field if
-you wanted to bind to your local IP address (like the `AI_PASSIVE` flag, above.)
+you wanted to bind to your local IP address (like the `AI_PASSIVE` flag, above).
 The IPv6 version of `INADDR_ANY` is a global variable `in6addr_any` that is
 assigned into the `sin6_addr` field of your `struct sockaddr_in6`. (There is
 also a macro `IN6ADDR_ANY_INIT` that you can use in a variable initializer.)
@@ -1695,7 +1695,7 @@ also a macro `IN6ADDR_ANY_INIT` that you can use in a variable initializer.)
 Another thing to watch out for when calling `bind()`: don't go underboard with
 your port numbers. \index{ports} All ports below 1024 are RESERVED (unless
 you're the superuser)! You can have any port number above that, right up to
-65535 (provided they aren't already being used by another program.)
+65535 (provided they aren't already being used by another program).
 
 Sometimes, you might notice, you try to rerun a server and `bind()` fails,
 claiming \index{Address already in use} "Address already in use." What does that
@@ -1733,7 +1733,7 @@ necessary.
 you're a telnet application. Your user commands you (just like in the movie
 \index{TRON} _TRON_) to get a socket file descriptor. You comply and call
 `socket()`. Next, the user tells you to connect to "`10.12.110.57`" on port
-"`23`" (the standard telnet port.)  Yow! What do you do now?
+"`23`" (the standard telnet port). Yow! What do you do now?
 
 Lucky for you, program, you're now perusing the section on `connect()`---how to
 connect to a remote host. So read furiously onward! No time to lose!
@@ -1801,7 +1801,7 @@ worries.
 don't want to connect to a remote host. Say, just for kicks, that you want to
 wait for incoming connections and handle them in some way. The process is two
 step: first you `listen()`, then you \index{accept()@\texttt{accept()}}
-`accept()` (see below.)
+`accept()` (see below).
 
 
 The listen call is fairly simple, but requires a bit of explanation:
@@ -1942,7 +1942,7 @@ int send(int sockfd, const void *msg, int len, int flags);
 ```
 
 `sockfd` is the socket descriptor you want to send data to (whether it's the one
-returned by `socket()` or the one you got with `accept()`.) `msg` is a pointer
+returned by `socket()` or the one you got with `accept()`). `msg` is a pointer
 to the data you want to send, and `len` is the length of that data in bytes.
 Just set `flags` to `0`. (See the `send()` man page for more information
 concerning flags.)
@@ -1983,7 +1983,7 @@ information into, `len` is the maximum length of the buffer, and `flags` can
 again be set to `0`. (See the `recv()` man page for flag information.)
 
 `recv()` returns the number of bytes actually read into the buffer, or `-1` on
-error (with `errno` set, accordingly.)
+error (with `errno` set, accordingly).
 
 Wait! `recv()` can return `0`. This can mean only one thing: the remote side has
 closed the connection on you! A return value of `0` is `recv()`'s way of letting
@@ -2041,7 +2041,7 @@ function returns, `fromlen` will contain the length of the address actually
 stored in `from`.
 
 `recvfrom()` returns the number of bytes received, or `-1` on error (with
-`errno` set accordingly.)
+`errno` set accordingly).
 
 So, here's a question: why do we use `struct sockaddr_storage` as the socket
 type? Why not `struct sockaddr_in`? Because, you see, we want to not tie
@@ -2079,7 +2079,7 @@ read or write the socket on the remote end will receive an error.
 Just in case you want a little more control over how the socket closes, you can
 use the \index{shutdown()@\texttt{shutdown()}} `shutdown()` function. It allows
 you to cut off communication in a certain direction, or both ways (just like
-`close()` does.) Synopsis:
+`close()` does). Synopsis:
 
 ```{.c}
 int shutdown(int sockfd, int how); 
@@ -2096,11 +2096,11 @@ the following:
 |  `2`  | Further sends and receives are disallowed (like `close()`) |
 
 `shutdown()` returns `0` on success, and `-1` on error (with `errno` set
-accordingly.)
+accordingly).
 
 If you deign to use `shutdown()` on unconnected datagram sockets, it will simply
 make the socket unavailable for further `send()` and `recv()` calls (remember
-that you can use these if you `connect()` your datagram socket.)
+that you can use these if you `connect()` your datagram socket).
 
 It's important to note that `shutdown()` doesn't actually close the file
 descriptor---it just changes its usability. To free a socket descriptor, you need
@@ -2190,7 +2190,7 @@ The exchange of information between client and server is summarized in the above
 diagram.
 
 Note that the client-server pair can speak `SOCK_STREAM`, `SOCK_DGRAM`, or
-anything else (as long as they're speaking the same thing.)  Some good examples
+anything else (as long as they're speaking the same thing). Some good examples
 of client-server pairs are `telnet`/`telnetd`, `ftp`/`ftpd`, or
 `Firefox`/`Apache`. Every time you use `ftp`, there's a remote program, `ftpd`,
 that serves you.
@@ -3156,7 +3156,7 @@ buffer containing the data, and `len` is a pointer to an `int` containing the
 number of bytes in the buffer.
 
 The function returns `-1` on error (and `errno` is still set from the call to
-`send()`.)  Also, the number of bytes actually sent is returned in `len`. This
+`send()`). Also, the number of bytes actually sent is returned in `len`. This
 will be the same number of bytes you asked it to send, unless there was an
 error. `sendall()` will do it's best, huffing and puffing, to send the data out,
 but if there's an error, it gets back to you right away.
@@ -3412,7 +3412,7 @@ long double unpack754(uint64_t i, unsigned bits, unsigned expbits)
 I put some handy macros up there at the top for packing and unpacking 32-bit
 (probably a `float`) and 64-bit (probably a `double`) numbers, but the
 `pack754()` function could be called directly and told to encode `bits`-worth of
-data (`expbits` of which are reserved for the normalized number's exponent.)
+data (`expbits` of which are reserved for the normalized number's exponent).
 
 Here's sample usage:
 
@@ -4053,7 +4053,7 @@ the packet is completely received.
 But how? Well, we know the number of bytes we need to receive in total for the
 packet to be complete, since that number is tacked on the front of the packet.
 We also know the maximum packet size is 1+8+128, or 137 bytes (because that's
-how we defined the packet.)
+how we defined the packet).
 
 There are actually a couple things you can do here. Since you know every packet
 starts off with a length, you can call `recv()` just to get the packet length.
@@ -4075,7 +4075,7 @@ work array where you will reconstruct packets as they arrive.
 Every time you `recv()` data, you'll append it into the work buffer and check to
 see if the packet is complete. That is, the number of bytes in the buffer is
 greater than or equal to the length specified in the header (+1, because the
-length in the header doesn't include the byte for the length itself.)  If the
+length in the header doesn't include the byte for the length itself). If the
 number of bytes in the buffer is less than 1, the packet is not complete,
 obviously. You have to make a special case for this, though, since the first
 byte is garbage and you can't rely on it for the correct packet length.
@@ -4117,7 +4117,7 @@ send data to multiple hosts _at the same time_!
 With \index{UDP} UDP (only UDP, not TCP) and standard IPv4, this is done through
 a mechanism called \index{broadcast} _broadcasting_. With IPv6, broadcasting
 isn't supported, and you have to resort to the often superior technique of
-_multicasting_, which, sadly I won't be discussing at this time.  But enough of
+_multicasting_, which, sadly I won't be discussing at this time. But enough of
 the starry-eyed future---we're stuck in the 32-bit present.
 
 But wait! You can't just run off and start broadcasting willy-nilly; You have to
@@ -4149,7 +4149,7 @@ address for a broadcast message? There are two common ways:
    bytes, according to the netmask, are the network number). So my broadcast
    address is `192.168.1.255`. Under Unix, the `ifconfig` command will actually
    give you all this data. (If you're curious, the bitwise logic to get your
-   broadcast address is `network_number` OR (NOT `netmask`).)  You can send this
+   broadcast address is `network_number` OR (NOT `netmask`).) You can send this
    type of broadcast packet to remote networks as well as your local network,
    but you run the risk of the packet being dropped by the destination's router.
    (If they didn't drop it, then some random smurf could start flooding their
@@ -4257,7 +4257,7 @@ int main(int argc, char *argv[])
 
 What's different between this and a "normal" UDP client/server situation?
 Nothing! (With the exception of the client being allowed to send broadcast
-packets in this case.)  As such, go ahead and run the old UDP
+packets in this case.) As such, go ahead and run the old UDP
 [`listener`](#datagram) program in one window, and `broadcaster` in another. You
 should be now be able to do all those sends that failed, above.
 
@@ -4529,7 +4529,7 @@ executes them?**
 
 For simplicity, lets say the client `connect()`s, `send()`s, and `close()`s the
 connection (that is, there are no subsequent system calls without the client
-connecting again.)
+connecting again).
 
 The process the client follows is this:
 
@@ -4811,7 +4811,7 @@ new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
 
 
 \newpage
-## `bind()`
+## `bind()` {#bindman}
 
 Associate a socket with an IP address and port number
 
@@ -4856,7 +4856,7 @@ Lastly, the `addrlen` parameter should be set to `sizeof my_addr`.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -4953,7 +4953,7 @@ well as `sendto()` and `recvfrom()`. If you want.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -5019,7 +5019,7 @@ angry... And you wouldn't like it when it's angry.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -5077,7 +5077,7 @@ struct addrinfo {
 
 `getaddrinfo()` is an excellent function that will return information on a
 particular host name (such as its IP address) and load up a `struct sockaddr`
-for you, taking care of the gritty details (like if it's IPv4 or IPv6.)  It
+for you, taking care of the gritty details (like if it's IPv4 or IPv6). It
 replaces the old functions `gethostbyname()` and `getservbyname()`.The
 description, below, contains a lot of information that might be a little
 daunting, but actual usage is pretty simple. It might be worth it to check out
@@ -5086,7 +5086,7 @@ the examples first.
 The host name that you're interested in goes in the `nodename` parameter. The
 address can be either a host name, like "www.example.com", or an IPv4 or IPv6
 address (passed as a string). This parameter can also be `NULL` if you're using
-the `AI_PASSIVE` flag (see below.)
+the `AI_PASSIVE` flag (see below).
 
 The `servname` parameter is basically the port number. It can be a port number
 (passed as a string, like "80"), or it can be a service name, like "http" or
@@ -5102,7 +5102,7 @@ to set up before use.
 
 The `ai_flags` can be set to a variety of things, but here are a couple
 important ones. (Multiple flags can be specified by bitwise-ORing them together
-with the `|` operator.) Check your man page for the complete list of flags.
+with the `|` operator). Check your man page for the complete list of flags.
 
 `AI_CANONNAME` causes the `ai_canonname` of the result to the filled out with
 the host's canonical (real) name. `AI_PASSIVE` causes the result's IP address to
@@ -5112,7 +5112,7 @@ with the address of the current host. That's excellent for setting up a server
 when you don't want to hardcode the address.
 
 If you do use the `AI_PASSIVE`, flag, then you can pass `NULL` in the `nodename`
-(since `bind()` will fill it in for you later.)
+(since `bind()` will fill it in for you later).
 
 Continuing on with the input paramters, you'll likely want to set `ai_family` to
 `AF_UNSPEC` which tells `getaddrinfo()` to look for both IPv4 and IPv6
@@ -5139,7 +5139,7 @@ the `AI_PASSIVE` flag) until it succeeds.
 
 Finally, when you're done with the linked list, you need to call
 `freeaddrinfo()` to free up the memory (or it will be leaked, and Some People
-will get upset.)
+will get upset).
 
 #### Return Value
 
@@ -5273,7 +5273,7 @@ it will `NUL`-terminate the string if there's room for it in the buffer.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -5465,7 +5465,7 @@ Finally, there are several flags you can pass, but here a a couple good ones.
 domain name. `NI_NAMEREQD` will cause the function to fail if the name cannot be
 found with a DNS lookup (if you don't specify this flag and the name can't be
 found, `getnameinfo()` will put a string version of the IP address in `host`
-instead.)
+instead).
 
 As always, check your local man pages for the full scoop.
 
@@ -5529,7 +5529,7 @@ must preload `len` with the size of `addr`.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -5664,7 +5664,7 @@ here, but I'm trying to stay socket-oriented.)
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 Different uses of the `fcntl()` system call actually have different return
 values, but I haven't covered them here because they're not socket-related. See
@@ -5705,7 +5705,7 @@ uint16_t ntohs(uint16_t netshort);
 \index{htons()@\texttt{htons()}} \index{htonl()@\texttt{htonl()}}
 \index{ntohs()@\texttt{ntohs()}} \index{ntohl()@\texttt{ntohl()}} Just to make
 you really unhappy, different computers use different byte orderings internally
-for their multibyte integers (i.e. any integer that's larger than a `char`.)
+for their multibyte integers (i.e. any integer that's larger than a `char`).
 The upshot of this is that if you `send()` a two-byte `short int` from an Intel
 box to a Mac (before they became Intel boxes, too, I mean), what one computer
 thinks is the number `1`, the other will think is the number `256`, and
@@ -5803,11 +5803,11 @@ The function `inet_ntoa()` converts a network address in a `struct in_addr` to a
 dots-and-numbers format string. The "n" in "ntoa" stands for network, and the
 "a" stands for ASCII for historical reasons (so it's "Network To ASCII"---the
 "toa" suffix has an analogous friend in the C library called `atoi()` which
-converts an ASCII string to an integer.)
+converts an ASCII string to an integer).
 
 The function `inet_aton()` is the opposite, converting from a dots-and-numbers
 string into a `in_addr_t` (which is the type of the field `s_addr` in your
-`struct in_addr`.)
+`struct in_addr`).
 
 Finally, the function `inet_addr()` is an older function that does basically the
 same thing as `inet_aton()`. It's theoretically deprecated, but you'll see it a
@@ -6002,7 +6002,7 @@ the one that clients connect to.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -6061,14 +6061,14 @@ easily print that in a form that made sense to you.
 
 Mercifully, `perror()` does that. If you want more description to be printed
 before the error, you can point the parameter `s` to it (or you can leave `s` as
-`NULL` and nothing additional will be printed.)
+`NULL` and nothing additional will be printed).
 
 In a nutshell, this function takes `errno` values, like `ECONNRESET`, and prints
 them nicely, like "Connection reset by peer."
 
 The function `strerror()` is very similar to `perror()`, except it returns a
 pointer to the error message string for a given value (you usually pass in the
-variable `errno`.)
+variable `errno`).
 
 #### Return Value
 
@@ -6119,7 +6119,7 @@ ready to `recv()`, socket ready to `send()` data to, out-of-band data ready to
 `recv()`, errors, etc.
 
 The basic idea is that you pass an array of `nfds` `struct pollfd`s in `ufds`,
-along with a timeout in milliseconds (1000 milliseconds in a second.)  The
+along with a timeout in milliseconds (1000 milliseconds in a second). The
 `timeout` can be negative if you want to wait forever. If no event happens on
 any of the socket descriptors by the timeout, `poll()` will return.
 
@@ -6161,7 +6161,7 @@ that event occur. Additionally, these other fields might be present:
 
 Returns the number of elements in the `ufds` array that have had event occur on
 them; this can be zero if the timeout occurred. Also returns `-1` on error (and
-`errno` will be set accordingly.)
+`errno` will be set accordingly).
 
 #### Example
 
@@ -6272,7 +6272,7 @@ want to not block, set the socket to non-blocking or check with `select()` or
 
 Returns the number of bytes actually received (which might be less
 than you requested in the `len` parameter), or `-1`
-on error (and `errno` will be set accordingly.)
+on error (and `errno` will be set accordingly).
 
 If the remote side has closed the connection, `recv()`
 will return `0`. This is the normal method for determining
@@ -6389,7 +6389,7 @@ Lastly, the \index{struct timeval@\texttt{struct timeval}} `struct timeval`,
 for. It'll return after the timeout, or when an event occurs, whichever is
 first. The `struct timeval` has two fields: `tv_sec` is the number of seconds,
 to which is added `tv_usec`, the number of microseconds (1,000,000 microseconds
-in a second.)
+in a second).
 
 The helper macros do the following:
 
@@ -6410,7 +6410,7 @@ for more info on setting a socket to non-blocking.
 #### Return Value
 
 Returns the number of descriptors in the set on success, `0` if the timeout was
-reached, or `-1` on error (and `errno` will be set accordingly.)  Also, the sets
+reached, or `-1` on error (and `errno` will be set accordingly). Also, the sets
 are modified to show which sockets are ready.
 
 #### Example
@@ -6522,7 +6522,7 @@ set to, for example, a character value of `'1'` instead of an `int` value of
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and `errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -6595,7 +6595,7 @@ more details:
 #### Return Value
 
 Returns the number of bytes actually sent, or `-1` on error (and `errno` will be
-set accordingly.)  Note that the number of bytes actually sent might be less
+set accordingly). Note that the number of bytes actually sent might be less
 than the number you asked it to send! See the section on [handling partial
 `send()`s](#sendall) for a helper function to get around this.
 
@@ -6681,8 +6681,7 @@ This is a rarely used system call.
 
 #### Return Value
 
-Returns zero on success, or `-1` on error (and
-`errno` will be set accordingly.)
+Returns zero on success, or `-1` on error (and `errno` will be set accordingly).
 
 #### Example
 
@@ -6728,13 +6727,13 @@ if you really want to.
 | Macro      | Description                                                 |
 |------------|-------------------------------------------------------------|
 | `domain` | `domain` describes what kind of socket you're interested in. This can, believe me, be a wide variety of things, but since this is a socket guide, it's going to be \index{PF\_INET@\texttt{PF\_INET}} `PF_INET` for IPv4, and `PF_INET6` for IPv6.|
-| `type` | Also, the `type` parameter can be a number of things, but you'll probably be setting it to either \index{SOCK\_STREAM@\texttt{SOCK\_STREAM}} `SOCK_STREAM` for reliable \index{TCP} TCP sockets (`send()`, `recv()`) or \index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM` for unreliable fast \index{UDP} UDP sockets (`sendto()`, `recvfrom()`.) (Another interesting socket type is \index{SOCK\_RAW@\texttt{SOCK\_RAW}} `SOCK_RAW` which can be used to construct packets by hand. It's pretty cool.)| 
+| `type` | Also, the `type` parameter can be a number of things, but you'll probably be setting it to either \index{SOCK\_STREAM@\texttt{SOCK\_STREAM}} `SOCK_STREAM` for reliable \index{TCP} TCP sockets (`send()`, `recv()`) or \index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM` for unreliable fast \index{UDP} UDP sockets (`sendto()`, `recvfrom()`). (Another interesting socket type is \index{SOCK\_RAW@\texttt{SOCK\_RAW}} `SOCK_RAW` which can be used to construct packets by hand. It's pretty cool.)| 
 | `protocol` | Finally, the `protocol` parameter tells which protocol to use with a certain socket type. Like I've already said, for instance, `SOCK_STREAM` uses TCP. Fortunately for you, when using `SOCK_STREAM` or `SOCK_DGRAM`, you can just set the protocol to 0, and it'll use the proper protocol automatically. Otherwise, you can use \index{getprotobyname()@\texttt{getprotobyname()}} `getprotobyname()` to look up the proper protocol number.|
 
 #### Return Value
 
 The new socket descriptor to be used in subsequent calls, or `-1` on error (and
-`errno` will be set accordingly.)
+`errno` will be set accordingly).
 
 #### Example
 
