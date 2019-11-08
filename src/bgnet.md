@@ -5106,7 +5106,7 @@ with the `|` operator.) Check your man page for the complete list of flags.
 
 `AI_CANONNAME` causes the `ai_canonname` of the result to the filled out with
 the host's canonical (real) name. `AI_PASSIVE` causes the result's IP address to
-be filled out with `INADDR_ANY` (IPv4)or `in6addr_any` (IPv6); this causes a
+be filled out with `INADDR_ANY` (IPv4) or `in6addr_any` (IPv6); this causes a
 subsequent call to `bind()` to auto-fill the IP address of the `struct sockaddr`
 with the address of the current host. That's excellent for setting up a server
 when you don't want to hardcode the address.
