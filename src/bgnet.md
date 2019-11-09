@@ -6923,7 +6923,7 @@ ISBNs for volumes 1-2:
 
 **Internetworking with TCP/IP, volume I**
 by Douglas E. Comer. Published by Pearson.
-ISBNs for volumes I, II, and III:
+ISBN
 [978-0136085300](https://beej.us/guide/url/intertcp1)^[https://beej.us/guide/url/intertcp1], 
 
 **TCP/IP Illustrated, volumes 1-3**
