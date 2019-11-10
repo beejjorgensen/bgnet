@@ -1,5 +1,5 @@
 TARGETS=broadcaster client getip ghbn ieee754 listener pack pack2 \
-	select selectserver server showip talker
+	pollserver select selectserver server showip talker
 
 CC=gcc
 CCOPTS=-Wall -Wextra
