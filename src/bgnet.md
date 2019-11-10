@@ -55,6 +55,7 @@
 	3.0.20:		fix missing .fd in poll() example
 	3.0.21:		change sizeof(int) to sizeof yes
     3.0.22:     C99 updates, bug fixes, markdown
+    3.0.23:     Book reference and URL updates
 -->
 
 <!--
