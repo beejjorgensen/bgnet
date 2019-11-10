@@ -56,6 +56,7 @@
 	3.0.21:		change sizeof(int) to sizeof yes
     3.0.22:     C99 updates, bug fixes, markdown
     3.0.23:     Book reference and URL updates
+    3.1.0:      Section on poll()
 -->
 
 <!--
@@ -2736,10 +2737,391 @@ Generally speaking, however, this type of polling is a bad idea. If you put your
 program in a busy-wait looking for data on the socket, you'll suck up CPU time
 like it was going out of style. A more elegant solution for checking to see if
 there's data waiting to be read comes in the following section on
-\index{select()@\texttt{select()}} `select()`.
+\index{poll()@\texttt{poll()}} `poll()`.
 
 
-## `select()`---Synchronous I/O Multiplexing {#select}
+## `poll()`---Synchronous I/O Multiplexing {#poll}
+
+\index{poll()@\texttt{poll()}} What you really want to be able to do is
+somehow monitor a _bunch_ of sockets at once and then handle the ones
+that have data ready. This way you don't have to continously poll all
+those sockets to see which are ready to read.
+
+> _A word of warning: `poll()` is horribly slow when it comes to giant
+> numbers of connections. In those circumstances, you'll get better
+> performance out of an event library such as
+> [libevent](https://libevent.org/)^[https://libevent.org/] that
+> attempts to use the fastest possible method availabile on your
+> system._
+
+So how can you avoid polling? Not slightly ironically, you can avoid
+polling by using the `poll()` system call. In a nutshell, we're going to
+ask the operating system to do all the dirty work for us, and just let
+us know when some data is ready to read on which sockets. In the
+meantime, our process can go to sleep, saving system resources.
+
+The general gameplan is to keep an array of `struct pollfd`s with
+information about which socket descriptors we want to monitor, and what
+kind of events we want to monitor for. The OS will block on the `poll()`
+call until one of those events occurs (e.g. "socket ready to read!") or
+until a user-specified timeout occurs.
+
+Usefully, a `listen()`ing socket will return "ready to read" when a new
+incoming connection is ready to be `accept()`ed.
+
+That's enough banter. How do we use this?
+
+``` {.c}
+#include <poll.h>
+
+int poll(struct pollfd fds[], nfds_t nfds, int timeout);
+```
+
+`fds` is our array of information (which sockets to monitor for what),
+`nfds` is the count of elements in the array, and `timeout` is a timeout
+in milliseconds. It returns the number of elements in the array that
+have had an event occur.
+
+Let's have a look at that `struct`:
+
+``` {.c}
+struct pollfd {
+    int fd;         // the socket descriptor
+    short events;   // bitmap of events we're interested in
+    short revents;  // when poll() returns, bitmap of events that occurred
+};
+```
+
+So we're going to have an array of those, and we'll see the `fd` field
+for each element to a socket descriptor we're interested in monitoring.
+And then we'll set the `events` field to indicate the type of events
+we're interested in.
+
+The `events` field is the bitwise-OR of the following:
+
+| Macro     | Description                                                  |
+|-----------|--------------------------------------------------------------|
+| `POLLIN`  | Alert me when data is ready to `recv()` on this socket.      |
+| `POLLOUT` | Alert me when I can `send()` data to this socket without blocking.|
+
+Once you have your array of `struct pollfd`s in order, then you can pass
+it to `poll()`, also passing the size of the array, as well as a timeout
+value in milliseconds. (You can specify a negative timeout to wait
+forever.)
+
+After `poll()` returns, you can check the `revents` field to see if
+`POLLIN` or `POLLOUT` is set, indicating that event occurred.
+
+(There's actually more that you can do with the `poll()` call. See the
+[`poll()` man page, below](#pollman), for more details.)
+
+Here's [an
+example](https://beej.us/guide/bgnet/examples/poll.c)^[https://beej.us/guide/bgnet/examples/poll.c]
+where we'll wait 2.5 seconds for data to be ready to read from standard
+input, i.e. when you hit `RETURN`:
+
+``` {.c .numberLines}
+#include <stdio.h>
+#include <poll.h>
+
+int main(void)
+{
+    struct pollfd pfds[1]; // More if you want to monitor more
+
+    pfds[0].fd = 0;          // Standard input
+    pfds[0].events = POLLIN; // Tell me when ready to read
+
+    // If you needed to monitor other things, as well:
+    //pfds[1].fd = some_socket; // Some socket descriptor
+    //pfds[1].events = POLLIN;  // Tell me when ready to read
+
+    printf("Hit RETURN or wait 2.5 seconds for timeout\n");
+
+    int num_events = poll(pfds, 1, 2500); // 2.5 second timeout
+
+    if (num_events == 0) {
+        printf("Poll timed out!\n");
+    } else {
+        int pollin_happened = pfds[0].revents & POLLIN;
+
+        if (pollin_happened) {
+            printf("File descriptor %d is ready to read\n", pfds[0].fd);
+        } else {
+            printf("Unexpected event occurred: %d\n", pfds[0].revents);
+        }
+    }
+
+    return 0;
+}
+```
+
+Notice again that `poll()` returns the number of elements in the `pfds`
+array for which events have occurred. It doesn't tell you _which_
+elements in the array (you still have to scan for that), but it does
+tell you how many entries have a non-zero `revents` field (so you can
+stop scanning after you find that many).
+
+A couple questions might come up here: how to I add new file descriptors
+to the set I pass to `poll()`? For this, simply make sure you have
+enough space in the array for all you need, or `realloc()` more space as
+needed.
+
+What about deleting items from the set? For this, you can copy the last
+element in the array over-top the one you're deleting. And then pass in
+one fewer as the count to `poll()`. Another option is that you can set
+any `fd` field to a negative number and `poll()` will ignore it.
+
+How can we put it all together into a chat server that you can `telnet`
+to?
+
+What we'll do is start a listener socket, and add it to the set of file
+descriptors to `poll()`. (It will show ready-to-read when there's an
+incoming connection.)
+
+Then we'll add new connections to our `struct pollfd` array. And we'll
+grow it dynamically if we run out of space.
+
+When a connection is closed, we'll remove it from the array.
+
+And when a connection is ready-to-read, we'll read the data from it and
+send that data to all the other connections so they can see what the
+other users typed.
+
+So give [this poll
+server](https://beej.us/guide/bgnet/examples/pollserver.c)^[https://beej.us/guide/bgnet/examples/pollserver.c]
+a try. Run it in one window, then `telnet localhost 9034` from a number
+of other terminal windows. You should be able to see what you type in
+one window in the other ones (after you hit RETURN).
+
+Not only that, but if you hit `CTRL-]` and type `quit` to exit `telnet`,
+the server should detect the disconnection and remove you from the array
+of file descriptors.
+
+``` {.c .numberLines}
+/*
+** pollserver.c -- a cheezy multiperson chat server
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <poll.h>
+
+#define PORT "9034"   // Port we're listening on
+
+// Get sockaddr, IPv4 or IPv6:
+void *get_in_addr(struct sockaddr *sa)
+{
+    if (sa->sa_family == AF_INET) {
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    }
+
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
+// Return a listening socket
+int get_listener_socket(void)
+{
+    int listener;     // Listening socket descriptor
+    int yes=1;        // For setsockopt() SO_REUSEADDR, below
+    int rv;
+
+    struct addrinfo hints, *ai, *p;
+
+    // Get us a socket and bind it
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+    if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0) {
+        fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
+        exit(1);
+    }
+    
+    for(p = ai; p != NULL; p = p->ai_next) {
+        listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+        if (listener < 0) { 
+            continue;
+        }
+        
+        // Lose the pesky "address already in use" error message
+        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+
+        if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
+            close(listener);
+            continue;
+        }
+
+        break;
+    }
+
+    // If we got here, it means we didn't get bound
+    if (p == NULL) {
+        return -1;
+    }
+
+    freeaddrinfo(ai); // All done with this
+
+    // Listen
+    if (listen(listener, 10) == -1) {
+        return -1;
+    }
+
+    return listener;
+}
+
+// Add a new file descriptor to the set
+void add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
+{
+    // If we don't have room, add more space in the pfds array
+    if (*fd_count == *fd_size) {
+        *fd_size *= 2; // Double it
+
+        *pfds = realloc(*pfds, sizeof(**pfds) * (*fd_size));
+    }
+
+    (*pfds)[*fd_count].fd = newfd;
+    (*pfds)[*fd_count].events = POLLIN; // Check ready-to-read
+
+    (*fd_count)++;
+}
+
+// Remove an index from the set
+void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
+{
+    // Copy the one from the end over this one
+    pfds[i] = pfds[*fd_count-1];
+
+    (*fd_count)--;
+}
+
+// Main
+int main(void)
+{
+    int listener;     // Listening socket descriptor
+
+    int newfd;        // Newly accept()ed socket descriptor
+    struct sockaddr_storage remoteaddr; // Client address
+    socklen_t addrlen;
+
+    char buf[256];    // Buffer for client data
+
+    char remoteIP[INET6_ADDRSTRLEN];
+
+    // Start off with room for 5 connections
+    // (We'll realloc as necessary)
+    int fd_count = 0;
+    int fd_size = 5;
+    struct pollfd *pfds = malloc(sizeof *pfds * fd_size);
+
+    // Set up and get a listening socket
+    listener = get_listener_socket();
+
+    if (listener == -1) {
+        fprintf(stderr, "error getting listening socket\n");
+        exit(1);
+    }
+
+    // Add the listener to set
+    pfds[0].fd = listener;
+    pfds[0].events = POLLIN; // Report ready to read on incoming connection
+
+    fd_count = 1; // For the listener
+
+    // Main loop
+    for(;;) {
+        int poll_count = poll(pfds, fd_count, -1);
+
+        if (poll_count == -1) {
+            perror("poll");
+            exit(1);
+        }
+
+        // Run through the existing connections looking for data to read
+        for(int i = 0; i <= fd_count; i++) {
+
+            // Check if someone's ready to read
+            if (pfds[i].revents & POLLIN) { // We got one!!
+
+                if (pfds[i].fd == listener) {
+                    // If listener is ready to read, handle new connection
+
+                    addrlen = sizeof remoteaddr;
+                    newfd = accept(listener,
+                        (struct sockaddr *)&remoteaddr,
+                        &addrlen);
+
+                    if (newfd == -1) {
+                        perror("accept");
+                    } else {
+                        add_to_pfds(&pfds, newfd, &fd_count, &fd_size);
+
+                        printf("pollserver: new connection from %s on "
+                            "socket %d\n",
+                            inet_ntop(remoteaddr.ss_family,
+                                get_in_addr((struct sockaddr*)&remoteaddr),
+                                remoteIP, INET6_ADDRSTRLEN),
+                            newfd);
+                    }
+                } else {
+                    // If not the listener, we're just a regular client
+                    int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0);
+
+                    int sender_fd = pfds[i].fd;
+
+                    if (nbytes <= 0) {
+                        // Got error or connection closed by client
+                        if (nbytes == 0) {
+                            // Connection closed
+                            printf("pollserver: socket %d hung up\n", sender_fd);
+                        } else {
+                            perror("recv");
+                        }
+
+                        close(pfds[i].fd); // Bye!
+
+                        del_from_pfds(pfds, i, &fd_count);
+
+                    } else {
+                        // We got some good data from a client
+
+                        for(int j = 0; j < fd_count; j++) {
+                            // Send to everyone!
+                            int dest_fd = pfds[j].fd;
+
+                            // Except the listener and ourselves
+                            if (dest_fd != listener && dest_fd != sender_fd) {
+                                if (send(dest_fd, buf, nbytes, 0) == -1) {
+                                    perror("send");
+                                }
+                            }
+                        }
+                    }
+                } // END handle data from client
+            } // END got ready-to-read from poll()
+        } // END looping through file descriptors
+    } // END for(;;)--and you thought it would never end!
+    
+    return 0;
+}
+
+```
+
+In the next section, we'll look at a similar, older function called
+`select()`. Both `select()` and `poll()` offer similar functionality and
+performance, and only really differ in how they're used. `select()`
+might be slightly more portable, but is perhaps a little clunkier in
+use. Choose the one you like the best, as long as it's supported on your
+system.
+
+
+## `select()`---Synchronous I/O Multiplexing, Old School {#select}
 
 \index{select()@\texttt{select()}} This function is somewhat strange, but it's
 very useful. Take the following situation: you are a server and you want to
@@ -2755,11 +3137,12 @@ want to be a CPU hog. What, then?
 It'll tell you which ones are ready for reading, which are ready for writing,
 and which sockets have raised exceptions, if you really want to know that.
 
-This being said, in modern times `select()`, though very portable, is one of the
-slowest methods for monitoring sockets. One possible alternative is
-[libevent](https://libevent.org/)^[https://libevent.org/],
-or something similar, that encapsulates all the system-dependent stuff involved
-with getting socket notifications.
+> _A word of warning: `select()`, though very portable, is terribly slow
+> when it comes to giant numbers of connections. In those circumstances,
+> you'll get better performance out of an event library such as
+> [libevent](https://libevent.org/)^[https://libevent.org/] that
+> attempts to use the fastest possible method availabile on your
+> system._
 
 Without any further ado, I'll offer the synopsis of `select()`:
 

@@ -84,7 +84,6 @@ void add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
         *fd_size *= 2; // Double it
 
         *pfds = realloc(*pfds, sizeof(**pfds) * (*fd_size));
-        printf("realloc to size %d\n", *fd_size);
     }
 
     (*pfds)[*fd_count].fd = newfd;
@@ -145,9 +144,7 @@ int main(void)
         }
 
         // Run through the existing connections looking for data to read
-        int handled = 0;
-
-        for(int i = 0; i <= fd_count && handled < poll_count; i++) {
+        for(int i = 0; i <= fd_count; i++) {
 
             // Check if someone's ready to read
             if (pfds[i].revents & POLLIN) { // We got one!!
