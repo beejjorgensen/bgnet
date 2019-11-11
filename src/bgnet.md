@@ -59,55 +59,6 @@
     3.1.0:      Section on poll()
 -->
 
-<!--
-    pandoc markdown weirdnesses
-    ---------------------------
-    If you have multiple inline footnotes in the same paragraph but on
-    different lines of the markdown, all lines except the last must end
-    with a trailing space.
-
-    man page subsections are h4 #### to keep from showing up in the
-    contents. Pandoc 2.8 should have a way to suppress h3 from contents.
-
-    Table rows need to be on one line for proper wrapping (newlines are
-    preserved in table cells).
-
-    Tables: the relative widths of the headers is reflected in the final
-    output.
-
-    Table header template
-
-| Macro           | Description                                            |
-|-----------------|--------------------------------------------------------|
-
-    <a name> doesn't work. Use header {#tags}.
-
-    Indexing done with latex [ix[foo]] markers. They don't show up
-    in HTML output.
-
-    LaTex indexing examples:
-
-    \index{foo} plain element
-    \index{foo\_bar} element with underscore
-    \index{foo()@\texttt{foo()}} render foo() in monospace in index
-    \index{O\_NONBLOCK@\texttt{O\_NONBLOCK}} mono with underscores
-    \index{foo!bar} subindex bar in foo
-    \index{bind()@\texttt{bind()}!implicit} subindex with mono
-
-    index entries should be at the main level and not in headers
-    or bold or italicized text (or they'll appear as seperate entries
-    in the index).
-
-    Put a \newpage before each manpage to force a page break.
-
-    generate latex pandoc template with
-        pandoc -D latex > latex-template.latex
-    Then add BG specific stuff to the template.
-
-    When editing bgnet_lulu.md, use \newpage to force content onto the
-    next page.
--->
-
 <!-- prevent hyphenation of the following words: -->
 [nh[strtol]]
 [nh[sprintf]]
@@ -121,7 +72,7 @@
 Don't know how to make this work with underscores. I love
 you, Knuth, but... daaahm.
 
-\hyphenation{gai_strerr}
+[nh[gai_strerr]]
 -->
 [nh[gethostname]]
 [nh[gethostbyname]]
