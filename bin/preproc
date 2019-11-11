@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 """
+[[pagebreak]]
+
 [nh[x]] \hyphenation{x}   # no hyphen, no underscores allowed
 [ix[x]] \index{x}         # index straight up
 [ixtt[x]] \index{x@\texttt{x}}         # index tt
@@ -28,6 +30,7 @@ fin = open(infile)
 filedata = fin.read()
 fin.close()
 
+filedata = re.sub(r'\[\[pagebreak\]\]', r'\\newpage', filedata, flags=re.DOTALL)
 filedata = re.sub(r'\[nh\[(.+?)\]\]', r'\\hyphenation{\1}', filedata, flags=re.DOTALL)
 filedata = re.sub(r'\[ix\[(.+?)\]\]', r'\\index{\1}', filedata, flags=re.DOTALL)
 filedata = re.sub(r'\[ixtt\[(.+?)\]\]', r'\\index{\1@\\texttt{\1}}', filedata, flags=re.DOTALL)

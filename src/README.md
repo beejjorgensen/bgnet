@@ -4,6 +4,11 @@
 
 These are brought to life with the `bin/preproc` script.
 
+* `[[pagebreak]]`
+
+  Issue a page break on the printed version. Renders as LaTeX
+  `\newpage`.
+
 * `[nh[word]]`
 
   Don't allow hypenation of this word. Translates to

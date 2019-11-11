@@ -4906,7 +4906,7 @@ connection. So that return value is already spoken for, and `-1` means
 it through the socket?**
 
 One easy way to do encryption is to use [ix[SSL]] SSL (secure sockets
-layer), but that's beyond the scope of this guide. ([ix[OpenSSL]] Check
+layer), but that's beyond the scope of this guide. [ix[OpenSSL]] (Check
 out the [fl[OpenSSL project|https://www.openssl.org/]] for more info.)
 
 But assuming you want to plug in or implement your own [ix[compression]]
@@ -5151,7 +5151,7 @@ should absolutely do error checking pretty much any time you make any of
 the system calls unless you're totally 100% sure it's not going to fail,
 and you should probably do it even then!
 
-\newpage
+[[pagebreak]]
 ## `accept()` {#acceptman}
 
 Accept an incoming connection on a listening socket
@@ -5236,7 +5236,7 @@ new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
 [`listen()`](#listenman), [`struct sockaddr_in`](#sockaddr_inman)
 
 
-\newpage
+[[pagebreak]]
 ## `bind()` {#bindman}
 
 Associate a socket with an IP address and port number
@@ -5339,7 +5339,7 @@ bind(s, (struct sockaddr*)&myaddr, sizeof myaddr);
 sockaddr_in`](#sockaddr_inman), [`struct in_addr`](#sockaddr_inman)
 
 
-\newpage
+[[pagebreak]]
 ## `connect()` {#connectman}
 
 Connect a socket to a server
@@ -5419,7 +5419,7 @@ connect(sockfd, res->ai_addr, res->ai_addrlen);
 [`socket()`](#socketman), [`bind()`](#bindman)
 
 
-\newpage
+[[pagebreak]]
 ## `close()` {#closeman}
 
 Close a socket descriptor
@@ -5474,7 +5474,7 @@ close(s);  // not much to it, really.
 [`socket()`](#socketman), [`shutdown()`](#shutdownman)
 
 
-\newpage
+[[pagebreak]]
 ## `getaddrinfo()`, `freeaddrinfo()`, `gai_strerror()` {#getaddrinfoman}
 
 Get information about a host name and/or service and load up a `struct
@@ -5680,7 +5680,7 @@ freeaddrinfo(servinfo); // all done with this structure
 [`gethostbyname()`](#gethostbynameman), [`getnameinfo()`](#getnameinfoman)
 
 
-\newpage
+[[pagebreak]]
 ## `gethostname()` {#gethostnameman}
 
 Returns the name of the system
@@ -5728,7 +5728,7 @@ printf("My hostname: %s\n", hostname);
 [`gethostbyname()`](#gethostbynameman)
 
 
-\newpage
+[[pagebreak]]
 ## `gethostbyname()`, `gethostbyaddr()` {#gethostbynameman}
 
 Get an IP address for a hostname, or vice-versa
@@ -5870,7 +5870,7 @@ printf("Host name: %s\n", he->h_name);
 in_addr`](#sockaddr_inman)
 
 
-\newpage
+[[pagebreak]]
 ## `getnameinfo()` {#getnameinfoman}
 
 Look up the host name and service name information for a given `struct
@@ -5939,7 +5939,7 @@ printf("service: %s\n", service); // e.g. "http"
 [`getaddrinfo()`](#getaddrinfoman), [`gethostbyaddr()`](#gethostbynameman)
 
 
-\newpage
+[[pagebreak]]
 ## `getpeername()` {#getpeernameman}
 
 Return address info about the remote side of the connection
@@ -6010,7 +6010,7 @@ printf("Peer port      : %d\n", port);
 [`gethostbyaddr()`](#gethostbynameman)
 
 
-\newpage
+[[pagebreak]]
 ## `errno` {#errnoman}
 
 Holds the error code for the last system call
@@ -6075,7 +6075,7 @@ if (select(n, &readfds, NULL, NULL) == -1) {
 [`perror()`](#perrorman), [`strerror()`](#perrorman)
 
 
-\newpage
+[[pagebreak]]
 ## `fcntl()` {#fcntlman}
 
 Control socket descriptors
@@ -6130,7 +6130,7 @@ fcntl(s, F_SETFL, O_ASYNC);     // set to asynchronous I/O
 [Blocking](#blocking), [`send()`](#sendman)
 
 
-\newpage
+[[pagebreak]]
 ## `htons()`, `htonl()`, `ntohs()`, `ntohl()` {#htonsman}
 
 Convert multi-byte integer types from host byte order to network byte order
@@ -6211,7 +6211,7 @@ some_short == ntohs(htons(some_short)); // this expression is true
 ```
 
 
-\newpage
+[[pagebreak]]
 ## `inet_ntoa()`, `inet_aton()`, `inet_addr` {#inet_ntoaman}
 
 Convert IP addresses from a dots-and-number string to a `struct in_addr` and
@@ -6296,7 +6296,7 @@ antelope.sin_addr.s_addr = inet_addr("10.0.0.1");
 [`gethostbyname()`](#gethostbynameman), [`gethostbyaddr()`](#gethostbynameman)
 
 
-\newpage
+[[pagebreak]]
 ## `inet_ntop()`, `inet_pton()` {#inet_ntopman}
 
 Convert IP addresses to human-readable form and back.
@@ -6423,7 +6423,7 @@ char *get_ip_str(const struct sockaddr *sa, char *s, size_t maxlen)
 
 
 
-\newpage
+[[pagebreak]]
 ## `listen()` {#listenman}
 
 Tell a socket to listen for incoming connections
@@ -6491,7 +6491,7 @@ listen(sockfd, 10); // set s up to be a server (listening) socket
 [`accept()`](#acceptman), [`bind()`](#bindman), [`socket()`](#socketman)
 
 
-\newpage
+[[pagebreak]]
 ## `perror()`, `strerror()` {#perrorman}
 
 Print an error as a human-readable string
@@ -6552,7 +6552,7 @@ if (listen(s, 10) == -1) {
 [`errno`](#errnoman)
 
 
-\newpage
+[[pagebreak]]
 ## `poll()` {#pollman}
 
 Test for events on multiple sockets simultaneously
@@ -6673,7 +6673,7 @@ if (rv == -1) {
 [`select()`](#selectman)
 
 
-\newpage
+[[pagebreak]]
 ## `recv()`, `recvfrom()` {#recvman}
 
 Receive data on a socket
@@ -6801,7 +6801,7 @@ printf("from IP address %s\n",
 [`poll()`](#pollman), [Blocking](#blocking)
 
 
-\newpage
+[[pagebreak]]
 ## `select()` {#selectman}
 
 Check if sockets descriptors are ready to read/write
@@ -6922,7 +6922,7 @@ if (rv == -1) {
 [`poll()`](#pollman)
 
 
-\newpage
+[[pagebreak]]
 ## `setsockopt()`, `getsockopt()` {#setsockoptman}
 
 Set various options for a socket
@@ -6959,7 +6959,7 @@ options, but here are some of the most fun ones:
 |-------------------|------------------------------------------------------|
 | [ixtt[SO\_BINDTODEVICE]] `SO_BINDTODEVICE` | Bind this socket to a symbolic device name like `eth0` instead of using `bind()` to bind it to an IP address. Type the command `ifconfig` under Unix to see the device names.|
 | [ixtt[SO\_REUSEADDR]] `SO_REUSEADDR` | Allows other sockets to `bind()` to this port, unless there is an active listening socket bound to the port already. This enables you to get around those "Address already in use" error messages when you try to restart your server after a crash.|
-| [ixtt[SO\_BROADCAST]] `SOCK_DGRAM`) sockets to send and receive packets sent to and from the broadcast address. Does nothing---_NOTHING!!_---to TCP stream sockets! Hahaha!|
+| [ixtt[SO\_BROADCAST]] `SOCK_DGRAM` | Allows UDP datagram [ixtt[SOCK\_DGRAM]] (`SOCK_DGRAM`) sockets to send and receive packets sent to and from the broadcast address. Does nothing---_NOTHING!!_---to TCP stream sockets! Hahaha!|
 
 As for the parameter `optval`, it's usually a pointer to an `int`
 indicating the value in question. For booleans, zero is false, and
@@ -7012,7 +7012,7 @@ if (optval != 0) {
 [`fcntl()`](#fcntlman)
 
 
-\newpage
+[[pagebreak]]
 ## `send()`, `sendto()` {#sendman}
 
 Send data out over a socket
@@ -7104,7 +7104,7 @@ sendto(dgram_socket, secret_message, strlen(secret_message)+1, 0,
 [`recv()`](#recvman), [`recvfrom()`](#recvman)
 
 
-\newpage
+[[pagebreak]]
 ## `shutdown()` {#shutdownman}
 
 Stop further sends and receives on a socket
@@ -7160,7 +7160,7 @@ shutdown(s, SHUT_WR);
 [`close()`](#closeman)
 
 
-\newpage
+[[pagebreak]]
 ## `socket()` {#socketman}
 
 Allocate a socket descriptor
@@ -7221,7 +7221,7 @@ sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 [`getaddrinfo()`](#getaddrinfoman), [`listen()`](#listenman)
 
 
-\newpage
+[[pagebreak]]
 ## `struct sockaddr` and pals {#structsockaddrman}
 
 Structures for handling internet addresses
