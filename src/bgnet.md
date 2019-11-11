@@ -5152,7 +5152,7 @@ the system calls unless you're totally 100% sure it's not going to fail,
 and you should probably do it even then!
 
 \newpage
-## `accept()`
+## `accept()` {#acceptman}
 
 Accept an incoming connection on a listening socket
 
