@@ -18,6 +18,7 @@ BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR) bgnet_lulu.pdf
 
 HTML=bgnet.html
 
+PREPROC=../bin/preproc
 PREPROC_MD=bgnet_temp_preproc.md
 
 COMMON_OPTS= \
@@ -55,16 +56,15 @@ BW=--no-highlight  # black and white options
 
 all: $(HTML) $(BOOKS)
 
-$(PREPROC_MD): bgnet.md
-	../bin/preproc $^ $@
-
-bgnet.html: $(PREPROC_MD) bg-css.html
-	pandoc $(HTML_OPTS) -s $< -o bgnet.html -H bg-css.html
+bgnet.html: bgnet.md bg-css.html
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o bgnet.html -H bg-css.html
 	sed -i 's/src="\(.*\)\.pdf"/src="\1.svg"/g' bgnet.html  # use svg images
 	rm -f bgnet_temp*
 
-bgnet_usl_c_1.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $^
+bgnet_usl_c_1.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -72,8 +72,9 @@ bgnet_usl_c_1.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_usl_c_2.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $^
+bgnet_usl_c_2.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -81,8 +82,9 @@ bgnet_usl_c_2.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_a4_c_1.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $^
+bgnet_a4_c_1.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -90,8 +92,9 @@ bgnet_a4_c_1.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_a4_c_2.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $^
+bgnet_a4_c_2.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -99,8 +102,9 @@ bgnet_a4_c_2.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_usl_bw_1.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $(BW) $^
+bgnet_usl_bw_1.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $(BW) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -108,8 +112,9 @@ bgnet_usl_bw_1.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_usl_bw_2.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $(BW) $^
+bgnet_usl_bw_2.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $(BW) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -117,8 +122,9 @@ bgnet_usl_bw_2.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_a4_bw_1.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $(BW) $^
+bgnet_a4_bw_1.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $(BW) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -126,8 +132,9 @@ bgnet_a4_bw_1.pdf: $(PREPROC_MD)
 	mv bgnet_temp.pdf $@
 	rm -f bgnet_temp*
 
-bgnet_a4_bw_2.pdf: $(PREPROC_MD)
-	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $(BW) $^
+bgnet_a4_bw_2.pdf: bgnet.md
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $(BW) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -136,7 +143,8 @@ bgnet_a4_bw_2.pdf: $(PREPROC_MD)
 	rm -f bgnet_temp*
 
 bgnet_lulu.pdf: bgnet_lulu.md
-	pandoc $(PDF_OPTS) $(TWOSIDE) $(CROWNQUARTO) $(BLANKLAST) $^
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(TWOSIDE) $(CROWNQUARTO) $(BLANKLAST) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
@@ -145,7 +153,8 @@ bgnet_lulu.pdf: bgnet_lulu.md
 	rm -f bgnet_temp*
 
 bgnet_amazon.pdf: bgnet_amazon.md
-	pandoc $(PDF_OPTS) $(TWOSIDE) $(SIZE_75x925_AMAZON) $(BLANKLAST) $^
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(PDF_OPTS) $(TWOSIDE) $(SIZE_75x925_AMAZON) $(BLANKLAST) $(PREPROC_MD)
 	xelatex bgnet_temp.tex
 	makeindex bgnet_temp.idx
 	xelatex bgnet_temp.tex
