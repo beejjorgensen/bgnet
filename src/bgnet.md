@@ -82,7 +82,7 @@
 
     <a name> doesn't work. Use header {#tags}.
 
-    Indexing done with latex \index{foo} markers. They don't show up
+    Indexing done with latex [ix[foo]] markers. They don't show up
     in HTML output.
 
     LaTex indexing examples:
@@ -109,61 +109,61 @@
 -->
 
 <!-- prevent hyphenation of the following words: -->
-\hyphenation{strtol}
-\hyphenation{sprintf}
-\hyphenation{accept}
-\hyphenation{bind}
-\hyphenation{connect}
-\hyphenation{close}
-\hyphenation{getaddrinfo}
-\hyphenation{freeaddrinfo}
+[nh[strtol]]
+[nh[sprintf]]
+[nh[accept]]
+[nh[bind]]
+[nh[connect]]
+[nh[close]]
+[nh[getaddrinfo]]
+[nh[freeaddrinfo]]
 <!--
 Don't know how to make this work with underscores. I love
 you, Knuth, but... daaahm.
 
 \hyphenation{gai_strerr}
 -->
-\hyphenation{gethostname}
-\hyphenation{gethostbyname}
-\hyphenation{gethostbyaddr}
-\hyphenation{getnameinfo}
-\hyphenation{getpeername}
-\hyphenation{errno}
-\hyphenation{fcntl}
-\hyphenation{htons}
-\hyphenation{htonl}
-\hyphenation{ntohs}
-\hyphenation{ntohl}
+[nh[gethostname]]
+[nh[gethostbyname]]
+[nh[gethostbyaddr]]
+[nh[getnameinfo]]
+[nh[getpeername]]
+[nh[errno]]
+[nh[fcntl]]
+[nh[htons]]
+[nh[htonl]]
+[nh[ntohs]]
+[nh[ntohl]]
 <!--
-\hyphenation{inet_ntoa}
-\hyphenation{inet_aton}
-\hyphenation{inet_addr}
-\hyphenation{inet_ntop}
-\hyphenation{inet_pton}
+[nh[inet_ntoa]]
+[nh[inet_aton]]
+[nh[inet_addr]]
+[nh[inet_ntop]]
+[nh[inet_pton]]
 -->
-\hyphenation{listen}
-\hyphenation{perror}
-\hyphenation{strerror}
-\hyphenation{poll}
-\hyphenation{recv}
-\hyphenation{recvfrom}
-\hyphenation{select}
-\hyphenation{setsockopt}
-\hyphenation{getsockopt}
-\hyphenation{send}
-\hyphenation{sendto}
-\hyphenation{shutdown}
-\hyphenation{socket}
-\hyphenation{struct}
-\hyphenation{sockaddr}
+[nh[listen]]
+[nh[perror]]
+[nh[strerror]]
+[nh[poll]]
+[nh[recv]]
+[nh[recvfrom]]
+[nh[select]]
+[nh[setsockopt]]
+[nh[getsockopt]]
+[nh[send]]
+[nh[sendto]]
+[nh[shutdown]]
+[nh[socket]]
+[nh[struct]]
+[nh[sockaddr]]
 <!--
-\hyphenation{sockaddr_in}
-\hyphenation{in_addr}
-\hyphenation{sockaddr_in6}
-\hyphenation{in6_addr}
+[nh[sockaddr_in]]
+[nh[in_addr]]
+[nh[sockaddr_in6]]
+[nh[in6_addr]]
 -->
-\hyphenation{hostent}
-\hyphenation{addrinfo}
+[nh[hostent]]
+[nh[addrinfo]]
 
 # Intro
 
@@ -195,7 +195,7 @@ sense... `:-)`
 ## Platform and Compiler
 
 The code contained within this document was compiled on a Linux PC using Gnu's
-\index{compilers!gcc} `gcc` compiler. It should, however, build on just about
+[ix[compilers!gcc]] `gcc` compiler. It should, however, build on just about
 any platform that uses `gcc`. Naturally, this doesn't apply if you're
 programming for Windows---see the [section on Windows programming](#windows),
 below.
@@ -220,10 +220,10 @@ lifestyle!
 
 ## Note for Solaris/SunOS Programmers {#solaris}
 
-When compiling for \index{Solaris} Solaris or \index{SunOS} SunOS, you need to
-specify some extra command-line switches for linking in the proper libraries. In
-order to do this, simply add "`-lnsl -lsocket -lresolv`" to the end of the
-compile command, like so:
+When compiling for [ix[Solaris]] Solaris or [ix[SunOS]] SunOS, you need
+to specify some extra command-line switches for linking in the proper
+libraries. In order to do this, simply add "`-lnsl -lsocket -lresolv`"
+to the end of the compile command, like so:
 
 ```shell
 $ cc -o server server.c -lnsl -lsocket -lresolv
@@ -253,7 +253,7 @@ just what people have told me through email.
 ## Note for Windows Programmers {#windows}
 
 At this point in the guide, historically, I've done a bit of bagging on
-\index{Windows} Windows, simply due to the fact that I don't like it very much.
+[ix[Windows]] Windows, simply due to the fact that I don't like it very much.
 But I should really be fair and tell you that Windows has a huge install base
 and is obviously a perfectly fine operating system.
 
@@ -263,7 +263,7 @@ of not using Microsoft OSes for my personal work, I'm much happier! As such, I
 can sit back and safely say, "Sure, feel free to use Windows!"  ...Ok yes, it
 does make me grit my teeth to say that.
 
-So I still encourage you to try \index{Linux}
+So I still encourage you to try [ix[Linux]]
 [Linux](https://www.linux.com/)^[https://www.linux.com/], 
 [BSD](https://bsd.org/)^[https://bsd.org/], or some flavor of Unix,
 instead.
@@ -272,7 +272,7 @@ But people like what they like, and you Windows folk will be pleased to know
 that this information is generally applicable to you guys, with a few minor
 changes, if any.
 
-One cool thing you can do is install \index{Cygwin}
+One cool thing you can do is install [ix[Cygwin]]
 [Cygwin](https://cygwin.com/)^[https://cygwin.com/], which is a collection
 of Unix tools for Windows. I've heard on the grapevine that doing so allows all
 these programs to compile unmodified.
@@ -285,15 +285,15 @@ This is what you'll have to do (unless you install
 [Cygwin](https://cygwin.com/)!): first, ignore pretty much all of the system
 header files I mention in here. All you need to include is:
 
-\index{Winsock}
+[ix[Winsock]]
 
 ```{.c}
 #include <winsock.h>
 ```
 
-Wait! You also have to make a call to \index{WSAStartup()@\texttt{WSAStartup()}}
-`WSAStartup()` before doing anything else with the sockets library. The code to
-do that looks something like this:
+Wait! You also have to make a call to [ixtt[WSAStartup()]]
+`WSAStartup()` before doing anything else with the sockets library. The
+code to do that looks something like this:
 
 ```{.c .numberLines}
 #include <winsock.h>
@@ -318,37 +318,37 @@ the `Link` tab, and look for the box titled "Object/library modules". Add
 
 Or so I hear.
 
-Finally, you need to call \index{WSACleanup()@\texttt{WSACleanup()}}
+Finally, you need to call [ixtt[WSACleanup()]]
 `WSACleanup()` when you're all through with the sockets library. See your
 online help for details.
 
-Once you do that, the rest of the examples in this tutorial should generally
-apply, with a few exceptions. For one thing, you can't use `close()` to close a
-socket---you need to use \index{closesocket()@\texttt{closesocket()}}
-`closesocket()`, instead. Also, \index{select()@\texttt{select()}} `select()`
-only works with socket descriptors, not file descriptors (like `0` for `stdin`).
+Once you do that, the rest of the examples in this tutorial should
+generally apply, with a few exceptions. For one thing, you can't use
+`close()` to close a socket---you need to use [ixtt[closesocket()]]
+`closesocket()`, instead. Also, [ixtt[select()]] `select()` only works
+with socket descriptors, not file descriptors (like `0` for `stdin`).
 
-There is also a socket class that you can use, \index{CSocket@\texttt{CSocket}}
+There is also a socket class that you can use, [ixtt[CSocket]]
 `CSocket`. Check your compilers help pages for more information.
 
-To get more information about Winsock, read the \index{Winsock!FAQ} [Winsock
+To get more information about Winsock, read the [ix[Winsock!FAQ]] [Winsock
 FAQ](https://tangentsoft.net/wskfaq/)^[https://tangentsoft.net/wskfaq/] and go
 from there.
 
-Finally, I hear that Windows has no \index{fork()@\texttt{fork()}} `fork()`
-system call which is, unfortunately, used in some of my examples. Maybe you
-have to link in a POSIX library or something to get it to work, or you can use
-\index{CreateProcess()@\texttt{CreateProcess()}} `CreateProcess()` instead.
-`fork()` takes no arguments, and `CreateProcess()` takes about 48 billion
-arguments. If you're not up to that, the
-\index{CreateThread()@\texttt{CreateThread()}} `CreateThread()` is a little
-easier to digest...unfortunately a discussion about multithreading is beyond the
-scope of this document. I can only talk about so much, you know!
+Finally, I hear that Windows has no [ixtt[fork()]] `fork()` system call
+which is, unfortunately, used in some of my examples. Maybe you have to
+link in a POSIX library or something to get it to work, or you can use
+[ixtt[CreateProcess()]] `CreateProcess()` instead.  `fork()` takes no
+arguments, and `CreateProcess()` takes about 48 billion arguments. If
+you're not up to that, the [ix[CreateThread()]] `CreateThread()` is a
+little easier to digest...unfortunately a discussion about
+multithreading is beyond the scope of this document. I can only talk
+about so much, you know!
 
 
 ## Email Policy
 
-I'm generally available to help out with \index{email to Beej} email questions
+I'm generally available to help out with [ix[email to Beej]] email questions
 so feel free to write in, but I can't guarantee a response. I lead a pretty
 busy life and there are times when I just can't answer a question you have. When
 that's the case, I usually just delete the message. It's nothing personal; I
@@ -374,14 +374,14 @@ being used for good! `:-)` Thank you!
 
 ## Mirroring
 
-\index{mirroring} You are more than welcome to mirror this site, whether
+[ix[mirroring]] You are more than welcome to mirror this site, whether
 publicly or privately. If you publicly mirror the site and want me to link to
 it from the main page, drop me a line at [`beej@beej.us`](beej@beej.us).
 
 
 ## Note for Translators
 
-\index{translations} If you want to translate the guide into another language,
+[ix[translations]] If you want to translate the guide into another language,
 write me at [`beej@beej.us`](beej@beej.us) and I'll link to your translation
 from the main page. Feel free to add your name and contact info to the
 translation.
@@ -463,9 +463,9 @@ Software.
 
 # What is a socket?
 
-You hear talk of \index{socket} "sockets" all the time, and perhaps you are
+You hear talk of [ix[socket]] "sockets" all the time, and perhaps you are
 wondering just what they are exactly. Well, they're this: a way to speak to
-other programs using standard Unix \index{file descriptor} file descriptors.
+other programs using standard Unix [ix[file descriptor]] file descriptors.
 
 What?
 
@@ -480,43 +480,42 @@ program over the Internet you're gonna do it through a file descriptor, you'd
 better believe it.
 
 "Where do I get this file descriptor for network communication, Mr.
-Smarty-Pants?" is probably the last question on your mind right now, but I'm
-going to answer it anyway: You make a call to the
-\index{socket()@\texttt{socket()}} `socket()` system routine. It returns the
-\index{socket descriptor} socket descriptor, and you communicate through it
-using the specialized \index{send()@\texttt{send()}} `send()` and
-\index{recv()@\texttt{recv()}} `recv()` ([`man send`](#sendman), [`man
-recv`](#recvman)) socket calls.
+Smarty-Pants?" is probably the last question on your mind right now, but
+I'm going to answer it anyway: You make a call to the [ixtt[socket()]]
+`socket()` system routine. It returns the [ix[socket descriptor]] socket
+descriptor, and you communicate through it using the specialized
+[ixtt[send()]] `send()` and [ix[recv()]] `recv()` ([`man
+send`](#sendman), [`man recv`](#recvman)) socket calls.
 
 "But, hey!" you might be exclaiming right about now. "If it's a file
 descriptor, why in the name of Neptune can't I just use the normal
-\index{read()@\texttt{read()}} `read()` and \index{write()@\texttt{write()}}
-`write()` calls to communicate through the socket?"  The short answer is, "You
-can!"  The longer answer is, "You can, but \index{send()@\texttt{send()}}
-`send()` and \index{recv()@\texttt{recv()}} `recv()` offer much greater control
-over your data transmission."
+[ixtt[read()]] `read()` and [ixtt[write()]] `write()` calls to
+communicate through the socket?"  The short answer is, "You can!"  The
+longer answer is, "You can, but [ixtt[send()]] `send()` and [ix[recv()]]
+`recv()` offer much greater control over your data transmission."
 
 What next? How about this: there are all kinds of sockets. There are
-\index{socket!types} DARPA Internet addresses (Internet Sockets), path names on
-a local node (Unix Sockets), CCITT X.25 addresses (X.25 Sockets that you can
-safely ignore), and probably many others depending on which Unix flavor you run.
-This document deals only with the first: Internet Sockets.
+[ix[socket!types]] DARPA Internet addresses (Internet Sockets), path
+names on a local node (Unix Sockets), CCITT X.25 addresses (X.25 Sockets
+that you can safely ignore), and probably many others depending on which
+Unix flavor you run.  This document deals only with the first: Internet
+Sockets.
 
 
 ## Two Types of Internet Sockets
 
-What's this? \index{socket!types} There are two types of Internet sockets?
+What's this? [ix[socket!types]] There are two types of Internet sockets?
 Yes. Well, no. I'm lying. There are more, but I didn't want to scare you.
 I'm only going to talk about two types here. Except for this sentence, where
-I'm going to tell you that "\index{raw sockets} \index{socket!raw} Raw Sockets"
+I'm going to tell you that [ix[raw sockets]] [ix[socket!raw]] "Raw Sockets"
 are also very powerful and you should look them up.
 
-All right, already. What are the two types? One is \index{socket!stream}
-"Stream Sockets"; the other is \index{socket!datagram}"Datagram Sockets", which
-may hereafter be referred to as "`SOCK_STREAM`" and "`SOCK_DGRAM`",
-respectively. Datagram sockets are sometimes called "connectionless sockets".
-(Though they can be \index{connect()@\texttt{connect()}} `connect()`'d if you
-really want. See [`connect()`](#connect), below.)
+All right, already. What are the two types? One is [ix[socket!stream]]
+"Stream Sockets"; the other is [ix[socket!datagram]] "Datagram Sockets",
+which may hereafter be referred to as "`SOCK_STREAM`" and
+"`SOCK_DGRAM`", respectively. Datagram sockets are sometimes called
+"connectionless sockets".  (Though they can be [ixtt[connect()]]
+`connect()`'d if you really want. See [`connect()`](#connect), below.)
 
 Stream sockets are reliable two-way connected communication streams. If you
 output two items into the socket in the order "1, 2", they will arrive in the
@@ -524,31 +523,32 @@ order "1, 2" at the opposite end. They will also be error-free. I'm so
 certain, in fact, they will be error-free, that I'm just going to put my fingers
 in my ears and chant _la la la la_ if anyone tries to claim otherwise.
 
-What uses \index{socket!stream} stream sockets? Well, you may have heard of the
-\index{telnet} `telnet` application, yes? It uses stream sockets. All the
+What uses [ix[socket!stream]] stream sockets? Well, you may have heard of the
+[ix[telnet]] `telnet` application, yes? It uses stream sockets. All the
 characters you type need to arrive in the same order you type them, right?
-Also, web browsers use the \index{HTTP protocol} HTTP protocol which uses stream
+Also, web browsers use the [ix[HTTP protocol]] HTTP protocol which uses stream
 sockets to get pages. Indeed, if you telnet to a web site on port 80, and type
 "`GET / HTTP/1.0`" and hit RETURN twice, it'll dump the HTML back at you!
 
-How do stream sockets achieve this high level of data transmission quality?
-They use a protocol called "The Transmission Control Protocol", otherwise known
-as \index{TCP} "TCP" (see [RFC
-793](https://tools.ietf.org/html/rfc793)^[https://tools.ietf.org/html/rfc793] for
-extremely detailed info on TCP). TCP makes sure your data arrives sequentially
-and error-free. You may have heard "TCP" before as the better half of "TCP/IP"
-where \index{IP}  "IP" stands for "Internet Protocol" (see [RFC
+How do stream sockets achieve this high level of data transmission
+quality?  They use a protocol called "The Transmission Control
+Protocol", otherwise known as [ix[TCP]] "TCP" (see [RFC
+793](https://tools.ietf.org/html/rfc793)^[https://tools.ietf.org/html/rfc793]
+for extremely detailed info on TCP). TCP makes sure your data arrives
+sequentially and error-free. You may have heard "TCP" before as the
+better half of "TCP/IP" where [ix[IP]]  "IP" stands for "Internet
+Protocol" (see [RFC
 791](https://tools.ietf.org/html/rfc791)^[https://tools.ietf.org/html/rfc791]).
-IP deals primarily with Internet routing and is not generally responsible for
-data integrity.
+IP deals primarily with Internet routing and is not generally
+responsible for data integrity.
 
-Cool. \index{socket!datagram} What about Datagram sockets? Why are they called
+Cool. [ix[socket!datagram]] What about Datagram sockets? Why are they called
 connectionless? What is the deal, here, anyway? Why are they unreliable?
 Well, here are some facts: if you send a datagram, it may arrive. It may arrive
 out of order. If it arrives, the data within the packet will be error-free.
 
 Datagram sockets also use IP for routing, but they don't use TCP; they use the
-"User Datagram Protocol", or \index{UDP} "UDP" (see [RFC
+"User Datagram Protocol", or [ix[UDP]] "UDP" (see [RFC
 768](https://tools.ietf.org/html/rfc768)^[https://tools.ietf.org/html/rfc768]).
 
 Why are they connectionless? Well, basically, it's because you don't have to
@@ -589,27 +589,27 @@ dropped, and UDP is a good choice.
 
 Since I just mentioned layering of protocols, it's time to talk about how
 networks really work, and to show some examples of how
-\index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM` packets are built.
+[ixtt[SOCK\_DGRAM]] `SOCK_DGRAM` packets are built.
 Practically, you can probably skip this section. It's good background, however.
 
 ![Data Encapsulation.](dataencap.pdf "[Encapsulated Protocols Diagram]")
 
-Hey, kids, it's time to learn about \index{data encapsulation} _Data
-Encapsulation_! This is very very important. It's so important that you might
-just learn about it if you take the networks course here at Chico State `;-)`.
-Basically, it says this: a packet is born, the packet is wrapped
-("encapsulated") in a \index{header} header (and rarely a \index{footer} footer)
-by the first protocol (say, the \index{TFTP} TFTP protocol), then the whole
-thing (TFTP header included) is encapsulated again by the next protocol (say,
-\index{UDP} UDP), then again by the next (\index{IP}IP), then again by the
-final protocol on the hardware (physical) layer (say, \index{Ethernet}
-Ethernet).
+Hey, kids, it's time to learn about [ix[data encapsulation]] _Data
+Encapsulation_! This is very very important. It's so important that you
+might just learn about it if you take the networks course here at Chico
+State `;-)`.  Basically, it says this: a packet is born, the packet is
+wrapped ("encapsulated") in a [ix[header]] header (and rarely a
+[ix[footer]] footer) by the first protocol (say, the [ix[TFTP]] TFTP
+protocol), then the whole thing (TFTP header included) is encapsulated
+again by the next protocol (say, [ix[UDP]] UDP), then again by the next
+[ix[IP]] (IP), then again by the final protocol on the hardware
+(physical) layer (say, [ix[Ethernet]] Ethernet).
 
 When another computer receives the packet, the hardware strips the Ethernet
 header, the kernel strips the IP and UDP headers, the TFTP program strips the
 TFTP header, and it finally has the data.
 
-Now I can finally talk about the infamous \index{layered network model} _Layered
+Now I can finally talk about the infamous [ix[layered network model]] _Layered
 Network Model_ (aka "ISO/OSI"). This Network Model describes a system of
 network functionality that has many advantages over other models. For instance,
 you can write sockets programs that are exactly the same without caring how the
@@ -646,16 +646,16 @@ encapsulation of the original data.
 
 See how much work there is in building a simple packet? Jeez! And you have to
 type in the packet headers yourself using "`cat`"! Just kidding. All you have
-to do for stream sockets is \index{send()@\texttt{send()}} `send()` the data
+to do for stream sockets is [ixtt[send()]] `send()` the data
 out. All you have to do for datagram sockets is encapsulate the packet in the
-method of your choosing and \index{sendto()@\texttt{sendto()}} `sendto()` it
+method of your choosing and [ixtt[sendto()]] `sendto()` it
 out. The kernel builds the Transport Layer and Internet Layer on for you and
 the hardware does the Network Access Layer. Ah, modern technology.
 
 So ends our brief foray into network theory. Oh yes, I forgot to tell you
 everything I wanted to say about routing: nothing! That's right, I'm not going
 to talk about it at all. The router strips the packet to the IP header,
-consults its routing table, \index{blah blah blah} _blah blah blah_. Check out
+consults its routing table, [ix[blah blah blah}]] _blah blah blah_. Check out
 the [IP
 RFC](https://tools.ietf.org/html/rfc791)^[https://tools.ietf.org/html/rfc791] if
 you really really care. If you never learn about it, well, you'll live.
@@ -666,7 +666,7 @@ you really really care. If you never learn about it, well, you'll live.
 Here's the part of the game where we get to talk code for a change.
 
 But first, let's discuss more non-code! Yay! First I want to talk about
-\index{IP} IP addresses and ports for just a tad so we have that sorted out.
+[ix[IP]] IP addresses and ports for just a tad so we have that sorted out.
 Then we'll talk about how the sockets API stores and manipulates IP addresses
 and other data.
 
@@ -675,7 +675,7 @@ and other data.
 
 In the good old days back when Ben Kenobi was still called Obi Wan Kenobi, there
 was a wonderful network routing system called The Internet Protocol Version 4,
-also called \index{IPv4} IPv4. It had addresses made up of four bytes (A.K.A.
+also called [ix[Pv4]] IPv4. It had addresses made up of four bytes (A.K.A.
 four "octets"), and was commonly written in "dots and numbers" form, like so:
 `192.0.2.111`.
 
@@ -688,7 +688,7 @@ by the name of Vint Cerf warned everyone that we were about to run out of IPv4
 addresses!
 
 (Besides warning everyone of the Coming IPv4 Apocalypse Of Doom And Gloom,
-\index{Vint Cerf} [Vint
+[ix[Vint Cerf]] [Vint
 Cerf](https://en.wikipedia.org/wiki/Vint_Cerf)^[https://en.wikipedia.org/wiki/Vint_Cerf]
 is also well-known for being The Father Of The Internet. So I really am in no
 position to second-guess his judgment.)
@@ -712,7 +712,7 @@ But now we're living in an era where we're talking about every human having an
 IP address, every computer, every calculator, every phone, every parking meter,
 and (why not) every puppy dog, as well.
 
-And so, \index{IPv6} IPv6 was born. Since Vint Cerf is probably immortal (even
+And so, [ix[IPv6]] IPv6 was born. Since Vint Cerf is probably immortal (even
 if his physical form should pass on, heaven forbid, he is probably already
 existing as some kind of hyper-intelligent
 [ELIZA](https://en.wikipedia.org/wiki/ELIZA)^[https://en.wikipedia.org/wiki/ELIZA]
@@ -856,7 +856,7 @@ And that's about it!
 
 ## Byte Order
 
-\index{byte ordering} By Order of the Realm! There shall be two byte orderings,
+[ix[byte ordering]] By Order of the Realm! There shall be two byte orderings,
 hereafter to be known as Lame and Magnificent!
 
 I joke, but one really is better than the other. `:-)`
@@ -906,7 +906,7 @@ You can use every combination of "n", "h", "s", and "l" you want, not counting
 the really stupid ones. For example, there is NOT a `stolh()` ("Short to Long
 Host") function---not at this party, anyway. But there are:
 
-\index{htons()@\texttt{htons()}}\index{htonl()@\texttt{htonl()}}\index{ntohs()@\texttt{ntohs()}}\index{ntohl()@\texttt{ntohl()}}
+[ixtt[htons()]] [ixtt[htonl()]] [ix[ntohs()]] [ix[ntohl()]]
 
 | Function  | Description                   |
 |-----------|-------------------------------|
@@ -932,7 +932,7 @@ Well, we're finally here. It's time to talk about programming. In this section,
 I'll cover various data types used by the sockets interface, since some of them
 are a real bear to figure out.
 
-First the easy one: a \index{socket descriptor} socket descriptor. A socket
+First the easy one: a [ix[socket descriptor]] socket descriptor. A socket
 descriptor is the following type:
 
 ```{.c}
@@ -943,8 +943,8 @@ Just a regular `int`.
 
 Things get weird from here, so just read through and bear with me.
 
-My First Struct™---`struct addrinfo`\index{struct addrinfo@\texttt{struct
-addrinfo}}. This structure is a more recent invention, and is used to prep the
+My First Struct™---`struct addrinfo`. [ixtt[struct addrinfo]]
+This structure is a more recent invention, and is used to prep the
 socket address structures for subsequent use. It's also used in host name
 lookups, and service name lookups. That'll make more sense later when we get to
 actual usage, but just know for now that it's one of the first things you'll
@@ -964,10 +964,9 @@ struct addrinfo {
 };
 ```
 
-You'll load this struct up a bit, and then call
-\index{getaddrinfo()@\texttt{getaddrinfo()}} `getaddrinfo()`. It'll return a
-pointer to a new linked list of these structures filled out with all the goodies
-you need.
+You'll load this struct up a bit, and then call [ixtt[getaddrinfo()]]
+`getaddrinfo()`. It'll return a pointer to a new linked list of these
+structures filled out with all the goodies you need.
 
 You can force it to use IPv4 or IPv6 in the `ai_family` field, or leave it as
 `AF_UNSPEC` to use whatever. This is cool because your code can be IP
@@ -979,9 +978,9 @@ worked, but you might have different business needs; I don't know everything,
 man!
 
 You'll see that the `ai_addr` field in the `struct addrinfo` is a pointer to a
-\index{struct sockaddr@\texttt{struct sockaddr}} `struct sockaddr`. This is
-where we start getting into the nitty-gritty details of what's inside an IP
-address structure.
+[ixtt[struct sockaddr]] `struct sockaddr`. This is where we start
+getting into the nitty-gritty details of what's inside an IP address
+structure.
 
 You might not usually need to write to these structures; oftentimes, a call to
 `getaddrinfo()` to fill out your `struct addrinfo` for you is all you'll need.
@@ -1006,16 +1005,15 @@ struct sockaddr {
 
 ```
 
-`sa_family` can be a variety of things, but it'll be
-\index{AF\_INET@\texttt{AF\_INET}} `AF_INET` (IPv4) or
-\index{AF\_INET6@\texttt{AF\_INET6}} `AF_INET6` (IPv6) for everything we do in
-this document. `sa_data` contains a destination address and port number for the
-socket. This is rather unwieldy since you don't want to tediously pack the
-address in the `sa_data` by hand.
+`sa_family` can be a variety of things, but it'll be [ixtt[AF\_INET]]
+`AF_INET` (IPv4) or [ixtt[AF\_INET6]] `AF_INET6` (IPv6) for everything
+we do in this document. `sa_data` contains a destination address and
+port number for the socket. This is rather unwieldy since you don't want
+to tediously pack the address in the `sa_data` by hand.
 
-To deal with `struct sockaddr`, programmers created a parallel structure:
-\index{struct sockaddr\_in@\texttt{struct sockaddr\_in}} `struct sockaddr_in`
-("in" for "Internet") to be used with IPv4.
+To deal with `struct sockaddr`, programmers created a parallel
+structure: [ixtt[struct sockaddr]] `struct sockaddr_in` ("in" for
+"Internet") to be used with IPv4.
 
 And _this is the important_ bit: a pointer to a `struct sockaddr_in` can be cast
 to a pointer to a `struct sockaddr` and vice-versa. So even though `connect()`
@@ -1034,13 +1032,13 @@ struct sockaddr_in {
 
 ```
 
-This structure makes it easy to reference elements of the socket address. Note
-that `sin_zero` (which is included to pad the structure to the length of a
-`struct sockaddr`) should be set to all zeros with the function `memset()`.
-Also, notice that `sin_family` corresponds to `sa_family` in a `struct sockaddr`
-and should be set to "`AF_INET`". Finally, the `sin_port` must be in \index{byte
-ordering} _Network Byte Order_ (by using \index{htons()@\texttt{htons()}}
-`htons()`!)
+This structure makes it easy to reference elements of the socket
+address. Note that `sin_zero` (which is included to pad the structure to
+the length of a `struct sockaddr`) should be set to all zeros with the
+function `memset()`.  Also, notice that `sin_family` corresponds to
+`sa_family` in a `struct sockaddr` and should be set to "`AF_INET`".
+Finally, the `sin_port` must be in [ix[byte ordering]] _Network Byte
+Order_ (by using [ixtt[htons()]] `htons()`!)
 
 Let's dig deeper! You see the `sin_addr` field is a `struct in_addr`. What is
 that thing? Well, not to be overly dramatic, but it's one of the scariest unions
@@ -1062,7 +1060,7 @@ Note that even if your system still uses the God-awful union for `struct
 in_addr`, you can still reference the 4-byte IP address in exactly the same way
 as I did above (this due to `#define`s).
 
-What about \index{IPv6} IPv6? Similar `struct`s exist for it, as well:
+What about [ix[IPv6]] IPv6? Similar `struct`s exist for it, as well:
 
 ```{.c}
 // (IPv6 only--see struct sockaddr_in and struct in_addr for IPv4)
@@ -1113,17 +1111,17 @@ wanna.
 ## IP Addresses, Part Deux
 
 Fortunately for you, there are a bunch of functions that allow you to manipulate
-\index{IP} IP addresses. No need to figure them out by hand and stuff them in a
+[ix[IP]] IP addresses. No need to figure them out by hand and stuff them in a
 `long` with the `<<` operator.
 
-First, let's say you have a `struct sockaddr_in ina`, and you have an IP address
-"`10.12.110.57`" or "`2001:db8:63b3:1::3490`" that you want to store into it.
-The function you want to use, \index{inet\_pton()@\texttt{inet\_pton()}}
-`inet_pton()`, converts an IP address in numbers-and-dots notation into either a
-`struct in_addr` or a `struct in6_addr` depending on whether you specify
-`AF_INET` or `AF_INET6`. ("`pton`" stands for "presentation to network"---you
-can call it "printable to network" if that's easier to remember.) The
-conversion can be made as follows:
+First, let's say you have a `struct sockaddr_in ina`, and you have an IP
+address "`10.12.110.57`" or "`2001:db8:63b3:1::3490`" that you want to
+store into it.  The function you want to use, [ixtt[inet\_pton()]]
+`inet_pton()`, converts an IP address in numbers-and-dots notation into
+either a `struct in_addr` or a `struct in6_addr` depending on whether
+you specify `AF_INET` or `AF_INET6`. ("`pton`" stands for "presentation
+to network"---you can call it "printable to network" if that's easier to
+remember.) The conversion can be made as follows:
 
 ```{.c}
 struct sockaddr_in sa; // IPv4
@@ -1134,21 +1132,22 @@ inet_pton(AF_INET6, "2001:db8:63b3:1::3490", &(sa6.sin6_addr)); // IPv6
 ```
 
 (Quick note: the old way of doing things used a function called
-\index{inet\_addr()@\texttt{inet\_addr()}} `inet_addr()` or another function
-called \index{inet\_aton()@\texttt{inet\_aton()}} `inet_aton()`; these are now
-obsolete and don't work with IPv6.)
+[ixtt[inet\_addr()]] `inet_addr()` or another function called
+[ixtt[inet\_aton()]] `inet_aton()`; these are now obsolete and don't
+work with IPv6.)
 
 Now, the above code snippet isn't very robust because there is no error
 checking. See, `inet_pton()` returns `-1` on error, or 0 if the address is
 messed up. So check to make sure the result is greater than 0 before using!
 
 All right, now you can convert string IP addresses to their binary
-representations. What about the other way around? What if you have a `struct
-in_addr` and you want to print it in numbers-and-dots notation?  (Or a `struct
-in6_addr` that you want in, uh, "hex-and-colons" notation.) In this case,
-you'll want to use the function \index{inet\_ntop()@\texttt{inet\_ntop()}}
-`inet_ntop()` ("ntop" means "network to presentation"---you can call it "network
-to printable" if that's easier to remember), like this:
+representations. What about the other way around? What if you have a
+`struct in_addr` and you want to print it in numbers-and-dots notation?
+(Or a `struct in6_addr` that you want in, uh, "hex-and-colons"
+notation.) In this case, you'll want to use the function
+[ixtt[inet\_ntop()]] `inet_ntop()` ("ntop" means "network to
+presentation"---you can call it "network to printable" if that's easier
+to remember), like this:
 
 ```{.c .numberLines}
 // IPv4:
@@ -1178,7 +1177,7 @@ largest IPv4 or IPv6 address: `INET_ADDRSTRLEN` and `INET6_ADDRSTRLEN`.)
 
 (Another quick note to mention once again the old way of doing things: the
 historical function to do this conversion was called
-\index{inet\_ntoa()@\texttt{inet\_ntoa()}} `inet_ntoa()`. It's also obsolete and
+[ixtt[inet\_ntoa()]] `inet_ntoa()`. It's also obsolete and
 won't work with IPv6.)
 
 Lastly, these functions only work with numeric IP addresses---they won't do any
@@ -1188,11 +1187,11 @@ nameserver DNS lookup on a hostname, like "`www.example.com`". You will use
 
 ### Private (Or Disconnected) Networks
 
-\index{private network} Lots of places have a \index{firewall} firewall that
+[ix[private network} Lots of places have a [ix[firewall]] firewall that
 hides the network from the rest of the world for their own protection. And often
 times, the firewall translates "internal" IP addresses to "external" (that
 everyone else in the world knows) IP addresses using a process called _Network
-Address Translation_, or \index{NAT} NAT.
+Address Translation_, or [ix[NAT]] NAT.
 
 Are you getting nervous yet? "Where's he going with all this weird stuff?"
 
@@ -1220,8 +1219,8 @@ fully disconnected networks, or on networks that are behind firewalls. The
 details of which private network numbers are available for you to use are
 outlined in [RFC
 1918](https://tools.ietf.org/html/rfc1918)^[https://tools.ietf.org/html/rfc1918],
-but some common ones you'll see are \index{10.x.x.x} `10.x.x.x` and
-\index{192.168.x.x} `192.168.x.x`, where `x` is 0-255, generally. Less common is
+but some common ones you'll see are [ix[10.x.x.x]] `10.x.x.x` and
+[ix[192.168.x.x]] `192.168.x.x`, where `x` is 0-255, generally. Less common is
 `172.y.x.x`, where `y` goes between 16 and 31.
 
 Networks behind a NATing firewall don't _need_ to be on one of these reserved
@@ -1231,7 +1230,7 @@ networks, but they commonly are.
 network is reserved for make-believe "real" IP addresses to be used in
 documentation, just like this guide! Wowzers!)
 
-\index{IPv6} IPv6 has private networks, too, in a sense. They'll start with
+[ix[IPv6]] IPv6 has private networks, too, in a sense. They'll start with
 `fdXX:` (or maybe in the future `fcXX:`), as per [RFC
 4193](https://tools.ietf.org/html/rfc4193)^[https://tools.ietf.org/html/rfc4193].
 NAT and IPv6 don't generally mix, however (unless you're doing the IPv6 to IPv4
@@ -1243,7 +1242,7 @@ won't route outside, this is how to do it.
 
 # Jumping from IPv4 to IPv6
 
-\index{IPv6} But I just want to know what to change in my code to get it going
+[ix[IPv6]] But I just want to know what to change in my code to get it going
 with IPv6! Tell me now!
 
 Ok! Ok!
@@ -1252,10 +1251,10 @@ Almost everything in here is something I've gone over, above, but it's the short
 version for the impatient. (Of course, there is more than this, but this is what
 applies to the guide.)
 
-1. First of all, try to use \index{getaddrinfo()@\texttt{getaddrinfo()}}
-   [`getaddrinfo()`](#structs) to get all the `struct sockaddr` info, instead of
-   packing the structures by hand. This will keep you IP version-agnostic, and
-   will eliminate many of the subsequent steps.
+1. First of all, try to use [ixtt[getaddrinfo()]]
+   [`getaddrinfo()`](#structs) to get all the `struct sockaddr` info,
+   instead of packing the structures by hand. This will keep you IP
+   version-agnostic, and will eliminate many of the subsequent steps.
 
 2. Any place that you find you're hard-coding anything related to the IP
    version, try to wrap up in a helper function.
@@ -1296,8 +1295,8 @@ applies to the guide.)
 10. Instead of `gethostbyname()`, use the superior `getaddrinfo()`.
 
 11. Instead of `gethostbyaddr()`, use the superior
-    \index{getnameinfo()@\texttt{getnameinfo()}} `getnameinfo()` (although
-    `gethostbyaddr()` can still work with IPv6).
+    [ixtt[getnameinfo()]] `getnameinfo()` (although `gethostbyaddr()`
+    can still work with IPv6).
 
 12. `INADDR_BROADCAST` no longer works. Use IPv6 multicast instead.
 
@@ -1306,14 +1305,12 @@ _Et voila_!
 
 # System Calls or Bust
 
-
 This is the section where we get into the system calls (and other
 library calls) that allow you to access the network functionality of a
 Unix box, or any box that supports the sockets API for that matter (BSD,
 Windows, Linux, Mac, what-have-you.) When you call one of these
 functions, the kernel takes over and does all the work for you
 automagically.
-
 
 The place most people get stuck around here is what order to call
 these things in. In that, the `man` pages are no use,
@@ -1322,12 +1319,10 @@ situation, I've tried to lay out the system calls in the following
 sections in _exactly_ (approximately) the same order
 that you'll need to call them in your programs.
 
-
 That, coupled with a few pieces of sample code here and there,
 some milk and cookies (which I fear you will have to supply yourself),
 and some raw guts and courage, and you'll be beaming data around the
 Internet like the Son of Jon Postel!
-
 
 _(Please note that for brevity, many code snippets below do not
 include necessary error checking. And they very commonly assume that
@@ -1339,9 +1334,9 @@ model.)_
 
 ## `getaddrinfo()`---Prepare to launch!
 
-\index{getaddrinfo()@\texttt{getaddrinfo()}} This is a real workhorse of a
-function with a lot of options, but usage is actually pretty simple. It helps
-set up the `struct`s you need later on.
+[ixtt[getaddrinfo()]] This is a real workhorse of a function with a lot
+of options, but usage is actually pretty simple. It helps set up the
+`struct`s you need later on.
 
 A tiny bit of history: it used to be that you would use a function called
 `gethostbyname()` to do DNS lookups. Then you'd load that information by hand
@@ -1546,7 +1541,7 @@ network connection established! Keep reading!
 ## `socket()`---Get the File Descriptor! {#socket}
 
 I guess I can put it off no longer---I have to talk about the
-\index{socket()@\texttt{socket()}} `socket()` system call. Here's the breakdown:
+[ixtt[socket()]] `socket()` system call. Here's the breakdown:
 
 ```{.c}
 #include <sys/types.h>
@@ -1565,18 +1560,18 @@ do that. (`domain` is `PF_INET` or `PF_INET6`, `type` is `SOCK_STREAM` or
 the given `type`. Or you can call `getprotobyname()` to look up the protocol you
 want, "tcp" or "udp".)
 
-(This `PF_INET` thing is a close relative of the
-\index{AF\_INET@\texttt{AF\_INET}} `AF_INET` that you can use when initializing
-the `sin_family` field in your `struct sockaddr_in`. In fact, they're so closely
-related that they actually have the same value, and many programmers will call
-`socket()` and pass `AF_INET` as the first argument instead of `PF_INET`. Now,
-get some milk and cookies, because it's time for a story. Once upon a time, a
-long time ago, it was thought that maybe an address family (what the "AF" in
-"`AF_INET`" stands for) might support several protocols that were referred to by
-their protocol family (what the "PF" in "`PF_INET`" stands for). That didn't
-happen. And they all lived happily ever after, The End. So the most correct
-thing to do is to use `AF_INET` in your `struct sockaddr_in` and `PF_INET` in
-your call to `socket()`.)
+(This `PF_INET` thing is a close relative of the [ixtt[AF\_INET]]
+`AF_INET` that you can use when initializing the `sin_family` field in
+your `struct sockaddr_in`. In fact, they're so closely related that they
+actually have the same value, and many programmers will call `socket()`
+and pass `AF_INET` as the first argument instead of `PF_INET`. Now, get
+some milk and cookies, because it's time for a story. Once upon a time,
+a long time ago, it was thought that maybe an address family (what the
+"AF" in "`AF_INET`" stands for) might support several protocols that
+were referred to by their protocol family (what the "PF" in "`PF_INET`"
+stands for). That didn't happen. And they all lived happily ever after,
+The End. So the most correct thing to do is to use `AF_INET` in your
+`struct sockaddr_in` and `PF_INET` in your call to `socket()`.)
 
 Anyway, enough of that. What you really want to do is use the values from the
 results of the call to `getaddrinfo()`, and feed them into `socket()` directly
@@ -1610,15 +1605,15 @@ make any sense.
 
 ## `bind()`---What port am I on? {#bind}
 
-\index{bind()@\texttt{bind()}} Once you have a socket, you might have to
-associate that socket with a \index{ports} port on your local machine. (This is
-commonly done if you're going to \index{listen()@\texttt{listen()}} `listen()`
-for incoming connections on a specific port---multiplayer network games do this
-when they tell you to "connect to 192.168.5.10 port 3490".) The port number is
-used by the kernel to match an incoming packet to a certain process's socket
-descriptor. If you're going to only be doing a
-\index{connect()@\texttt{connect()}} `connect()` (because you're the client, not
-the server), this is probably be unnecessary. Read it anyway, just for kicks.
+[ixtt[bind()]] Once you have a socket, you might have to associate that
+socket with a [ix[ports]] port on your local machine. (This is commonly
+done if you're going to [ixtt[listen()]] `listen()` for incoming
+connections on a specific port---multiplayer network games do this when
+they tell you to "connect to 192.168.5.10 port 3490".) The port number
+is used by the kernel to match an incoming packet to a certain process's
+socket descriptor. If you're going to only be doing a [ixtt[connect()]]
+`connect()` (because you're the client, not the server), this is
+probably be unnecessary. Read it anyway, just for kicks.
 
 Here is the synopsis for the `bind()` system call:
 
@@ -1632,7 +1627,7 @@ int bind(int sockfd, struct sockaddr *my_addr, int addrlen);
 
 `sockfd` is the socket file descriptor returned by `socket()`. `my_addr` is a
 pointer to a `struct sockaddr` that contains information about your address,
-namely, port and \index{IP} IP address. `addrlen` is the length in bytes of that
+namely, port and [ix[IP]] IP address. `addrlen` is the length in bytes of that
 address.
 
 Whew. That's a bit to absorb in one chunk. Let's have an example that binds the
@@ -1695,18 +1690,18 @@ assigned into the `sin6_addr` field of your `struct sockaddr_in6`. (There is
 also a macro `IN6ADDR_ANY_INIT` that you can use in a variable initializer.)
 
 Another thing to watch out for when calling `bind()`: don't go underboard with
-your port numbers. \index{ports} All ports below 1024 are RESERVED (unless
+your port numbers. [ix[ports]] All ports below 1024 are RESERVED (unless
 you're the superuser)! You can have any port number above that, right up to
 65535 (provided they aren't already being used by another program).
 
 Sometimes, you might notice, you try to rerun a server and `bind()` fails,
-claiming \index{Address already in use} "Address already in use." What does that
+claiming [ix[Address already in use]] "Address already in use." What does that
 mean? Well, a little bit of a socket that was connected is still hanging around
 in the kernel, and it's hogging the port. You can either wait for it to clear (a
 minute or so), or add code to your program allowing it to reuse the port, like
 this:
 
-\index{setsockopt()@\texttt{setsockopt()}}\index{SO\_REUSEADDR@\texttt{SO\_REUSEADDR}} 
+[ixtt[setsockopt()]] [ixtt[SO\_REUSEADDR]]
 
 ```{.c .numberLines}
 int yes=1;
@@ -1720,22 +1715,22 @@ if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
 
 ```
 
-\index{bind()@\texttt{bind()}!implicit} One small extra final note about
-`bind()`: there are times when you won't absolutely have to call it. If you are
-\index{connect()@\texttt{connect()}} `connect()`ing to a remote machine and you
-don't care what your local port is (as is the case with `telnet` where you only
-care about the remote port), you can simply call `connect()`, it'll check to see
-if the socket is unbound, and will `bind()` it to an unused local port if
-necessary.
+[ixtt[bind()]] One small extra final note about `bind()`: there are
+times when you won't absolutely have to call it. If you are
+[ixtt[connect()]] `connect()`ing to a remote machine and you don't care
+what your local port is (as is the case with `telnet` where you only
+care about the remote port), you can simply call `connect()`, it'll
+check to see if the socket is unbound, and will `bind()` it to an unused
+local port if necessary.
 
 
 ## `connect()`---Hey, you! {#connect}
 
-\index{connect()@\texttt{connect()}} Let's just pretend for a few minutes that
-you're a telnet application. Your user commands you (just like in the movie
-\index{TRON} _TRON_) to get a socket file descriptor. You comply and call
-`socket()`. Next, the user tells you to connect to "`10.12.110.57`" on port
-"`23`" (the standard telnet port). Yow! What do you do now?
+[ixtt[connect()]] Let's just pretend for a few minutes that you're a
+telnet application. Your user commands you (just like in the movie
+[ix[TRON]] _TRON_) to get a socket file descriptor. You comply and call
+`socket()`. Next, the user tells you to connect to "`10.12.110.57`" on
+port "`23`" (the standard telnet port). Yow! What do you do now?
 
 Lucky for you, program, you're now perusing the section on `connect()`---how to
 connect to a remote host. So read furiously onward! No time to lose!
@@ -1790,20 +1785,22 @@ Again, old-school programs filled out their own `struct sockaddr_in`s to pass to
 Be sure to check the return value from `connect()`---it'll return `-1` on error
 and set the variable `errno`.
 
-\index{bind()@\texttt{bind()}!implicit} Also, notice that we didn't call
-`bind()`. Basically, we don't care about our local port number; we only care
-where we're going (the remote port). The kernel will choose a local port for us,
-and the site we connect to will automatically get this information from us. No
-worries.
+<!-- latex index here so we can get the subindex entry after the tt -->
+[ix[bind()@\texttt{bind()}!implicit]]
+
+Also, notice that we didn't call `bind()`. Basically, we don't care
+about our local port number; we only care where we're going (the remote
+port). The kernel will choose a local port for us, and the site we
+connect to will automatically get this information from us. No worries.
 
 
 ## `listen()`---Will somebody please call me? {#listen}
 
-\index{listen()@\texttt{listen()}} Ok, time for a change of pace. What if you
-don't want to connect to a remote host. Say, just for kicks, that you want to
-wait for incoming connections and handle them in some way. The process is two
-step: first you `listen()`, then you \index{accept()@\texttt{accept()}}
-`accept()` (see below).
+[ixtt[listen()]] Ok, time for a change of pace. What if you don't want
+to connect to a remote host. Say, just for kicks, that you want to wait
+for incoming connections and handle them in some way. The process is two
+step: first you `listen()`, then you [ixtt[accept()]] `accept()` (see
+below).
 
 
 The listen call is fairly simple, but requires a bit of explanation:
@@ -1813,13 +1810,13 @@ int listen(int sockfd, int backlog);
 
 ```
 
-`sockfd` is the usual socket file descriptor from the `socket()` system call.
-\index{listen()@\texttt{listen()}!backlog} `backlog` is the number of
-connections allowed on the incoming queue. What does that mean? Well, incoming
-connections are going to wait in this queue until you `accept()` them (see
-below) and this is the limit on how many can queue up. Most systems silently
-limit this number to about 20; you can probably get away with setting it to `5`
-or `10`.
+`sockfd` is the usual socket file descriptor from the `socket()` system
+call.  [ix[listen()@\texttt{listen()}!backlog]] `backlog` is the number
+of connections allowed on the incoming queue. What does that mean? Well,
+incoming connections are going to wait in this queue until you
+`accept()` them (see below) and this is the limit on how many can queue
+up. Most systems silently limit this number to about 20; you can
+probably get away with setting it to `5` or `10`.
 
 Again, as per usual, `listen()` returns `-1` and sets `errno` on error.
 
@@ -1844,15 +1841,16 @@ The really tricky part of this whole sha-bang is the call to `accept()`.
 
 ## `accept()`---"Thank you for calling port 3490."
 
-\index{accept()@\texttt{accept()}} Get ready---the `accept()` call is kinda
-weird! What's going to happen is this: someone far far away will try to
-`connect()` to your machine on a port that you are `listen()`ing on. Their
-connection will be queued up waiting to be `accept()`ed. You call `accept()` and
-you tell it to get the pending connection. It'll return to you a _brand new
-socket file descriptor_ to use for this single connection! That's right,
-suddenly you have _two socket file descriptors_ for the price of one! The
-original one is still listening for more new connections, and the newly created
-one is finally ready to `send()` and `recv()`. We're there! 
+[ixtt[accept()]] Get ready---the `accept()` call is kinda weird! What's
+going to happen is this: someone far far away will try to `connect()` to
+your machine on a port that you are `listen()`ing on. Their connection
+will be queued up waiting to be `accept()`ed. You call `accept()` and
+you tell it to get the pending connection. It'll return to you a _brand
+new socket file descriptor_ to use for this single connection! That's
+right, suddenly you have _two socket file descriptors_ for the price of
+one! The original one is still listening for more new connections, and
+the newly created one is finally ready to `send()` and `recv()`. We're
+there! 
 
 The call is as follows:
 
@@ -1936,7 +1934,7 @@ datagram sockets. If you want to use regular unconnected datagram sockets,
 you'll need to see the section on [`sendto()` and `recvfrom()`](#sendtorecv),
 below.
 
-\index{send()@\texttt{send()}} The `send()` call:
+[ixtt[send()]] The `send()` call:
 
 ```{.c}
 int send(int sockfd, const void *msg, int len, int flags); 
@@ -1974,7 +1972,7 @@ the rest of the string. The good news is this: if the packet is small (less than
 1K or so) it will _probably_ manage to send the whole thing all in one go.
 Again, `-1` is returned on error, and `errno` is set to the error number.
 
-\index{recv()@\texttt{recv()}} The `recv()` call is similar in many respects:
+[ixtt[recv()]] The `recv()` call is similar in many respects:
 
 ```{.c}
 int recv(int sockfd, void *buf, int len, int flags);
@@ -1997,9 +1995,9 @@ sockets! Whee! You're a Unix Network Programmer!
 
 ## `sendto()` and `recvfrom()`---Talk to me, DGRAM-style {#sendtorecv}
 
-\index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} "This is all fine and dandy," I hear
-you saying, "but where does this leave me with unconnected datagram sockets?"
-No problemo, amigo. We have just the thing.
+[ixtt[SOCK\_DGRAM]] "This is all fine and dandy," I hear you saying,
+"but where does this leave me with unconnected datagram sockets?" No
+problemo, amigo. We have just the thing.
 
 Since datagram sockets aren't connected to a remote host, guess which piece of
 information we need to give before we send a packet? That's right! The
@@ -2014,7 +2012,7 @@ As you can see, this call is basically the same as the call to `send()` with the
 addition of two other pieces of information. `to` is a pointer to a `struct
 sockaddr` (which will probably be another `struct sockaddr_in` or `struct
 sockaddr_in6` or `struct sockaddr_storage` that you cast at the last minute)
-which contains the destination \index{IP} IP address and \index{port} port.
+which contains the destination [ix[IP} IP address and [ix[port]] port.
 `tolen`, an `int` deep-down, can simply be set to `sizeof *to` or `sizeof(struct
 sockaddr_storage)`.
 
@@ -2026,21 +2024,21 @@ Just like with `send()`, `sendto()` returns the number of bytes actually sent
 (which, again, might be less than the number of bytes you told it to send!), or
 `-1` on error.
 
-Equally similar are `recv()` and \index{recvfrom()@\texttt{recvfrom()}}
-`recvfrom()`. The synopsis of `recvfrom()` is:
+Equally similar are `recv()` and [ixtt[recvfrom()]] `recvfrom()`. The
+synopsis of `recvfrom()` is:
 
 ```{.c}
 int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
              struct sockaddr *from, int *fromlen); 
 ```
 
-Again, this is just like `recv()` with the addition of a couple fields. `from`
-is a pointer to a local \index{struct sockaddr@\texttt{struct sockaddr}} `struct
-sockaddr_storage` that will be filled with the IP address and port of the
-originating machine. `fromlen` is a pointer to a local `int` that should be
-initialized to `sizeof *from` or `sizeof(struct sockaddr_storage)`. When the
-function returns, `fromlen` will contain the length of the address actually
-stored in `from`.
+Again, this is just like `recv()` with the addition of a couple fields.
+`from` is a pointer to a local [ix[struct sockaddr]] `struct
+sockaddr_storage` that will be filled with the IP address and port of
+the originating machine. `fromlen` is a pointer to a local `int` that
+should be initialized to `sizeof *from` or `sizeof(struct
+sockaddr_storage)`. When the function returns, `fromlen` will contain
+the length of the address actually stored in `from`.
 
 `recvfrom()` returns the number of bytes received, or `-1` on error (with
 `errno` set accordingly).
@@ -2056,7 +2054,7 @@ the general-purpose `struct sockaddr`! Seems extraneous and redundant, huh. The
 answer is, it just isn't big enough, and I'd guess that changing it at this
 point would be Problematic. So they made a new one.)
 
-Remember, if you \index{connect()@\texttt{connect()}!on datagram sockets}
+Remember, if you [ix[connect()@\texttt{connect()}!on datagram sockets]]
 `connect()` a datagram socket, you can then simply use `send()` and `recv()` for
 all your transactions. The socket itself is still a datagram socket and the
 packets still use UDP, but the socket interface will automatically add the
@@ -2065,10 +2063,10 @@ destination and source information for you.
 
 ## `close()` and `shutdown()`---Get outta my face!
 
-Whew! You've been `send()`ing and `recv()`ing data all day long, and you've had
-it. You're ready to close the connection on your socket descriptor. This is
-easy. You can just use the regular Unix file descriptor
-\index{close()@\texttt{close()}} `close()` function:
+Whew! You've been `send()`ing and `recv()`ing data all day long, and
+you've had it. You're ready to close the connection on your socket
+descriptor. This is easy. You can just use the regular Unix file
+descriptor [ixtt[close()]] `close()` function:
 
 ```{.c}
 close(sockfd); 
@@ -2078,9 +2076,9 @@ close(sockfd);
 This will prevent any more reads and writes to the socket. Anyone attempting to
 read or write the socket on the remote end will receive an error.
 
-Just in case you want a little more control over how the socket closes, you can
-use the \index{shutdown()@\texttt{shutdown()}} `shutdown()` function. It allows
-you to cut off communication in a certain direction, or both ways (just like
+Just in case you want a little more control over how the socket closes,
+you can use the [ixtt[shutdown()]] `shutdown()` function. It allows you
+to cut off communication in a certain direction, or both ways (just like
 `close()` does). Synopsis:
 
 ```{.c}
@@ -2110,15 +2108,14 @@ to use `close()`.
 
 Nothing to it.
 
-(Except to remember that if you're using \index{Windows} Windows and
-\index{Winsock} Winsock that you should call
-\index{closesocket()@\texttt{closesocket()}} `closesocket()` instead of
-`close()`.)
+(Except to remember that if you're using [ix[Windows]] Windows and
+[ix[Winsock]] Winsock that you should call [ixtt[closesocket()]]
+`closesocket()` instead of `close()`.)
 
 
 ## `getpeername()`---Who are you?
 
-\index{getpeername()@\texttt{getpeername()}} This function is so easy.
+[ixtt[getpeername()]] This function is so easy.
 
 It's so easy, I almost didn't give it its own section. But here it is anyway.
 
@@ -2140,24 +2137,23 @@ sockaddr)`.
 
 The function returns `-1` on error and sets `errno` accordingly.
 
-Once you have their address, you can use
-\index{inet\_ntop()@\texttt{inet\_ntop()}} `inet_ntop()`,
-\index{getnameinfo()@\texttt{getnameinfo()}} `getnameinfo()`, or
-\index{gethostbyaddr()@\texttt{gethostbyaddr()}} `gethostbyaddr()` to print or
-get more information. No, you can't get their login name. (Ok, ok. If the other
-computer is running an ident daemon, this is possible. This, however, is beyond
-the scope of this document. Check out [RFC
+Once you have their address, you can use [ixtt[inet\_ntop()]]
+`inet_ntop()`, [ixtt[getnameinfo()]] `getnameinfo()`, or
+[ixtt[gethostbyaddr()]] `gethostbyaddr()` to print or get more
+information. No, you can't get their login name. (Ok, ok. If the other
+computer is running an ident daemon, this is possible. This, however, is
+beyond the scope of this document. Check out [RFC
 1413](https://tools.ietf.org/html/rfc1413)^[https://tools.ietf.org/html/rfc1413]
 for more info.)
 
 
 ## `gethostname()`---Who am I?
 
-\index{gethostname()@\texttt{gethostname()}} Even easier than `getpeername()` is
-the function `gethostname()`. It returns the name of the computer that your
-program is running on. The name can then be used by
-\index{gethostbyname()@\texttt{gethostbyname()}} `gethostbyname()`, below, to
-determine the \index{IP} IP address of your local machine.
+[ixtt[gethostname()]] Even easier than `getpeername()` is the function
+`gethostname()`. It returns the name of the computer that your program
+is running on. The name can then be used by [ixtt[gethostbyname()]]
+`gethostbyname()`, below, to determine the [ix[IP]] IP address of your
+local machine.
 
 What could be more fun? I could think of a few things, but they don't pertain to
 socket programming. Anyway, here's the breakdown:
@@ -2179,7 +2175,7 @@ The function returns `0` on successful completion, and `-1` on error, setting
 
 # Client-Server Background
 
-\index{client/server} It's a client-server world, baby. Just about everything on
+[ix[client/server]] It's a client-server world, baby. Just about everything on
 the network deals with client processes talking to server processes and
 vice-versa. Take `telnet`, for instance. When you connect to a remote host on
 port 23 with telnet (the client), a program on that host (called `telnetd`, the
@@ -2197,16 +2193,16 @@ of client-server pairs are `telnet`/`telnetd`, `ftp`/`ftpd`, or
 `Firefox`/`Apache`. Every time you use `ftp`, there's a remote program, `ftpd`,
 that serves you.
 
-Often, there will only be one server on a machine, and that server will handle
-multiple clients using \index{fork()@\texttt{fork()}} `fork()`. The basic
-routine is: server will wait for a connection, `accept()` it, and `fork()` a
-child process to handle it. This is what our sample server does in the next
-section.
+Often, there will only be one server on a machine, and that server will
+handle multiple clients using [ixtt[fork()]] `fork()`. The basic routine
+is: server will wait for a connection, `accept()` it, and `fork()` a
+child process to handle it. This is what our sample server does in the
+next section.
 
 
 ## A Simple Stream Server
 
-\index{server!stream} All this server does is send the string "`Hello, world!`"
+[ix[server!stream]] All this server does is send the string "`Hello, world!`"
 out over a stream connection. All you need to do to test this server is run it
 in one window, and telnet to it from another with:
 
@@ -2358,11 +2354,11 @@ In case you're curious, I have the code in one big `main()` function for (I
 feel) syntactic clarity. Feel free to split it into smaller functions if it
 makes you feel better.
 
-(Also, this whole \index{sigaction()@\texttt{sigaction()}} `sigaction()` thing
-might be new to you---that's ok. The code that's there is responsible for reaping
-\index{zombie process} zombie processes that appear as the `fork()`ed child
-processes exit. If you make lots of zombies and don't reap them, your system
-administrator will become agitated.)
+(Also, this whole [ixtt[sigaction()]] `sigaction()` thing might be new
+to you---that's ok. The code that's there is responsible for reaping
+[ix[zombie process]] zombie processes that appear as the `fork()`ed
+child processes exit. If you make lots of zombies and don't reap them,
+your system administrator will become agitated.)
 
 You can get the data from this server by using the client listed in the next
 section.
@@ -2370,7 +2366,7 @@ section.
 
 ## A Simple Stream Client
 
-\index{client!stream} This guy's even easier than the server. All
+[ix[client!stream]] This guy's even easier than the server. All
 this client does is connect to the host you specify on the command line,
 port 3490. It gets the string that the server sends.
 
@@ -2474,7 +2470,7 @@ int main(int argc, char *argv[])
 ```
 
 Notice that if you don't run the server before you run the client, `connect()`
-returns \index{Connection refused} "Connection refused". Very useful.
+returns [ix[Connection refused]] "Connection refused". Very useful.
 
 
 ## Datagram Sockets {#datagram}
@@ -2483,7 +2479,7 @@ We've already covered the basics of UDP datagram sockets with our discussion of
 `sendto()` and `recvfrom()`, above, so I'll just present a couple of sample
 programs: `talker.c` and `listener.c`.
 
-\index{server!datagram} `listener` sits on a machine waiting for an incoming
+[ix[server!datagram]] `listener` sits on a machine waiting for an incoming
 packet on port 4950. `talker` sends a packet to that port, on the specified
 machine, that contains whatever the user enters on the command line.
 
@@ -2592,7 +2588,7 @@ Notice that in our call to `getaddrinfo()` we're finally using `SOCK_DGRAM`.
 Also, note that there's no need to `listen()` or `accept()`. This is one of the
 perks of using unconnected datagram sockets!
 
-\index{client!datagram} Next comes the [source for
+[ix[client!datagram]] Next comes the [source for
 `talker.c`](https://beej.us/guide/bgnet/examples/talker.c)^[https://beej.us/guide/bgnet/examples/talker.c]:
 
 ```{.c .numberLines}
@@ -2675,7 +2671,7 @@ one is ready with a `recvfrom()` on the other side. Remember: data sent using
 UDP datagram sockets isn't guaranteed to arrive!
 
 Except for one more tiny detail that I've mentioned many times in the past:
-\index{connect()@\texttt{connect()}!on datagram sockets} connected datagram
+[ix[connect()@\texttt{connect()}!on datagram sockets]] connected datagram
 sockets. I need to talk about this here, since we're in the datagram section of
 the document. Let's say that `talker` calls `connect()` and specifies the
 `listener`'s address. From that point on, `talker` may only sent to and receive
@@ -2696,17 +2692,17 @@ might want to learn about sockets. Have at it!
 
 ## Blocking {#blocking}
 
-\index{blocking} Blocking. You've heard about it---now what the heck is it? In a
+[ix[blocking]] Blocking. You've heard about it---now what the heck is it? In a
 nutshell, "block" is techie jargon for "sleep". You probably noticed that when
 you run `listener`, above, it just sits there until a packet arrives. What
 happened is that it called `recvfrom()`, there was no data, and so `recvfrom()`
 is said to "block" (that is, sleep there) until some data arrives.
 
-Lots of functions block. `accept()` blocks. All the `recv()` functions block.
-The reason they can do this is because they're allowed to. When you first create
-the socket descriptor with `socket()`, the kernel sets it to blocking.
-\index{non-blocking sockets} If you don't want a socket to be blocking, you have
-to make a call to \index{fcntl()@\texttt{fcntl()}} `fcntl()`:
+Lots of functions block. `accept()` blocks. All the `recv()` functions
+block.  The reason they can do this is because they're allowed to. When
+you first create the socket descriptor with `socket()`, the kernel sets
+it to blocking.  [ix[non-blocking sockets]] If you don't want a socket
+to be blocking, you have to make a call to [ixtt[fcntl()]] `fcntl()`:
 
 ```{.c .numberLines}
 #include <unistd.h>
@@ -2722,30 +2718,30 @@ fcntl(sockfd, F_SETFL, O_NONBLOCK);
 
 ```
 
-By setting a socket to non-blocking, you can effectively "poll" the socket for
-information. If you try to read from a non-blocking socket and there's no data
-there, it's not allowed to block---it will return `-1` and `errno` will be set to
-\index{EAGAIN@\texttt{EAGAIN}} `EAGAIN` or
-\index{EWOULDBLOCK@\texttt{EWOULDBLOCK}} `EWOULDBLOCK`.
+By setting a socket to non-blocking, you can effectively "poll" the
+socket for information. If you try to read from a non-blocking socket
+and there's no data there, it's not allowed to block---it will return
+`-1` and `errno` will be set to [ixtt[EAGAIN@]] `EAGAIN` or
+[ixtt[EWOULDBLOCK]] `EWOULDBLOCK`.
 
-(Wait---it can return \index{EAGAIN@\texttt{EAGAIN}} `EAGAIN` _or_
-\index{EWOULDBLOCK@\texttt{EWOULDBLOCK}} `EWOULDBLOCK`? Which do you check for?
-The specification doesn't actually specify which your system will return, so for
-portability, check them both.)
+(Wait---it can return [ixtt[EAGAIN]] `EAGAIN` _or_ [ixtt[EWOULDBLOCK]]
+`EWOULDBLOCK`? Which do you check for?  The specification doesn't
+actually specify which your system will return, so for portability,
+check them both.)
 
-Generally speaking, however, this type of polling is a bad idea. If you put your
-program in a busy-wait looking for data on the socket, you'll suck up CPU time
-like it was going out of style. A more elegant solution for checking to see if
-there's data waiting to be read comes in the following section on
-\index{poll()@\texttt{poll()}} `poll()`.
+Generally speaking, however, this type of polling is a bad idea. If you
+put your program in a busy-wait looking for data on the socket, you'll
+suck up CPU time like it was going out of style. A more elegant solution
+for checking to see if there's data waiting to be read comes in the
+following section on [ixtt[poll()]] `poll()`.
 
 
 ## `poll()`---Synchronous I/O Multiplexing {#poll}
 
-\index{poll()@\texttt{poll()}} What you really want to be able to do is
-somehow monitor a _bunch_ of sockets at once and then handle the ones
-that have data ready. This way you don't have to continously poll all
-those sockets to see which are ready to read.
+[ixtt[poll()]] What you really want to be able to do is somehow monitor
+a _bunch_ of sockets at once and then handle the ones that have data
+ready. This way you don't have to continously poll all those sockets to
+see which are ready to read.
 
 > _A word of warning: `poll()` is horribly slow when it comes to giant
 > numbers of connections. In those circumstances, you'll get better
@@ -3123,10 +3119,10 @@ system.
 
 ## `select()`---Synchronous I/O Multiplexing, Old School {#select}
 
-\index{select()@\texttt{select()}} This function is somewhat strange, but it's
-very useful. Take the following situation: you are a server and you want to
-listen for incoming connections as well as keep reading from the connections you
-already have.
+[ixtt[select()]] This function is somewhat strange, but it's very
+useful. Take the following situation: you are a server and you want to
+listen for incoming connections as well as keep reading from the
+connections you already have.
 
 No problem, you say, just an `accept()` and a couple of `recv()`s. Not so fast,
 buster! What if you're blocking on an `accept()` call? How are you going to
@@ -3170,7 +3166,7 @@ macro `FD_ISSET()`, below.
 Before progressing much further, I'll talk about how to manipulate these sets.
 Each set is of the type `fd_set`. The following macros operate on this type:
 
-\index{FD\_SET()@\texttt{FD\_SET()}}\index{FD\_CLR()@\texttt{FD\_CLR()}}\index{FD\_ISSET()@\texttt{FD\_ISSET()}}\index{FD\_ZERO()@\texttt{FD\_ZERO()}}
+[ixtt[FD\_SET()]] [ixtt[FD\_CLR()]] [ixtt[FD\_ISSET()]] [ixtt[FD\_ZERO()]]
 
 | Function                         | Description                          |
 |----------------------------------|--------------------------------------|
@@ -3179,12 +3175,13 @@ Each set is of the type `fd_set`. The following macros operate on this type:
 | `FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`. |
 | `FD_ZERO(fd_set *set);`          | Clear all entries from the `set`.    |
 
-Finally, what is this weirded out \index{struct timeval@\texttt{struct timeval}}
-`struct timeval`? Well, sometimes you don't want to wait forever for someone to
-send you some data. Maybe every 96 seconds you want to print "Still Going..." to
-the terminal even though nothing has happened. This time structure allows you to
-specify a timeout period. If the time is exceeded and `select()` still hasn't
-found any ready file descriptors, it'll return so you can continue processing.
+Finally, what is this weirded out [ixtt[struct timeval]] `struct
+timeval`? Well, sometimes you don't want to wait forever for someone to
+send you some data. Maybe every 96 seconds you want to print "Still
+Going..." to the terminal even though nothing has happened. This time
+structure allows you to specify a timeout period. If the time is
+exceeded and `select()` still hasn't found any ready file descriptors,
+it'll return so you can continue processing.
 
 The `struct timeval` has the follow fields:
 
@@ -3263,11 +3260,11 @@ socket---and you are right: it _might_ be. Some Unices can use select in this
 manner, and some can't. You should see what your local man page says on the
 matter if you want to attempt it.
 
-Some Unices update the time in your `struct timeval` to reflect the amount of
-time still remaining before a timeout. But others do not. Don't rely on that
-occurring if you want to be portable. (Use
-\index{gettimeofday()@\texttt{gettimeofday()}} `gettimeofday()` if you need to
-track time elapsed. It's a bummer, I know, but that's the way it is.)
+Some Unices update the time in your `struct timeval` to reflect the
+amount of time still remaining before a timeout. But others do not.
+Don't rely on that occurring if you want to be portable. (Use
+[ixtt[gettimeofday()]] `gettimeofday()` if you need to track time
+elapsed. It's a bummer, I know, but that's the way it is.)
 
 What happens if a socket in the read set closes the connection? Well, in that
 case, `select()` returns with that socket descriptor set as "ready to read".
@@ -3275,8 +3272,8 @@ When you actually do `recv()` from it, `recv()` will return `0`. That's how you
 know the client has closed the connection.
 
 One more note of interest about `select()`: if you have a socket that is
-\index{select()@\texttt{select()}!with listen()@with \texttt{listen()}}
-\index{listen()@\texttt{listen()}!with select()@with \texttt{select()}}
+[ix[select()@\texttt{select()}!with listen()@with \texttt{listen()}]]
+[ix[listen()@\texttt{listen()}!with select()@with \texttt{select()}]]
 `listen()`ing, you can check to see if there is a new connection by putting that
 socket's file descriptor in the `readfds` set.
 
@@ -3486,17 +3483,17 @@ function.
 
 Quick note to all you Linux fans out there: sometimes, in rare circumstances,
 Linux's `select()` can return "ready-to-read" and then not actually be ready to
-read! This means it will block on the `read()` after the `select()` says it
-won't! Why you little---! Anyway, the workaround solution is to set the
-\index{O\_NONBLOCK@\texttt{O\_NONBLOCK}} `O_NONBLOCK` flag on the receiving
-socket so it errors with `EWOULDBLOCK` (which you can just safely ignore if it
-occurs). See the [`fcntl()` reference page](#fcntlman) for more info on setting
-a socket to non-blocking.
+read! This means it will block on the `read()` after the `select()` says
+it won't! Why you little---! Anyway, the workaround solution is to set
+the [ixtt[O\_NONBLOCK]] `O_NONBLOCK` flag on the receiving socket so it
+errors with `EWOULDBLOCK` (which you can just safely ignore if it
+occurs). See the [`fcntl()` reference page](#fcntlman) for more info on
+setting a socket to non-blocking.
 
-In addition, here is a bonus afterthought: there is another function called
-\index{poll()@\texttt{poll()}} `poll()` which behaves much the same way
-`select()` does, but with a different system for managing the file descriptor
-sets. [Check it out!](#pollman)
+In addition, here is a bonus afterthought: there is another function
+called [ixtt[poll()]] `poll()` which behaves much the same way
+`select()` does, but with a different system for managing the file
+descriptor sets. [Check it out!](#pollman)
 
 
 ## Handling Partial `send()`s {#sendall}
@@ -3509,8 +3506,7 @@ Well, they're still in your little buffer waiting to be sent out. Due to
 circumstances beyond your control, the kernel decided not to send all the data
 out in one chunk, and now, my friend, it's up to you to get the data out there.
 
-\index{sendall()@\texttt{sendall()}} You could write a function like this to do
-it, too:
+[ixtt[sendall()]] You could write a function like this to do it, too:
 
 ```{.c .numberLines}
 #include <sys/types.h>
@@ -3562,15 +3558,15 @@ if (sendall(s, buf, &len) == -1) {
 
 What happens on the receiver's end when part of a packet arrives? If the packets
 are variable length, how does the receiver know when one packet ends and another
-begins? Yes, real-world scenarios are a royal pain in the \index{donkeys}
-donkeys. You probably have to \index{data encapsulation} _encapsulate_ (remember
+begins? Yes, real-world scenarios are a royal pain in the [ix[donkeys]]
+donkeys. You probably have to [ix[data encapsulation]] _encapsulate_ (remember
 that from the [data encapsulation section](#lowlevel) way back there at the
 beginning?)  Read on for details!
 
 
 ## Serialization---How to Pack Data {#serialization}
 
-\index{serialization} It's easy enough to send text data across the network,
+[ix[serialization]] It's easy enough to send text data across the network,
 you're finding, but what happens if you want to send some "binary" data like
 `int`s or `float`s? It turns out you have a few options.
 
@@ -3604,7 +3600,7 @@ some of the drawbacks and advantages to the other two.
 The first method, encoding the numbers as text before sending, has the advantage
 that you can easily print and read the data that's coming over the wire.
 Sometimes a human-readable protocol is excellent to use in a
-non-bandwidth-intensive situation, such as with \index{IRC} [Internet Relay Chat
+non-bandwidth-intensive situation, such as with [ix[IRC]] [Internet Relay Chat
 (IRC)](https://en.wikipedia.org/wiki/Internet_Relay_Chat)^[https://en.wikipedia.org/wiki/Internet_Relay_Chat].
 However, it has the disadvantage that it is slow to convert, and the results
 almost always take up more space than the original number!
@@ -3631,10 +3627,10 @@ represent a `double` (or `int` for that matter) with the same bit representation
 or even the same byte ordering! The code is decidedly non-portable. (Hey---maybe
 you don't need portability, in which case this is nice and fast.)
 
-When packing integer types, we've already seen how the
-\index{htons()@\texttt{htons()}} `htons()`-class of functions can help keep
-things portable by transforming the numbers into \index{byte ordering} Network
-Byte Order, and how that's the Right Thing to do. Unfortunately, there are no
+When packing integer types, we've already seen how the [ixtt[htons()]]
+`htons()`-class of functions can help keep things portable by
+transforming the numbers into [ix[byte ordering]] Network Byte Order,
+and how that's the Right Thing to do. Unfortunately, there are no
 similar functions for `float` types. Is all hope lost?
 
 Fear not! (Were you afraid there for a second? No? Not even a little bit?)
@@ -3718,7 +3714,7 @@ in the above example that the last couple decimal places are not correctly
 preserved.
 
 What can we do instead? Well, _The_ Standard for storing floating point numbers
-is known as \index{IEEE-754}
+is known as [ix[IEEE-754]]
 [IEEE-754](https://en.wikipedia.org/wiki/IEEE_754)^[https://en.wikipedia.org/wiki/IEEE_754].
 Most computers use this format internally for doing floating point math, so in
 those cases, strictly speaking, conversion wouldn't need to be done. But if you
@@ -4335,7 +4331,7 @@ general set of data packing routines for the sake of keeping bugs in check,
 rather than packing each bit by hand each time.
 
 When packing the data, what's a good format to use? Excellent question.
-Fortunately, \index{XDR} [RFC
+Fortunately, [ix[XDR]] [RFC
 4506](https://tools.ietf.org/html/rfc4506)^[https://tools.ietf.org/html/rfc4506],
 the External Data Representation Standard, already defines binary formats for a
 bunch of different types, like floating point types, integer types, arrays, raw
@@ -4375,11 +4371,11 @@ stream looks like this:
 t o m H i B e n j a m i n H e y g u y s w h a t i s u p ?
 ```
 
-And so on. How does the client know when one message starts and another stops?
-You could, if you wanted, make all messages the same length and just call the
-\index{sendall()@\texttt{sendall()}} `sendall()` we implemented,
-[above](#sendall). But that wastes bandwidth! We don't want to `send()` 1024
-bytes just so "tom" can say "Hi".
+And so on. How does the client know when one message starts and another
+stops?  You could, if you wanted, make all messages the same length and
+just call the [ixtt[sendall()]] `sendall()` we implemented,
+[above](#sendall). But that wastes bandwidth! We don't want to `send()`
+1024 bytes just so "tom" can say "Hi".
 
 So we _encapsulate_ the data in a tiny header and packet structure. Both the
 client and server know how to pack and unpack (sometimes referred to as
@@ -4490,7 +4486,7 @@ discussion on circular buffers is beyond the scope of this article. If you're
 still curious, grab a data structures book and go from there.)
 
 I never said it was easy. Ok, I did say it was easy. And it is; you just need
-practice and pretty soon it'll come to you naturally. By \index{Excalibur}
+practice and pretty soon it'll come to you naturally. By [ix[Excalibur]]
 Excalibur I swear it!
 
 
@@ -4500,18 +4496,18 @@ So far, this guide has talked about sending data from one host to one other
 host. But it is possible, I insist, that you can, with the proper authority,
 send data to multiple hosts _at the same time_!
 
-With \index{UDP} UDP (only UDP, not TCP) and standard IPv4, this is done through
-a mechanism called \index{broadcast} _broadcasting_. With IPv6, broadcasting
+With [ix[UDP]] UDP (only UDP, not TCP) and standard IPv4, this is done through
+a mechanism called [ix[broadcast]] _broadcasting_. With IPv6, broadcasting
 isn't supported, and you have to resort to the often superior technique of
 _multicasting_, which, sadly I won't be discussing at this time. But enough of
 the starry-eyed future---we're stuck in the 32-bit present.
 
-But wait! You can't just run off and start broadcasting willy-nilly; You have to
-\index{setsockopt()@\texttt{setsockopt()}} set the socket option
-\index{SO\_BROADCAST@\texttt{SO\_BROADCAST}} `SO_BROADCAST` before you can send
-a broadcast packet out on the network. It's like a one of those little plastic
-covers they put over the missile launch switch! That's just how much power you
-hold in your hands!
+But wait! You can't just run off and start broadcasting willy-nilly; You
+have to [ixtt[setsockopt()]] set the socket option [ixtt[SO\_BROADCAST]]
+`SO_BROADCAST` before you can send a broadcast packet out on the
+network. It's like a one of those little plastic covers they put over
+the missile launch switch! That's just how much power you hold in your
+hands!
 
 But seriously, though, there is a danger to using broadcast packets, and that
 is: every system that receives a broadcast packet must undo all the onion-skin
@@ -4542,11 +4538,11 @@ address for a broadcast message? There are two common ways:
    LAN with broadcast traffic.)
 
 2. Send the data to the "global" broadcast address. This is
-   \index{255.255.255.255} `255.255.255.255`, aka
-   \index{INADDR\_BROADCAST@\texttt{INADDR\_BROADCAST}} `INADDR_BROADCAST`. Many
-   machines will automatically bitwise AND this with your network number to
-   convert it to a network broadcast address, but some won't. It varies. Routers
-   do not forward this type of broadcast packet off your local network,
+   [ix[255.255.255.255]] `255.255.255.255`, aka
+   [ixtt[INADDR\_BROADCAST]] `INADDR_BROADCAST`. Many machines will
+   automatically bitwise AND this with your network number to convert it
+   to a network broadcast address, but some won't. It varies. Routers do
+   not forward this type of broadcast packet off your local network,
    ironically enough.
 
 So what happens if you try to send data on the broadcast address without first
@@ -4666,9 +4662,9 @@ machine, and run `broadcaster` again with your broadcast address... Hey! Both
 `listener`s get the packet even though you only called `sendto()` once! Cool!
 
 If the `listener` gets data you send directly to it, but not data on the
-broadcast address, it could be that you have a \index{firewall} firewall on your
-local machine that is blocking the packets. (Yes, \index{Pat} Pat and
-\index{Bapper} Bapper, thank you for realizing before I did that this is why my
+broadcast address, it could be that you have a [ix[firewall]] firewall on your
+local machine that is blocking the packets. (Yes, [ix[Pat]] Pat and
+[ix[Bapper]] Bapper, thank you for realizing before I did that this is why my
 sample code wasn't working. I told you I'd mention you in the guide, and here
 you are. So _nyah_.)
 
@@ -4682,22 +4678,21 @@ used sparingly and appropriately.
 
 **Where can I get those header files?**
 
-\index{header files} If you don't have them on your system already, you probably
+[ix[header files]] If you don't have them on your system already, you probably
 don't need them. Check the manual for your particular platform. If you're
-building for \index{Windows} Windows, you only need to `#include <winsock.h>`.
+building for [ix[Windows]] Windows, you only need to `#include <winsock.h>`.
 
-**What do I do when `bind()` reports \index{Address already in use} "Address
+**What do I do when `bind()` reports [ix[Address already in use]] "Address
 already in use"?**
 
-You have to use \index{setsockopt()@\texttt{setsockopt()}} `setsockopt()` with
-the \index{SO\_REUSEADDR@\texttt{SO\_REUSEADDR}} `SO_REUSEADDR` option on the
-listening socket. Check out the \index{bind()@\texttt{bind()}} [section on
-`bind()`](#bind) and the \index{select()@\texttt{select()}} [section on
-`select()`](#select) for an example.
+You have to use [ixtt[setsockopt()]] `setsockopt()` with the
+[ixtt[SO\_REUSEADDR]] `SO_REUSEADDR` option on the listening socket.
+Check out the [ixtt[bind()]] [section on `bind()`](#bind) and the
+[ixtt[select()]] [section on `select()`](#select) for an example.
 
 **How do I get a list of open sockets on the system?**
 
-Use the \index{netstat} `netstat`. Check the `man` page for full details, but
+Use the [ix[netstat]] `netstat`. Check the `man` page for full details, but
 you should get some good output just typing:
 
 ```shell
@@ -4709,20 +4704,20 @@ The only trick is determining which socket is associated with which program.
 
 **How can I view the routing table?**
 
-Run the \index{route} `route` command (in `/sbin` on most Linuxes) or the
-command \index{netstat} `netstat -r`.
+Run the [ix[route]] `route` command (in `/sbin` on most Linuxes) or the
+command [ix[netstat]] `netstat -r`.
 
 **How can I run the client and server programs if I only have one computer?
 Don't I need a network to write network programs?**
 
-Fortunately for you, virtually all machines implement a \index{loopback device}
+Fortunately for you, virtually all machines implement a [ix[loopback device]]
 loopback network "device" that sits in the kernel and pretends to be a network
 card. (This is the interface listed as "`lo`" in the routing table.)
 
-Pretend you're logged into a machine named \index{goat} "`goat`". Run the client
+Pretend you're logged into a machine named [ix[goat]] "`goat`". Run the client
 in one window and the server in another. Or start the server in the background
 ("`server &`") and run the client in the same window. The upshot of the loopback
-device is that you can either `client goat` or \index{localhost} `client
+device is that you can either `client goat` or [ix[localhost]] `client
 localhost` (since "`localhost`" is likely defined in your `/etc/hosts` file) and
 you'll have the client talking to the server without a network!
 
@@ -4733,8 +4728,8 @@ non-networked machine! Huzzah!
 
 You can tell because `recv()` will return `0`.
 
-**How do I implement a \index{ping} "ping" utility? What is \index{ICMP} ICMP?
-Where can I find out more about \index{raw sockets} raw sockets and
+**How do I implement a [ixtt[ping]] "ping" utility? What is [ixtt[ICMP]] ICMP?
+Where can I find out more about [ix[raw sockets]] raw sockets and
 `SOCK_RAW`?**
 
 All your raw sockets questions will be answered in [W. Richard Stevens' UNIX
@@ -4783,16 +4778,16 @@ the introduction for an example of how to do this.
 
 **Why does `select()` keep falling out on a signal?**
 
-Signals tend to cause blocked system calls to return `-1` with `errno` set to
-`EINTR`. When you set up a signal handler with
-\index{sigaction()@\texttt{sigaction()}} `sigaction()`, you can set the flag
-\index{SA\_RESTART@\texttt{SA\_RESTART}} `SA_RESTART`, which is supposed to
-restart the system call after it was interrupted.
+Signals tend to cause blocked system calls to return `-1` with `errno`
+set to `EINTR`. When you set up a signal handler with
+[ixtt[sigaction()]] `sigaction()`, you can set the flag
+[ixtt[SA\_RESTART]] `SA_RESTART`, which is supposed to restart the
+system call after it was interrupted.
 
 Naturally, this doesn't always work.
 
-My favorite solution to this involves a \index{goto@\texttt{goto}} `goto`
-statement. You know this irritates your professors to no end, so go for it!
+My favorite solution to this involves a [ix[goto]] `goto` statement. You
+know this irritates your professors to no end, so go for it!
 
 ```{.c .numberLines}
 select_restart:
@@ -4812,10 +4807,10 @@ to control it. But I think the `goto` statement is actually cleaner.
 
 **How can I implement a timeout on a call to `recv()`?**
 
-\index{recv()@\texttt{recv()}!timeout} Use \index{select()@\texttt{select()}}
-[`select()`](#select)! It allows you to specify a timeout parameter for socket
-descriptors that you're looking to read from. Or, you could wrap the entire
-functionality in a single function, like this:
+[ix[recv()@\texttt{recv()}!timeout]] Use [ixtt[select()]]
+[`select()`](#select)! It allows you to specify a timeout parameter for
+socket descriptors that you're looking to read from. Or, you could wrap
+the entire functionality in a single function, like this:
 
 ```{.c .numberLines}
 #include <unistd.h>
@@ -4866,21 +4861,21 @@ else if (n == -2) {
 
 ```
 
-Notice that \index{recvtimeout()@\texttt{recvtimeout()}} `recvtimeout()` returns
-`-2` in case of a timeout. Why not return `0`? Well, if you recall, a return
-value of `0` on a call to `recv()` means that the remote side closed the
-connection. So that return value is already spoken for, and `-1` means "error",
-so I chose `-2` as my timeout indicator.
+Notice that [ixtt[recvtimeout()]] `recvtimeout()` returns `-2` in case
+of a timeout. Why not return `0`? Well, if you recall, a return value of
+`0` on a call to `recv()` means that the remote side closed the
+connection. So that return value is already spoken for, and `-1` means
+"error", so I chose `-2` as my timeout indicator.
 
-**How do I \index{encryption} encrypt or compress the data before sending it
+**How do I [ix[encryption]] encrypt or compress the data before sending it
 through the socket?**
 
-One easy way to do encryption is to use \index{SSL} SSL (secure sockets layer),
-but that's beyond the scope of this guide. (\index{OpenSSL} Check out the
+One easy way to do encryption is to use [ix[SSL]] SSL (secure sockets layer),
+but that's beyond the scope of this guide. ([ix[OpenSSL]] Check out the
 [OpenSSL project](https://www.openssl.org/)^[https://www.openssl.org/] for more
 info.)
 
-But assuming you want to plug in or implement your own \index{compression}
+But assuming you want to plug in or implement your own [ix[compression]]
 compressor or encryption system, it's just a matter of thinking of your data as
 running through a sequence of steps between both ends. Each step changes the
 data in some way.
@@ -4906,7 +4901,7 @@ code in there that does the encryption.
 
 **What is this "`PF_INET`" I keep seeing? Is it related to `AF_INET`?**
 
-\index{PF\_INET@\texttt{PF\_INET}} \index{AF\_INET@\texttt{AF\_INET}}
+[ixtt[PF\_INET]] [ix[AF\_INET]]
 
 Yes, yes it is. See [the section on `socket()`](#socket) for details.
 
@@ -4930,7 +4925,7 @@ Meanwhile, the server is handling the data and executing it:
 3. `close()` the connection
 4. `system(str)` to run the command
 
-\index{security} _Beware!_  Having the server execute what the client says is
+[ix[security]] _Beware!_  Having the server execute what the client says is
 like giving remote shell access and people can do things to your account when
 they connect to the server. For instance, in the above example, what if the
 client sends "`rm -rf ~`"? It deletes everything in your account, that's what!
@@ -4958,7 +4953,7 @@ things the client sends.
 1460 bytes at a time. But if I run it on my local machine, it receives all the
 data at the same time. What's going on?**
 
-You're hitting the \index{MTU} MTU---the maximum size the physical medium can
+You're hitting the [ix[MTU]] MTU---the maximum size the physical medium can
 handle. On the local machine, you're using the loopback device which can handle
 8K or more no problem. But on Ethernet, which can only handle 1500 bytes with a
 header, you hit that limit. Over a modem, with 576 MTU (again, with header), you
@@ -4974,21 +4969,22 @@ receiving complete packets of data using multiple calls to `recv()`.
 **I'm on a Windows box and I don't have the `fork()` system call or any kind of
 `struct sigaction`. What to do?**
 
-\index{fork()@\texttt{fork()}} If they're anywhere, they'll be in POSIX
-libraries that may have shipped with your compiler. Since I don't have a Windows
-box, I really can't tell you the answer, but I seem to remember that Microsoft
-has a POSIX compatibility layer and that's where `fork()` would be. (And maybe
-even `sigaction`.)
+[ixtt[fork()]] If they're anywhere, they'll be in POSIX libraries that
+may have shipped with your compiler. Since I don't have a Windows box, I
+really can't tell you the answer, but I seem to remember that Microsoft
+has a POSIX compatibility layer and that's where `fork()` would be. (And
+maybe even `sigaction`.)
 
 Search the help that came with VC++ for "fork" or "POSIX" and see if it gives
 you any clues.
 
-If that doesn't work at all, ditch the `fork()`/`sigaction` stuff and replace it
-with the Win32 equivalent: \index{CreateProcess()@\texttt{CreateProcess()}}
-`CreateProcess()`. I don't know how to use `CreateProcess()`---it takes a
-bazillion arguments, but it should be covered in the docs that came with VC++.
+If that doesn't work at all, ditch the `fork()`/`sigaction` stuff and
+replace it with the Win32 equivalent: [ixtt[CreateProcess()]]
+`CreateProcess()`. I don't know how to use `CreateProcess()`---it takes
+a bazillion arguments, but it should be covered in the docs that came
+with VC++.
 
-**\index{firewall} I'm behind a firewall---how do I let people outside the
+**[ix[firewall]] I'm behind a firewall---how do I let people outside the
 firewall know my IP address so they can connect to my machine?**
 
 Unfortunately, the purpose of a firewall is to prevent people outside the
@@ -5000,7 +4996,7 @@ This isn't to say that all is lost. For one thing, you can still often
 or something like that. Just design your programs so that you're always the one
 initiating the connection, and you'll be fine.
 
-\index{firewall!poking holes in} If that's not satisfactory, you can ask your
+[ix[firewall!poking holes in]] If that's not satisfactory, you can ask your
 sysadmins to poke a hole in the firewall so that people can connect to you. The
 firewall can forward to you either through it's NAT software, or through a proxy
 or something like that.
@@ -5011,7 +5007,7 @@ beginner, it's a lot harder to make software secure than you might imagine.
 
 Don't make your sysadmin mad at me. `;-)`
 
-**\index{packet sniffer} \index{promiscuous mode} How do I write a packet
+**[ix[packet sniffer]] [ix[promiscuous mode]] How do I write a packet
 sniffer? How do I put my Ethernet interface into promiscuous mode?**
 
 For those not in the know, when a network card is in "promiscuous mode", it will
@@ -5027,19 +5023,18 @@ You'll have a socket of some type that you can read this data from.
 
 Unfortunately, the answer to the question varies depending on the
 platform, but if you Google for, for instance, "windows promiscuous
-\index{ioctl()@\texttt{ioctl()}} ioctl" you'll probably get somewhere.
-For Linux, there's what looks like a [useful Stack Overflow
+[ixtt[ioctl()]] ioctl" you'll probably get somewhere.  For Linux,
+there's what looks like a [useful Stack Overflow
 thread](https://stackoverflow.com/questions/21323023/)^[https://stackoverflow.com/questions/21323023/],
 as well.
 
-**How can I set a custom \index{timeout, setting} timeout value for a TCP or UDP
+**How can I set a custom [ix[timeout, setting]] timeout value for a TCP or UDP
 socket?**
 
 It depends on your system. You might search the net for
-\index{SO\_RCVTIMEO@\texttt{SO\_RCVTIMEO}} `SO_RCVTIMEO` and
-\index{SO\_SNDTIMEO@\texttt{SO\_SNDTIMEO}} `SO_SNDTIMEO` (for use with
-\index{setsockopt()@\texttt{setsockopt()}} `setsockopt()`) to see if your system
-supports such functionality.
+[ixtt[SO\_RCVTIMEO]] `SO_RCVTIMEO` and [ixtt[SO\_SNDTIMEO]]
+`SO_SNDTIMEO` (for use with [ixtt[setsockopt()]] `setsockopt()`) to see
+if your system supports such functionality.
 
 The Linux man page suggests using `alarm()` or `setitimer()` as a substitute.
 
@@ -5067,7 +5062,7 @@ you want to use it.
 
 # Man Pages
 
-\index{man pages} In the Unix world, there are a lot of manuals. They have
+[ix[man pages]] In the Unix world, there are a lot of manuals. They have
 little sections that describe individual functions that you have at your
 disposal.
 
@@ -5127,11 +5122,11 @@ int accept(int s, struct sockaddr *addr, socklen_t *addrlen);
 
 #### Description 
 
-\index{accept()@\texttt{accept()}} Once you've gone through the trouble of
-getting a \index{SOCK\_STREAM@\texttt{SOCK\_STREAM}} `SOCK_STREAM` socket and
-setting it up for incoming connections with `listen()`, then you call `accept()`
-to actually get yourself a new socket descriptor to use for subsequent
-communication with the newly connected client.
+[ixtt[accept()]] Once you've gone through the trouble of getting a
+[ixtt[SOCK\_STREAM]] `SOCK_STREAM` socket and setting it up for incoming
+connections with `listen()`, then you call `accept()` to actually get
+yourself a new socket descriptor to use for subsequent communication
+with the newly connected client.
 
 The old socket that you are using for listening is still there, and will be used
 for further `accept()` calls as they come in.
@@ -5140,15 +5135,15 @@ for further `accept()` calls as they come in.
 |-----------|---------------------------------------------------------------|
 | `s`       | The `listen()`ing socket descriptor.                          | 
 | `addr`    | This is filled in with the address of the site that's connecting to you.|
-| `addrlen` | This is filled in with the `sizeof()` the structure returned in the `addr` parameter. You can safely ignore it if you assume you're getting a \index{struct sockaddr\_in@\texttt{struct sockaddr\_in}} `struct sockaddr_in` back, which you know you are, because that's the type you passed in for `addr`.|
+| `addrlen` | This is filled in with the `sizeof()` the structure returned in the `addr` parameter. You can safely ignore it if you assume you're getting a [ixtt[struct sockaddr\_in]] `struct sockaddr_in` back, which you know you are, because that's the type you passed in for `addr`.|
 
 `accept()` will normally block, and you can use `select()` to peek on the
-listening socket descriptor ahead of time to see if it's "ready to read". If so,
-then there's a new connection waiting to be `accept()`ed! Yay! Alternatively,
-you could set the \index{O\_NONBLOCK@\texttt{O\_NONBLOCK}} `O_NONBLOCK` flag on
-the listening socket using \index{fcntl()@\texttt{fcntl()}} `fcntl()`, and then
+listening socket descriptor ahead of time to see if it's "ready to
+read". If so, then there's a new connection waiting to be `accept()`ed!
+Yay! Alternatively, you could set the [ixtt[O\_NONBLOCK]] `O_NONBLOCK`
+flag on the listening socket using [ixtt[fcntl()]] `fcntl()`, and then
 it will never block, choosing instead to return `-1` with `errno` set to
-\index{EWOULDBLOCK@\texttt{EWOULDBLOCK}} `EWOULDBLOCK`.
+[ixtt[EWOULDBLOCK]] `EWOULDBLOCK`.
 
 The socket descriptor returned by `accept()` is a bona fide socket descriptor,
 open and connected to the remote host. You have to `close()` it when you're done
@@ -5212,10 +5207,10 @@ int bind(int sockfd, struct sockaddr *my_addr, socklen_t addrlen);
 
 #### Description 
 
-\index{bind()@\texttt{bind()}} When a remote machine wants to connect to your
-server program, it needs two pieces of information: the \index{IP address} IP
-address and the \index{port} port number. The `bind()` call allows you to do
-just that.
+[ixtt[bind()]] When a remote machine wants to connect to your server
+program, it needs two pieces of information: the [ix[IP address]] IP
+address and the [ix[port]] port number. The `bind()` call allows you to
+do just that.
 
 First, you call `getaddrinfo()` to load up a `struct sockaddr` with the
 destination address and port information. Then you call `socket()` to get a
@@ -5313,12 +5308,12 @@ int connect(int sockfd, const struct sockaddr *serv_addr,
 
 #### Description 
 
-\index{connect()@\texttt{connect()}} Once you've built a socket descriptor with
-the `socket()` call, you can `connect()` that socket to a remote server using
-the well-named `connect()` system call. All you need to do is pass it the socket
-descriptor and the address of the server you're interested in getting to know
-better. (Oh, and the length of the address, which is commonly passed to
-functions like this.)
+[ixtt[connect()]] Once you've built a socket descriptor with the
+`socket()` call, you can `connect()` that socket to a remote server
+using the well-named `connect()` system call. All you need to do is pass
+it the socket descriptor and the address of the server you're interested
+in getting to know better. (Oh, and the length of the address, which is
+commonly passed to functions like this.)
 
 Usually this information comes along as the result of a call to `getaddrinfo()`,
 but you can fill out your own `struct sockaddr` if you want to.
@@ -5333,9 +5328,10 @@ on a specific IP address and port, but this is pretty rare.
 Once the socket is `connect()`ed, you're free to `send()` and `recv()` data on
 it to your heart's content.
 
-\index{connect()@\texttt{connect()}!on datagram sockets} Special note: if you `connect()` a
-`SOCK_DGRAM` UDP socket to a remote host, you can use `send()` and `recv()` as
-well as `sendto()` and `recvfrom()`. If you want.
+[ix[connect()@\texttt{connect()}!on datagram sockets]] Special note: if
+you `connect()` a `SOCK_DGRAM` UDP socket to a remote host, you can use
+`send()` and `recv()` as well as `sendto()` and `recvfrom()`. If you
+want.
 
 #### Return Value
 
@@ -5387,20 +5383,20 @@ int close(int s);
 
 #### Description 
 
-\index{close()@\texttt{close()}} After you've finished using the socket for
-whatever demented scheme you have concocted and you don't want to `send()` or
+[ixtt[close()]] After you've finished using the socket for whatever
+demented scheme you have concocted and you don't want to `send()` or
 `recv()` or, indeed, do _anything else_ at all with the socket, you can
 `close()` it, and it'll be freed up, never to be used again.
 
-The remote side can tell if this happens one of two ways. One: if the remote
-side calls `recv()`, it will return `0`. Two: if the remote side calls `send()`,
-it'll receive a signal \index{SIGPIPE@\texttt{SIGPIPE}} `SIGPIPE` and send()
-will return `-1` and `errno` will be set to \index{EPIPE@\texttt{EPIPE}}
+The remote side can tell if this happens one of two ways. One: if the
+remote side calls `recv()`, it will return `0`. Two: if the remote side
+calls `send()`, it'll receive a signal [ixtt[SIGPIPE]] `SIGPIPE` and
+send() will return `-1` and `errno` will be set to [ixtt[EPIPE]]
 `EPIPE`.
 
-\index{Windows} **Windows users**: the function you need to use is called
-\index{closesocket()@\texttt{closesocket()}} `closesocket()`, not `close()`. If
-you try to use `close()` on a socket descriptor, it's possible Windows will get
+[ix[Windows]] **Windows users**: the function you need to use is called
+[ixtt[closesocket()]] `closesocket()`, not `close()`. If you try to use
+`close()` on a socket descriptor, it's possible Windows will get
 angry... And you wouldn't like it when it's angry.
 
 #### Return Value
@@ -5644,13 +5640,13 @@ int gethostname(char *name, size_t len);
 
 #### Description 
 
-\index{gethostname()@\texttt{gethostname()}} Your system has a name. They all
-do. This is a slightly more Unixy thing than the rest of the networky stuff
-we've been talking about, but it still has its uses.
+[ixtt[gethostname()]] Your system has a name. They all do. This is a
+slightly more Unixy thing than the rest of the networky stuff we've been
+talking about, but it still has its uses.
 
 For instance, you can get your host name, and then call
-\index{gethostbyname()@\texttt{gethostbyname()}} `gethostbyname()` to find out
-your \index{IP address} IP address.
+[ixtt[gethostbyname()]] `gethostbyname()` to find out your [ix[IP
+address]] IP address.
 
 The parameter `name` should point to a buffer that will hold the host name, and
 `len` is the size of that buffer in bytes. `gethostname()` won't overwrite the
@@ -5692,8 +5688,7 @@ struct hostent *gethostbyaddr(const char *addr, int len, int type);
 
 #### Description 
 
-\index{gethostbyname()@\texttt{gethostbyname()}}
-\index{gethostbyaddr()@\texttt{gethostbyaddr()}} _PLEASE NOTE: these two
+[ixtt[gethostbyname()]] [ixtt[gethostbyaddr()]] _PLEASE NOTE: these two
 functions are superseded by `getaddrinfo()` and `getnameinfo()`!_  In
 particular, `gethostbyname()` doesn't work well with IPv6.
 
@@ -5710,7 +5705,7 @@ you want to look up the hostname of, you'd be better off using `getaddrinfo()`
 with the `AI_CANONNAME` flag.)
 
 `gethostbyname()` takes a string like "www.yahoo.com", and returns a `struct
-hostent` which contains tons of information, including the \index{IP address} IP
+hostent` which contains tons of information, including the [ix[IP address]] IP
 address. (Other information is the official host name, a list of aliases, the
 address type, the length of the addresses, and the list of addresses---it's a
 general-purpose structure that's pretty easy to use for our specific purposes
@@ -5722,8 +5717,8 @@ up a corresponding host name (if there is one), so it's sort of the reverse of
 actually want to pass in a pointer to a `struct in_addr`. `len` should be
 `sizeof(struct in_addr)`, and `type` should be `AF_INET`.
 
-So what is this \index{struct hostent@\texttt{struct hostent}} `struct hostent`
-that gets returned? It has a number of fields that contain information about the
+So what is this [ixtt[struct hostent]] `struct hostent` that gets
+returned? It has a number of fields that contain information about the
 host in question.
 
 | Field                | Description                                       |
@@ -5740,12 +5735,12 @@ host in question.
 Returns a pointer to a resultant `struct hostent` on success, or `NULL` on
 error.
 
-Instead of the normal `perror()` and all that stuff you'd normally use for error
-reporting, these functions have parallel results in the variable `h_errno`,
-which can be printed using the functions \index{herror()@\texttt{herror()}}
-`herror()` or \index{hstrerror()@\texttt{hstrerror()}} `hstrerror()`. These work
-just like the classic `errno`, `perror()`, and `strerror()` functions you're
-used to.
+Instead of the normal `perror()` and all that stuff you'd normally use
+for error reporting, these functions have parallel results in the
+variable `h_errno`, which can be printed using the functions
+[ixtt[herror()]] `herror()` or [ixtt[hstrerror()]] `hstrerror()`.  These
+work just like the classic `errno`, `perror()`, and `strerror()`
+functions you're used to.
 
 #### Example
 
@@ -5897,10 +5892,11 @@ int getpeername(int s, struct sockaddr *addr, socklen_t *len);
 
 #### Description 
 
-\index{getpeername()@\texttt{getpeername()}} Once you have either `accept()`ed a
-remote connection, or `connect()`ed to a server, you now have what is known as a
-_peer_. Your peer is simply the computer you're connected to, identified by an
-\index{IP address} IP address and a \index{port} port. So...
+[ixtt[getpeername()]] Once you have either `accept()`ed a remote
+connection, or `connect()`ed to a server, you now have what is known as
+a _peer_. Your peer is simply the computer you're connected to,
+identified by an [ix[IP address]] IP address and a [ix[port]] port.
+So...
 
 `getpeername()` simply returns a `struct sockaddr_in` filled with information
 about the machine you're connected to.
@@ -5966,19 +5962,19 @@ int errno;
 
 #### Description 
 
-\index{errno@\texttt{errno}} This is the variable that holds error information
-for a lot of system calls. If you'll recall, things like `socket()` and
-`listen()` return `-1` on error, and they set the exact value of `errno` to let
-you know specifically which error occurred.
+[ixtt[errno]] This is the variable that holds error information for a
+lot of system calls. If you'll recall, things like `socket()` and
+`listen()` return `-1` on error, and they set the exact value of `errno`
+to let you know specifically which error occurred.
 
 The header file `errno.h` lists a bunch of constant symbolic names for errors,
 such as `EADDRINUSE`, `EPIPE`, `ECONNREFUSED`, etc. Your local man pages will
 tell you what codes can be returned as an error, and you can use these at run
 time to handle different errors in different ways.
 
-Or, more commonly, you can call \index{perror()@\texttt{perror()}} `perror()` or
-\index{strerror()@\texttt{strerror()}} `strerror()` to get a human-readable
-version of the error.
+Or, more commonly, you can call [ixtt[perror()]] `perror()` or
+[ixtt[strerror()]] `strerror()` to get a human-readable version of the
+error.
 
 One thing to note, for you multithreading enthusiasts, is that on most systems
 `errno` is defined in a threadsafe manner. (That is, it's not actually a global
@@ -6032,16 +6028,16 @@ int fcntl(int s, int cmd, long arg);
 
 #### Description 
 
-\index{fcntl()@\texttt{fcntl()}} This function is typically used to do file
-locking and other file-oriented stuff, but it also has a couple socket-related
+[ixtt[fcntl()]] This function is typically used to do file locking and
+other file-oriented stuff, but it also has a couple socket-related
 functions that you might see or use from time to time.
 
 Parameter `s` is the socket descriptor you wish to operate on, `cmd` should be
-set to \index{F\_SETFL@\texttt{F\_SETFL}} `F_SETFL`, and `arg` can be one of the
-following commands. (Like I said, there's more to `fcntl()` than I'm letting on
+set to [ixtt[F\_SETFL]] `F_SETFL`, and `arg` can be one of the following
+commands. (Like I said, there's more to `fcntl()` than I'm letting on
 here, but I'm trying to stay socket-oriented.)
 
-\index{O\_NONBLOCK@\texttt{O\_NONBLOCK}}\index{O\_ASYNC@\texttt{O\_ASYNC}}\index{SIGIO@\texttt{SIGIO}}
+[ixtt[O\_NONBLOCK]] [ixtt[O\_ASYNC]] [ixtt[SIGIO]]
 
 | `cmd`        | Description                                                |
 |--------------|------------------------------------------------------------|
@@ -6088,16 +6084,15 @@ uint16_t ntohs(uint16_t netshort);
 
 #### Description 
 
-\index{htons()@\texttt{htons()}} \index{htonl()@\texttt{htonl()}}
-\index{ntohs()@\texttt{ntohs()}} \index{ntohl()@\texttt{ntohl()}} Just to make
-you really unhappy, different computers use different byte orderings internally
-for their multibyte integers (i.e. any integer that's larger than a `char`).
-The upshot of this is that if you `send()` a two-byte `short int` from an Intel
-box to a Mac (before they became Intel boxes, too, I mean), what one computer
-thinks is the number `1`, the other will think is the number `256`, and
-vice-versa.
+[ixtt[htons()]] [ixtt[htonl()]] [ixtt[ntohs()]] [ixtt[ntohl()]] Just to
+make you really unhappy, different computers use different byte
+orderings internally for their multibyte integers (i.e. any integer
+that's larger than a `char`).  The upshot of this is that if you
+`send()` a two-byte `short int` from an Intel box to a Mac (before they
+became Intel boxes, too, I mean), what one computer thinks is the number
+`1`, the other will think is the number `256`, and vice-versa.
 
-\index{byte ordering} The way to get around this problem is for everyone to put
+[ix[byte ordering]] The way to get around this problem is for everyone to put
 aside their differences and agree that Motorola and IBM had it right, and Intel
 did it the weird way, and so we all convert our byte orderings to "big-endian"
 before sending them out. Since Intel is a "little-endian" machine, it's far more
@@ -6175,15 +6170,15 @@ _These functions are deprecated because they don't handle IPv6! Use
 `inet_ntop()` or `inet_pton()` instead! They are included here because they can
 still be found in the wild._
 
-\index{inet\_ntoa()@\texttt{inet\_ntoa()}}
-\index{inet\_aton()@\texttt{inet\_aton()}}
-\index{inet\_addr()@\texttt{inet\_addr()}} All of these functions convert from a
-`struct in_addr` (part of your `struct sockaddr_in`, most likely) to a string in
-dots-and-numbers format (e.g. "192.168.5.10") and vice-versa. If you have an IP
-address passed on the command line or something, this is the easiest way to get
-a `struct in_addr` to `connect()` to, or whatever. If you need more power, try
-some of the DNS functions like `gethostbyname()` or attempt a _coup d'État_ in
-your local country.
+[ixtt[inet\_ntoa()]]
+[ixtt[inet\_aton()]]
+[ixtt[inet\_addr()]] All of these functions convert from a `struct
+in_addr` (part of your `struct sockaddr_in`, most likely) to a string in
+dots-and-numbers format (e.g. "192.168.5.10") and vice-versa. If you
+have an IP address passed on the command line or something, this is the
+easiest way to get a `struct in_addr` to `connect()` to, or whatever. If
+you need more power, try some of the DNS functions like
+`gethostbyname()` or attempt a _coup d'État_ in your local country.
 
 The function `inet_ntoa()` converts a network address in a `struct in_addr` to a
 dots-and-numbers format string. The "n" in "ntoa" stands for network, and the
@@ -6209,7 +6204,7 @@ overwritten with each call to the function.
 
 `inet_addr()` returns the address as an `in_addr_t`, or `-1` if there's an
 error. (That is the same result as if you tried to convert the string
-\index{255.255.255.255} "`255.255.255.255`", which is a valid IP address. This
+[ix[255.255.255.255]] "`255.255.255.255`", which is a valid IP address. This
 is why `inet_aton()` is better.)
 
 #### Example
@@ -6371,8 +6366,8 @@ int listen(int s, int backlog);
 
 #### Description 
 
-\index{listen()@\texttt{listen()}} You can take your socket descriptor (made
-with the `socket()` system call) and tell it to listen for incoming connections.
+[ixtt[listen()]] You can take your socket descriptor (made with the
+`socket()` system call) and tell it to listen for incoming connections.
 This is what differentiates the servers from the clients, guys.
 
 The `backlog` parameter can mean a couple different things depending on the
@@ -6440,17 +6435,17 @@ char *strerror(int errnum);
 
 #### Description 
 
-\index{perror()@\texttt{perror()}} \index{strerror()@\texttt{strerror()}} Since
-so many functions return `-1` on error and set the value of the variable
-\index{errno@\texttt{errno}} `errno` to be some number, it would sure be nice if you could
-easily print that in a form that made sense to you.
+[ixtt[perror()]] [ix[strerror()]] Since so many functions return `-1` on
+error and set the value of the variable [ix[errno]] `errno` to be some
+number, it would sure be nice if you could easily print that in a form
+that made sense to you.
 
-Mercifully, `perror()` does that. If you want more description to be printed
-before the error, you can point the parameter `s` to it (or you can leave `s` as
-`NULL` and nothing additional will be printed).
+Mercifully, `perror()` does that. If you want more description to be
+printed before the error, you can point the parameter `s` to it (or you
+can leave `s` as `NULL` and nothing additional will be printed).
 
-In a nutshell, this function takes `errno` values, like `ECONNRESET`, and prints
-them nicely, like "Connection reset by peer."
+In a nutshell, this function takes `errno` values, like `ECONNRESET`,
+and prints them nicely, like "Connection reset by peer."
 
 The function `strerror()` is very similar to `perror()`, except it returns a
 pointer to the error message string for a given value (you usually pass in the
@@ -6499,10 +6494,10 @@ int poll(struct pollfd *ufds, unsigned int nfds, int timeout);
 
 #### Description 
 
-\index{poll()@\texttt{poll()}} This function is very similar to `select()` in
-that they both watch sets of file descriptors for events, such as incoming data
-ready to `recv()`, socket ready to `send()` data to, out-of-band data ready to
-`recv()`, errors, etc.
+[ixtt[poll()]] This function is very similar to `select()` in that they
+both watch sets of file descriptors for events, such as incoming data
+ready to `recv()`, socket ready to `send()` data to, out-of-band data
+ready to `recv()`, errors, etc.
 
 The basic idea is that you pass an array of `nfds` `struct pollfd`s in `ufds`,
 along with a timeout in milliseconds (1000 milliseconds in a second). The
@@ -6512,7 +6507,7 @@ any of the socket descriptors by the timeout, `poll()` will return.
 Each element in the array of `struct pollfd`s represents one socket descriptor,
 and contains the following fields:
 
-\index{struct pollfd@\texttt{struct pollfd}}
+[ixtt[struct pollfd]]
 
 ```{.c}
 struct pollfd {
@@ -6621,18 +6616,17 @@ ssize_t recvfrom(int s, void *buf, size_t len, int flags,
 
 #### Description 
 
-\index{recv()@\texttt{recv()}} \index{recvfrom()@\texttt{recvfrom()}} Once you
-have a socket up and connected, you can read incoming data from the remote side
-using the `recv()` (for TCP \index{SOCK\_STREAM@\texttt{SOCK\_STREAM}}
-`SOCK_STREAM` sockets) and `recvfrom()` (for UDP
-\index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM` sockets).
+[ixtt[recv()]] [ixtt[recvfrom()]] Once you have a socket up and
+connected, you can read incoming data from the remote side using the
+`recv()` (for TCP [ixtt[SOCK\_STREAM]] `SOCK_STREAM` sockets) and
+`recvfrom()` (for UDP [ixtt[SOCK\_DGRAM]] `SOCK_DGRAM` sockets).
 
 Both functions take the socket descriptor `s`, a pointer to the buffer `buf`,
 the size (in bytes) of the buffer `len`, and a set of `flags` that control how
 the functions work.
 
-Additionally, the `recvfrom()` takes a \index{struct sockaddr@\texttt{struct
-sockaddr}} `struct sockaddr*`, `from` that will tell you where the data came
+Additionally, the `recvfrom()` takes a [ixtt[struct sockaddr]]
+`struct sockaddr*`, `from` that will tell you where the data came
 from, and will fill in `fromlen` with the size of `struct sockaddr`. (You must
 also initialize `fromlen` to be the size of `from` or `struct sockaddr`.)
 
@@ -6641,11 +6635,12 @@ but you should check your local man pages for more information and what is
 actually supported on your system. You bitwise-or these together, or just set
 `flags` to `0` if you want it to be a regular vanilla `recv()`.
 
-\index{MSG\_OOB@\texttt{MSG\_OOB}}\index{out-of-band data}\index{MSG\_PEEK@\texttt{MSG\_PEEK}}\index{MSG\_WAITALL@\texttt{MSG\_WAITALL}}
+[ixtt[MSG\_OOB]] [ix[out-of-band data]] [ixtt[MSG\_PEEK]]
+[ixtt[MSG\_WAITALL]]
 
 | Macro         | Description                                              |
 |---------------|----------------------------------------------------------|
-| `MSG_OOB`     | Receive Out of Band data. This is how to get data that has been sent to you with the `MSG_OOB` flag in `send()`. As the receiving side, you will have had signal \index{SIGURG@\texttt{SIGURG}} `SIGURG` raised telling you there is urgent data. In your handler for that signal, you could call `recv()` with this `MSG_OOB` flag.|
+| `MSG_OOB`     | Receive Out of Band data. This is how to get data that has been sent to you with the `MSG_OOB` flag in `send()`. As the receiving side, you will have had signal [ixtt[SIGURG]] `SIGURG` raised telling you there is urgent data. In your handler for that signal, you could call `recv()` with this `MSG_OOB` flag.|
 | `MSG_PEEK`    | If you want to call `recv()` "just for pretend", you can call it with this flag. This will tell you what's waiting in the buffer for when you call `recv()` "for real" (i.e. _without_ the `MSG_PEEK` flag. It's like a sneak preview into the next `recv()` call.| 
 | `MSG_WAITALL` | Tell `recv()` to not return until all the data you specified in the `len` parameter. It will ignore your wishes in extreme circumstances, however, like if a signal interrupts the call or if some error occurs or if the remote side closes the connection, etc. Don't be mad with it.| 
 
@@ -6752,10 +6747,10 @@ FD_ZERO(fd_set *set);
 
 #### Description 
 
-\index{select()@\texttt{select()}} The `select()` function gives you a way to
-simultaneously check multiple sockets to see if they have data waiting to be
-`recv()`d, or if you can `send()` data to them without blocking, or if some
-exception has occurred.
+[ixtt[select()]] The `select()` function gives you a way to
+simultaneously check multiple sockets to see if they have data waiting
+to be `recv()`d, or if you can `send()` data to them without blocking,
+or if some exception has occurred.
 
 You populate your sets of socket descriptors using the macros, like `FD_SET()`,
 above. Once you have the set, you pass it into the function as one of the
@@ -6770,28 +6765,29 @@ reading or writing, and which have exceptions.
 The first parameter, `n` is the highest-numbered socket descriptor (they're just
 `int`s, remember?) plus one.
 
-Lastly, the \index{struct timeval@\texttt{struct timeval}} `struct timeval`,
-`timeout`, at the end---this lets you tell `select()` how long to check these sets
-for. It'll return after the timeout, or when an event occurs, whichever is
-first. The `struct timeval` has two fields: `tv_sec` is the number of seconds,
-to which is added `tv_usec`, the number of microseconds (1,000,000 microseconds
-in a second).
+Lastly, the [ixtt[struct timeval]] `struct timeval`, `timeout`, at the
+end---this lets you tell `select()` how long to check these sets for.
+It'll return after the timeout, or when an event occurs, whichever is
+first. The `struct timeval` has two fields: `tv_sec` is the number of
+seconds, to which is added `tv_usec`, the number of microseconds
+(1,000,000 microseconds in a second).
 
 The helper macros do the following:
 
 | Macro                            | Description                           |
 |----------------------------------|---------------------------------------|
-| \index{FD\_SET()@\texttt{FD\_SET()}} `FD_SET(int fd, fd_set *set);` | Add `fd` to the `set`.|
-| \index{FD\_CLR()@\texttt{FD\_CLR()}} `FD_CLR(int fd, fd_set *set);` | Remove `fd` from the `set`.|
-| \index{FD\_ISSET()@\texttt{FD\_ISSET()}} `FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`.|
-| \index{FD\_ZERO()@\texttt{FD\_ZERO()}} `FD_ZERO(fd_set *set);` | Clear all entries from the `set`.|
+| [ixtt[FD\_SET()]] `FD_SET(int fd, fd_set *set);` | Add `fd` to the `set`.|
+| [ixtt[FD\_CLR()]] `FD_CLR(int fd, fd_set *set);` | Remove `fd` from the `set`.|
+| [ixtt[FD\_ISSET()]] `FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`.|
+| [ixtt[FD\_ZERO()]] `FD_ZERO(fd_set *set);` | Clear all entries from the `set`.|
 
 Note for Linux users: Linux's `select()` can return "ready-to-read" and then not
-actually be ready to read, thus causing the subsequent `read()` call to block.
-You can work around this bug by setting \index{O\_NONBLOCK@\texttt{O\_NONBLOCK}}
-`O_NONBLOCK` flag on the receiving socket so it errors with `EWOULDBLOCK`, then
-ignoring this error if it occurs. See the [`fcntl()` reference page](#fcntlman)
-for more info on setting a socket to non-blocking.
+actually be ready to read, thus causing the subsequent `read()` call to
+block.  You can work around this bug by setting [ixtt[O\_NONBLOCK]]
+`O_NONBLOCK` flag on the receiving socket so it errors with
+`EWOULDBLOCK`, then ignoring this error if it occurs. See the [`fcntl()`
+reference page](#fcntlman) for more info on setting a socket to
+non-blocking.
 
 #### Return Value
 
@@ -6868,25 +6864,25 @@ int setsockopt(int s, int level, int optname, const void *optval,
 
 #### Description 
 
-\index{getsockopt()@\texttt{getsockopt()}}
-\index{setsockopt()@\texttt{setsockopt()}} Sockets are fairly configurable
-beasts. In fact, they are so configurable, I'm not even going to cover it all
-here. It's probably system-dependent anyway. But I will talk about the basics.
+[ixtt[getsockopt()]]
+[ixtt[setsockopt()]] Sockets are fairly configurable beasts. In fact,
+they are so configurable, I'm not even going to cover it all here. It's
+probably system-dependent anyway. But I will talk about the basics.
 
 Obviously, these functions get and set certain options on a socket. On a Linux
 box, all the socket information is in the man page for socket in section 7.
 (Type: "`man 7 socket`" to get all these goodies.)
 
-As for parameters, `s` is the socket you're talking about, level should be set
-to \index{SOL\_SOCKET@\texttt{SOL\_SOCKET}} `SOL_SOCKET`. Then you set the
-`optname` to the name you're interested in. Again, see your man page for all the
+As for parameters, `s` is the socket you're talking about, level should
+be set to [ixtt[SOL\_SOCKET]] `SOL_SOCKET`. Then you set the `optname`
+to the name you're interested in. Again, see your man page for all the
 options, but here are some of the most fun ones:
 
 | `optname`         | Description                                          |
 |-------------------|------------------------------------------------------|
-| \index{SO\_BINDTODEVICE@\texttt{SO\_BINDTODEVICE}} `SO_BINDTODEVICE` | Bind this socket to a symbolic device name like `eth0` instead of using `bind()` to bind it to an IP address. Type the command `ifconfig` under Unix to see the device names.|
-| \index{SO\_REUSEADDR@\texttt{SO\_REUSEADDR}} `SO_REUSEADDR` | Allows other sockets to `bind()` to this port, unless there is an active listening socket bound to the port already. This enables you to get around those "Address already in use" error messages when you try to restart your server after a crash.|
-| \index{SO\_BROADCAST@\texttt{SO\_BROADCAST}} `SO_BROADCAST` | Allows UDP datagram (\index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM`) sockets to send and receive packets sent to and from the broadcast address. Does nothing---_NOTHING!!_---to TCP stream sockets! Hahaha!|
+| [ixtt[SO\_BINDTODEVICE]] `SO_BINDTODEVICE` | Bind this socket to a symbolic device name like `eth0` instead of using `bind()` to bind it to an IP address. Type the command `ifconfig` under Unix to see the device names.|
+| [ixtt[SO\_REUSEADDR]] `SO_REUSEADDR` | Allows other sockets to `bind()` to this port, unless there is an active listening socket bound to the port already. This enables you to get around those "Address already in use" error messages when you try to restart your server after a crash.|
+| [ixtt[SO\_BROADCAST]] `SOCK_DGRAM`) sockets to send and receive packets sent to and from the broadcast address. Does nothing---_NOTHING!!_---to TCP stream sockets! Hahaha!|
 
 As for the parameter `optval`, it's usually a pointer to an `int` indicating the
 value in question. For booleans, zero is false, and non-zero is true. And that's
@@ -6900,8 +6896,8 @@ size object that will be stored in `optval` (to prevent buffer overflows). And
 `getsockopt()` will modify the value of `optlen` to reflect the number of bytes
 actually set.
 
-**Warning**: on some systems (notably \index{SunOS} \index{Solaris} Sun and
-\index{Windows} Windows), the option can be a `char` instead of an `int`, and is
+**Warning**: on some systems (notably [ix[SunOS]] [ix[Solaris]] Sun and
+[ix[Windows]] Windows), the option can be a `char` instead of an `int`, and is
 set to, for example, a character value of `'1'` instead of an `int` value of
 `1`. Again, check your own man pages for more info with "`man setsockopt`" and
 "`man 7 socket`"!
@@ -6956,13 +6952,13 @@ ssize_t sendto(int s, const void *buf, size_t len,
 
 #### Description 
 
-\index{send()@\texttt{send()}} \index{sendto()@\texttt{sendto()}} These
-functions send data to a socket. Generally speaking, `send()` is used for TCP
-\index{SOCK\_STREAM@\texttt{SOCK\_STREAM}} `SOCK_STREAM` connected sockets, and
-`sendto()` is used for UDP \index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM`
-unconnected datagram sockets. With the unconnected sockets, you must specify the
-destination of a packet each time you send one, and that's why the last
-parameters of `sendto()` define where the packet is going.
+[ixtt[send()]] [ixtt[sendto()]] These functions send data to a socket.
+Generally speaking, `send()` is used for TCP [ixtt[SOCK\_STREAM]]
+`SOCK_STREAM` connected sockets, and `sendto()` is used for UDP
+[ixtt[SOCK\_DGRAM]] `SOCK_DGRAM` unconnected datagram sockets. With the
+unconnected sockets, you must specify the destination of a packet each
+time you send one, and that's why the last parameters of `sendto()`
+define where the packet is going.
 
 With both `send()` and `sendto()`, the parameter `s` is the socket, `buf` is a
 pointer to the data you want to send, `len` is the number of bytes you want to
@@ -6973,10 +6969,10 @@ more details:
 
 | Macro           | Description                                            |
 |-----------------|--------------------------------------------------------|
-| \index{MSG\_OOB@\texttt{MSG\_OOB}} `MSG_OOB` | Send as \index{out-of-band data} "out of band" data. TCP supports this, and it's a way to tell the receiving system that this data has a higher priority than the normal data. The receiver will receive the signal \index{SIGURG@\texttt{SIGURG}} `SIGURG` and it can then receive this data without first receiving all the rest of the normal data in the queue.|
-| \index{MSG\_DONTROUTE@\texttt{MSG\_DONTROUTE}} `MSG_DONTROUTE` | Don't send this data over a router, just keep it local.|
-| \index{MSG\_DONTWAIT@\texttt{MSG\_DONTWAIT}} `MSG_DONTWAIT` | If `send()` would block because outbound traffic is clogged, have it return \index{EAGAIN@\texttt{EAGAIN}} `EAGAIN`. This is like a "enable \index{non-blocking sockets} non-blocking just for this send."  See the section on [blocking](#blocking)  for more details.|
-| \index{MSG\_NOSIGNAL@\texttt{MSG\_NOSIGNAL}} `MSG_NOSIGNAL` | If you `send()` to a remote host which is no longer `recv()`ing, you'll typically get the signal \index{SIGPIPE@\texttt{SIGPIPE}} `SIGPIPE`. Adding this flag prevents that signal from being raised.|
+| [ixtt[MSG\_OOB]] `MSG_OOB` | Send as [ix[out-of-band data]] "out of band" data. TCP supports this, and it's a way to tell the receiving system that this data has a higher priority than the normal data. The receiver will receive the signal [ixtt[SIGURG]] `SIGURG` and it can then receive this data without first receiving all the rest of the normal data in the queue.|
+| [ixtt[MSG\_DONTROUTE]] `MSG_DONTROUTE` | Don't send this data over a router, just keep it local.|
+| [ixtt[MSG\_DONTWAIT]] `MSG_DONTWAIT` | If `send()` would block because outbound traffic is clogged, have it return [ixtt[EAGAIN]] `EAGAIN`.  This is like a "enable [ix[non-blocking sockets]] non-blocking just for this send."  See the section on [blocking](#blocking)  for more details.|
+| [ixtt[MSG\_NOSIGNAL]] `MSG_NOSIGNAL` | If you `send()` to a remote host which is no longer `recv()`ing, you'll typically get the signal [ixtt[SIGPIPE]] `SIGPIPE`. Adding this flag prevents that signal from being raised.|
 
 #### Return Value
 
@@ -7043,9 +7039,9 @@ int shutdown(int s, int how);
 
 #### Description 
 
-\index{shutdown()@\texttt{shutdown()}} That's it! I've had it! No more
-`send()`s are allowed on this socket, but I still want to
-`recv()` data on it! Or vice-versa! How can I do this?
+[ixtt[shutdown()]] That's it! I've had it! No more `send()`s are allowed
+on this socket, but I still want to `recv()` data on it! Or vice-versa!
+How can I do this?
 
 When you `close()` a socket descriptor, it closes both
 sides of the socket for reading and writing, and frees the socket
@@ -7101,10 +7097,11 @@ int socket(int domain, int type, int protocol);
 
 #### Description 
 
-\index{socket()@\texttt{socket()}} Returns a new socket descriptor that you can
-use to do sockety things with. This is generally the first call in the whopping
-process of writing a socket program, and you can use the result for subsequent
-calls to `listen()`, `bind()`, `accept()`, or a variety of other functions.
+[ixtt[socket()]] Returns a new socket descriptor that you can use to do
+sockety things with. This is generally the first call in the whopping
+process of writing a socket program, and you can use the result for
+subsequent calls to `listen()`, `bind()`, `accept()`, or a variety of
+other functions.
 
 In usual usage, you get the values for these parameters from a call to
 `getaddrinfo()`, as shown in the example below. But you can fill them in by hand
@@ -7112,9 +7109,9 @@ if you really want to.
 
 | Macro      | Description                                                 |
 |------------|-------------------------------------------------------------|
-| `domain` | `domain` describes what kind of socket you're interested in. This can, believe me, be a wide variety of things, but since this is a socket guide, it's going to be \index{PF\_INET@\texttt{PF\_INET}} `PF_INET` for IPv4, and `PF_INET6` for IPv6.|
-| `type` | Also, the `type` parameter can be a number of things, but you'll probably be setting it to either \index{SOCK\_STREAM@\texttt{SOCK\_STREAM}} `SOCK_STREAM` for reliable \index{TCP} TCP sockets (`send()`, `recv()`) or \index{SOCK\_DGRAM@\texttt{SOCK\_DGRAM}} `SOCK_DGRAM` for unreliable fast \index{UDP} UDP sockets (`sendto()`, `recvfrom()`). (Another interesting socket type is \index{SOCK\_RAW@\texttt{SOCK\_RAW}} `SOCK_RAW` which can be used to construct packets by hand. It's pretty cool.)| 
-| `protocol` | Finally, the `protocol` parameter tells which protocol to use with a certain socket type. Like I've already said, for instance, `SOCK_STREAM` uses TCP. Fortunately for you, when using `SOCK_STREAM` or `SOCK_DGRAM`, you can just set the protocol to 0, and it'll use the proper protocol automatically. Otherwise, you can use \index{getprotobyname()@\texttt{getprotobyname()}} `getprotobyname()` to look up the proper protocol number.|
+| `domain` | `domain` describes what kind of socket you're interested in. This can, believe me, be a wide variety of things, but since this is a socket guide, it's going to be [ixtt[PF\_INET]] `PF_INET` for IPv4, and `PF_INET6` for IPv6.|
+| `type` | Also, the `type` parameter can be a number of things, but you'll probably be setting it to either [ixtt[SOCK\_STREAM]] `SOCK_STREAM` for reliable [ix[TCP]] TCP sockets (`send()`, `recv()`) or [ixtt[SOCK\_DGRAM]] `SOCK_DGRAM` for unreliable fast [ix[UDP]] UDP sockets (`sendto()`, `recvfrom()`). (Another interesting socket type is [ixtt[SOCK\_RAW]] `SOCK_RAW` which can be used to construct packets by hand. It's pretty cool.)| 
+| `protocol` | Finally, the `protocol` parameter tells which protocol to use with a certain socket type. Like I've already said, for instance, `SOCK_STREAM` uses TCP. Fortunately for you, when using `SOCK_STREAM` or `SOCK_DGRAM`, you can just set the protocol to 0, and it'll use the proper protocol automatically. Otherwise, you can use [ixtt[getprotobyname()]] `getprotobyname()` to look up the proper protocol number.|
 
 #### Return Value
 
@@ -7208,16 +7205,15 @@ struct sockaddr_storage {
 
 #### Description 
 
-\index{struct sockaddr\_in@\texttt{struct sockaddr\_in}} \index{struct
-in\_addr@\texttt{struct in\_addr}} These are the basic structures for all
-syscalls and functions that deal with internet addresses. Often you'll use
-`getaddrinfo()` to fill these structures out, and then will read them when you
-have to.
+[ixtt[struct sockaddr\_in]] [ixtt[struct in\_addr]] These are the basic
+structures for all syscalls and functions that deal with internet
+addresses. Often you'll use `getaddrinfo()` to fill these structures
+out, and then will read them when you have to.
 
-In memory, the `struct sockaddr_in` and `struct sockaddr_in6` share the same
-beginning structure as \index{struct sockaddr@\texttt{struct sockaddr}} `struct
-sockaddr`, and you can freely cast the pointer of one type to the other without
-any harm, except the possible end of the universe.
+In memory, the `struct sockaddr_in` and `struct sockaddr_in6` share the
+same beginning structure as [ixtt[struct sockaddr]] `struct sockaddr`,
+and you can freely cast the pointer of one type to the other without any
+harm, except the possible end of the universe.
 
 Just kidding on that end-of-the-universe thing...if the universe does end when
 you cast a `struct sockaddr_in*` to a ` struct sockaddr*`, I promise you it's
@@ -7292,7 +7288,7 @@ to learn more about all this stuff?
 
 ## Books {#books}
 
-\index{books} \index{references} For old-school actual
+[ix[books]] [ix[references]] For old-school actual
 hold-it-in-your-hand pulp paper books, try some of the following
 excellent books. These redirect to affiliate links with a popular
 bookseller, giving me nice kickbacks. If you're merely feeling generous,
@@ -7331,7 +7327,7 @@ ISBN
 
 ## Web References
 
-\index{references!web-based} On the web:
+[ix[references!web-based]] On the web:
 
 **[ BSD Sockets: A Quick And Dirty
 Primer](https://cis.temple.edu/~giorgio/old/cis307s96/readings/docs/sockets.html)^[https://cis.temple.edu/~giorgio/old/cis307s96/readings/docs/sockets.html]**
@@ -7369,7 +7365,7 @@ Sockets](https://en.wikipedia.org/wiki/Berkeley_sockets)^[https://en.wikipedia.o
 ## RFCs
 
 
-\index{RFCs}
+[ix[RFCs]]
 [RFCs](https://www.rfc-editor.org/)^[https://www.rfc-editor.org/]---the real dirt!
 These are documents that describe assigned numbers, programming APIs, and
 protocols that are used on the Internet. I've included links to a few of them
@@ -7381,31 +7377,31 @@ cap:
 it was coming to life, and an insight into how it was being designed from the
 ground up. (This RFC is completely obsolete, obviously!)
 
-\index{UDP} **[RFC
+[ix[UDP]] **[RFC
 768](https://tools.ietf.org/html/rfc768)^[https://tools.ietf.org/html/rfc768]**
 ---The User Datagram Protocol (UDP)
 
-\index{IP} **[RFC
+[ix[IP]] **[RFC
 791](https://tools.ietf.org/html/rfc791)^[https://tools.ietf.org/html/rfc791]**
 ---The Internet Protocol (IP)
 
-\index{TCP} **[RFC
+[ix[TCP]] **[RFC
 793](https://tools.ietf.org/html/rfc793)^[https://tools.ietf.org/html/rfc793]**
 ---The Transmission Control Protocol (TCP)
 
-\index{telnet} **[RFC
+[ix[telnet]] **[RFC
 854](https://tools.ietf.org/html/rfc854)^[https://tools.ietf.org/html/rfc854]**
 ---The Telnet Protocol
 
-\index{FTP} **[RFC
+[ix[FTP]] **[RFC
 959](https://tools.ietf.org/html/rfc959)^[https://tools.ietf.org/html/rfc959]**
 ---File Transfer Protocol (FTP)
 
-\index{TFTP} **[RFC
+[ix[TFTP]] **[RFC
 1350](https://tools.ietf.org/html/rfc1350)^[https://tools.ietf.org/html/rfc1350]**
 ---The Trivial File Transfer Protocol (TFTP)
 
-\index{IRC} **[RFC
+[ix[IRC]] **[RFC
 1459](https://tools.ietf.org/html/rfc1459)^[https://tools.ietf.org/html/rfc1459]**
 ---Internet Relay Chat Protocol (IRC)
 
@@ -7413,15 +7409,15 @@ ground up. (This RFC is completely obsolete, obviously!)
 1918](https://tools.ietf.org/html/rfc1918)^[https://tools.ietf.org/html/rfc1918]**
 ---Address Allocation for Private Internets
 
-\index{DHCP} **[RFC
+[ix[DHCP]] **[RFC
 2131](https://tools.ietf.org/html/rfc2131)^[https://tools.ietf.org/html/rfc2131]**
 ---Dynamic Host Configuration Protocol (DHCP)
 
-\index{HTTP protocol} **[RFC
+[ix[HTTP protocol]] **[RFC
 2616](https://tools.ietf.org/html/rfc2616)^[https://tools.ietf.org/html/rfc2616]**
 ---Hypertext Transfer Protocol (HTTP)
 
-\index{SMTP} **[RFC
+[ix[SMTP]] **[RFC
 2821](https://tools.ietf.org/html/rfc2821)^[https://tools.ietf.org/html/rfc2821]**
 ---Simple Mail Transfer Protocol (SMTP)
 
@@ -7441,11 +7437,11 @@ ground up. (This RFC is completely obsolete, obviously!)
 3849](https://tools.ietf.org/html/rfc3849)^[https://tools.ietf.org/html/rfc3849]**
 ---IPv6 Address Prefix Reserved for Documentation
 
-\index{XMPP} **[RFC
+[ix[XMPP]] **[RFC
 3920](https://tools.ietf.org/html/rfc3920)^[https://tools.ietf.org/html/rfc3920]**
 ---Extensible Messaging and Presence Protocol (XMPP)
 
-\index{NNTP} **[RFC
+[ix[NNTP]] **[RFC
 3977](https://tools.ietf.org/html/rfc3977)^[https://tools.ietf.org/html/rfc3977]**
 ---Network News Transfer Protocol (NNTP)
 
@@ -7453,7 +7449,7 @@ ground up. (This RFC is completely obsolete, obviously!)
 4193](https://tools.ietf.org/html/rfc4193)^[https://tools.ietf.org/html/rfc4193]**
 ---Unique Local IPv6 Unicast Addresses
 
-\index{XDR} **[RFC
+[ix[XDR]] **[RFC
 4506](https://tools.ietf.org/html/rfc4506)^[https://tools.ietf.org/html/rfc4506]**
 ---External Data Representation Standard (XDR)
 

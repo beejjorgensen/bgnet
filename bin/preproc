@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+"""
+[nh[x]] \hyphenation{x}   # no hyphen, no underscores allowed
+[ix[x]] \index{x}         # index straight up
+[ixtt[x]] \index{x@\texttt{x}}         # index tt
+[fl[link|url]] [link](url)^[url]
+[flx[link|file]] [link](https://beej.us/guide/bgnet/examples/file)^[https://beej.us/guide/bgnet/examples/file]
+"""
+
+import sys
+import re
+
+if len(sys.argv) != 3:
+    print("usage: preproc infile outputfile", file=sys.stdout)
+    sys.exit(1)
+
+infile = sys.argv[1]
+outfile = sys.argv[2]
+
+fin = open(infile)
+filedata = fin.read()
+fin.close()
+
+filedata = re.sub(r'\[nh\[(.+?)\]\]', r'\\hyphenation{\1}', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[ix\[(.+?)\]\]', r'\\index{\1}', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[ixtt\[(.+?)\]\]', r'\\index{\1@\\texttt{\1}}', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[fl\[(.+?)\|(.+?)\]\]', r'[\1](\2)^[\2]', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[flx\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/bgnet/examples/\2)^[https://beej.us/guide/bgnet/examples/\2]', filedata, flags=re.DOTALL)
+
+fout = open(outfile, "w")
+fout.write(filedata)
+fout.close()
+
