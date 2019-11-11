@@ -264,16 +264,15 @@ can sit back and safely say, "Sure, feel free to use Windows!"  ...Ok yes, it
 does make me grit my teeth to say that.
 
 So I still encourage you to try [ix[Linux]]
-[Linux](https://www.linux.com/)^[https://www.linux.com/], 
-[BSD](https://bsd.org/)^[https://bsd.org/], or some flavor of Unix,
-instead.
+[fl[Linux|https://www.linux.com/]], [fl[BSD|https://bsd.org/]], or some
+flavor of Unix, instead.
 
 But people like what they like, and you Windows folk will be pleased to know
 that this information is generally applicable to you guys, with a few minor
 changes, if any.
 
 One cool thing you can do is install [ix[Cygwin]]
-[Cygwin](https://cygwin.com/)^[https://cygwin.com/], which is a collection
+[fl[Cygwin|https://cygwin.com/]], which is a collection
 of Unix tools for Windows. I've heard on the grapevine that doing so allows all
 these programs to compile unmodified.
 
@@ -331,9 +330,8 @@ with socket descriptors, not file descriptors (like `0` for `stdin`).
 There is also a socket class that you can use, [ixtt[CSocket]]
 `CSocket`. Check your compilers help pages for more information.
 
-To get more information about Winsock, read the [ix[Winsock!FAQ]] [Winsock
-FAQ](https://tangentsoft.net/wskfaq/)^[https://tangentsoft.net/wskfaq/] and go
-from there.
+To get more information about Winsock, read the [ix[Winsock!FAQ]]
+[fl[Winsock FAQ|https://tangentsoft.net/wskfaq/]] and go from there.
 
 Finally, I hear that Windows has no [ixtt[fork()]] `fork()` system call
 which is, unfortunately, used in some of my examples. Maybe you have to
@@ -357,10 +355,10 @@ just won't ever have the time to give the detailed answer you require.
 As a rule, the more complex the question, the less likely I am to respond. If
 you can narrow down your question before mailing it and be sure to include any
 pertinent information (like platform, compiler, error messages you're getting,
-and anything else you think might help me troubleshoot), you're much more likely
-to get a response. For more pointers, read ESR's document, [How To Ask
-Questions The Smart
-Way](http://www.catb.org/~esr/faqs/smart-questions.html)^[http://www.catb.org/~esr/faqs/smart-questions.html].
+and anything else you think might help me troubleshoot), you're much
+more likely to get a response. For more pointers, read ESR's document,
+[fl[How To Ask Questions The Smart
+Way|http://www.catb.org/~esr/faqs/smart-questions.html]].
 
 If you don't get a response, hack on it some more, try to find the answer, and
 if it's still elusive, then write me again with the information you've found and
@@ -532,24 +530,22 @@ sockets to get pages. Indeed, if you telnet to a web site on port 80, and type
 
 How do stream sockets achieve this high level of data transmission
 quality?  They use a protocol called "The Transmission Control
-Protocol", otherwise known as [ix[TCP]] "TCP" (see [RFC
-793](https://tools.ietf.org/html/rfc793)^[https://tools.ietf.org/html/rfc793]
-for extremely detailed info on TCP). TCP makes sure your data arrives
-sequentially and error-free. You may have heard "TCP" before as the
-better half of "TCP/IP" where [ix[IP]]  "IP" stands for "Internet
-Protocol" (see [RFC
-791](https://tools.ietf.org/html/rfc791)^[https://tools.ietf.org/html/rfc791]).
-IP deals primarily with Internet routing and is not generally
-responsible for data integrity.
+Protocol", otherwise known as [ix[TCP]] "TCP" (see [fl[RFC
+793|https://tools.ietf.org/html/rfc793]] for extremely detailed info on
+TCP). TCP makes sure your data arrives sequentially and error-free. You
+may have heard "TCP" before as the better half of "TCP/IP" where
+[ix[IP]]  "IP" stands for "Internet Protocol" (see [fl[RFC
+791|https://tools.ietf.org/html/rfc791]]).  IP deals primarily with
+Internet routing and is not generally responsible for data integrity.
 
 Cool. [ix[socket!datagram]] What about Datagram sockets? Why are they called
 connectionless? What is the deal, here, anyway? Why are they unreliable?
 Well, here are some facts: if you send a datagram, it may arrive. It may arrive
 out of order. If it arrives, the data within the packet will be error-free.
 
-Datagram sockets also use IP for routing, but they don't use TCP; they use the
-"User Datagram Protocol", or [ix[UDP]] "UDP" (see [RFC
-768](https://tools.ietf.org/html/rfc768)^[https://tools.ietf.org/html/rfc768]).
+Datagram sockets also use IP for routing, but they don't use TCP; they
+use the "User Datagram Protocol", or [ix[UDP]] "UDP" (see [fl[RFC
+768|https://tools.ietf.org/html/rfc768]]).
 
 Why are they connectionless? Well, basically, it's because you don't have to
 maintain an open connection as you do with stream sockets. You just build a
@@ -653,11 +649,10 @@ out. The kernel builds the Transport Layer and Internet Layer on for you and
 the hardware does the Network Access Layer. Ah, modern technology.
 
 So ends our brief foray into network theory. Oh yes, I forgot to tell you
-everything I wanted to say about routing: nothing! That's right, I'm not going
-to talk about it at all. The router strips the packet to the IP header,
-consults its routing table, [ix[blah blah blah}]] _blah blah blah_. Check out
-the [IP
-RFC](https://tools.ietf.org/html/rfc791)^[https://tools.ietf.org/html/rfc791] if
+everything I wanted to say about routing: nothing! That's right, I'm not
+going to talk about it at all. The router strips the packet to the IP
+header, consults its routing table, [ix[blah blah blah]] _blah blah
+blah_. Check out the [fl[IP RFC|https://tools.ietf.org/html/rfc791]] if
 you really really care. If you never learn about it, well, you'll live.
 
 
@@ -687,11 +682,11 @@ Everyone, including Obi Wan, was happy. Things were great, until some naysayer
 by the name of Vint Cerf warned everyone that we were about to run out of IPv4
 addresses!
 
-(Besides warning everyone of the Coming IPv4 Apocalypse Of Doom And Gloom,
-[ix[Vint Cerf]] [Vint
-Cerf](https://en.wikipedia.org/wiki/Vint_Cerf)^[https://en.wikipedia.org/wiki/Vint_Cerf]
-is also well-known for being The Father Of The Internet. So I really am in no
-position to second-guess his judgment.)
+(Besides warning everyone of the Coming IPv4 Apocalypse Of Doom And
+Gloom, [ix[Vint Cerf]] [fl[Vint
+Cerf|https://en.wikipedia.org/wiki/Vint_Cerf]] is also well-known for
+being The Father Of The Internet. So I really am in no position to
+second-guess his judgment.)
 
 Run out of addresses? How could this be? I mean, there are like billions of IP
 addresses in a 32-bit IPv4 address. Do we really have billions of computers out
@@ -712,13 +707,13 @@ But now we're living in an era where we're talking about every human having an
 IP address, every computer, every calculator, every phone, every parking meter,
 and (why not) every puppy dog, as well.
 
-And so, [ix[IPv6]] IPv6 was born. Since Vint Cerf is probably immortal (even
-if his physical form should pass on, heaven forbid, he is probably already
-existing as some kind of hyper-intelligent
-[ELIZA](https://en.wikipedia.org/wiki/ELIZA)^[https://en.wikipedia.org/wiki/ELIZA]
-program out in the depths of the Internet2), no one wants to have to hear him
-say again "I told you so" if we don't have enough addresses in the next version
-of the Internet Protocol.
+And so, [ix[IPv6]] IPv6 was born. Since Vint Cerf is probably immortal
+(even if his physical form should pass on, heaven forbid, he is probably
+already existing as some kind of hyper-intelligent
+[fl[ELIZA|https://en.wikipedia.org/wiki/ELIZA]] program out in the
+depths of the Internet2), no one wants to have to hear him say again "I
+told you so" if we don't have enough addresses in the next version of
+the Internet Protocol.
 
 What does this suggest to you?
 
@@ -842,13 +837,13 @@ Say you want to have a computer that handles incoming mail AND web
 services---how do you differentiate between the two on a computer with a single
 IP address?
 
-Well, different services on the Internet have different well-known port numbers.
-You can see them all in [the Big IANA Port
-List](https://www.iana.org/assignments/port-numbers)^[https://www.iana.org/assignments/port-numbers]
-or, if you're on a Unix box, in your `/etc/services` file. HTTP (the web) is
-port 80, telnet is port 23, SMTP is port 25, the game
-[DOOM](https://en.wikipedia.org/wiki/Doom_(1993_video_game))^[https://en.wikipedia.org/wiki/Doom_(1993_video_game)]
-used port 666, etc. and so on. Ports under 1024 are often considered special,
+Well, different services on the Internet have different well-known port
+numbers.  You can see them all in [fl[the Big IANA Port
+List|https://www.iana.org/assignments/port-numbers]] or, if you're on a
+Unix box, in your `/etc/services` file. HTTP (the web) is port 80,
+telnet is port 23, SMTP is port 25, the game
+[fl[DOOM|https://en.wikipedia.org/wiki/Doom_(1993_video_game)]] used
+port 666, etc. and so on. Ports under 1024 are often considered special,
 and usually require special OS privileges to use.
 
 And that's about it!
@@ -865,12 +860,13 @@ There really is no easy way to say this, so I'll just blurt it out: your
 computer might have been storing bytes in reverse order behind your back. I
 know! No one wanted to have to tell you.
 
-The thing is, everyone in the Internet world has generally agreed that if you
-want to represent the two-byte hex number, say `b34f`, you'll store it in two
-sequential bytes `b3` followed by `4f`. Makes sense, and, as [Wilford
-Brimley](https://en.wikipedia.org/wiki/Wilford_Brimley)^[https://en.wikipedia.org/wiki/Wilford_Brimley]
-would tell you, it's the Right Thing To Do. This number, stored with the big
-end first, is called _Big-Endian_.
+The thing is, everyone in the Internet world has generally agreed that
+if you want to represent the two-byte hex number, say `b34f`, you'll
+store it in two sequential bytes `b3` followed by `4f`. Makes sense,
+and, as [fl[Wilford
+Brimley|https://en.wikipedia.org/wiki/Wilford_Brimley]] would tell you,
+it's the Right Thing To Do. This number, stored with the big end first,
+is called _Big-Endian_.
 
 Unfortunately, a _few_ computers scattered here and there throughout the world,
 namely anything with an Intel or Intel-compatible processor, store the bytes
@@ -1187,7 +1183,7 @@ nameserver DNS lookup on a hostname, like "`www.example.com`". You will use
 
 ### Private (Or Disconnected) Networks
 
-[ix[private network} Lots of places have a [ix[firewall]] firewall that
+[ix[private network]] Lots of places have a [ix[firewall]] firewall that
 hides the network from the rest of the world for their own protection. And often
 times, the firewall translates "internal" IP addresses to "external" (that
 everyone else in the world knows) IP addresses using a process called _Network
@@ -1215,13 +1211,12 @@ computer what its IP address is, it says 10.0.0.5. Who is translating the IP
 address from one to the other? That's right, the firewall! It's doing NAT!
 
 `10.x.x.x` is one of a few reserved networks that are only to be used either on
-fully disconnected networks, or on networks that are behind firewalls. The
-details of which private network numbers are available for you to use are
-outlined in [RFC
-1918](https://tools.ietf.org/html/rfc1918)^[https://tools.ietf.org/html/rfc1918],
+fully disconnected networks, or on networks that are behind firewalls.
+The details of which private network numbers are available for you to
+use are outlined in [fl[RFC 1918|https://tools.ietf.org/html/rfc1918]],
 but some common ones you'll see are [ix[10.x.x.x]] `10.x.x.x` and
-[ix[192.168.x.x]] `192.168.x.x`, where `x` is 0-255, generally. Less common is
-`172.y.x.x`, where `y` goes between 16 and 31.
+[ix[192.168.x.x]] `192.168.x.x`, where `x` is 0-255, generally. Less
+common is `172.y.x.x`, where `y` goes between 16 and 31.
 
 Networks behind a NATing firewall don't _need_ to be on one of these reserved
 networks, but they commonly are.
@@ -1230,14 +1225,14 @@ networks, but they commonly are.
 network is reserved for make-believe "real" IP addresses to be used in
 documentation, just like this guide! Wowzers!)
 
-[ix[IPv6]] IPv6 has private networks, too, in a sense. They'll start with
-`fdXX:` (or maybe in the future `fcXX:`), as per [RFC
-4193](https://tools.ietf.org/html/rfc4193)^[https://tools.ietf.org/html/rfc4193].
-NAT and IPv6 don't generally mix, however (unless you're doing the IPv6 to IPv4
-gateway thing which is beyond the scope of this document)---in theory you'll
-have so many addresses at your disposal that you won't need to use NAT any
-longer. But if you want to allocate addresses for yourself on a network that
-won't route outside, this is how to do it.
+[ix[IPv6]] IPv6 has private networks, too, in a sense. They'll start
+with `fdXX:` (or maybe in the future `fcXX:`), as per [fl[RFC
+4193|https://tools.ietf.org/html/rfc4193]].  NAT and IPv6 don't
+generally mix, however (unless you're doing the IPv6 to IPv4 gateway
+thing which is beyond the scope of this document)---in theory you'll
+have so many addresses at your disposal that you won't need to use NAT
+any longer. But if you want to allocate addresses for yourself on a
+network that won't route outside, this is how to do it.
 
 
 # Jumping from IPv4 to IPv6
@@ -1366,10 +1361,10 @@ linked-list, `res`, of results.
 
 The `node` parameter is the host name to connect to, or an IP address.
 
-Next is the parameter `service`, which can be a port number, like "80", or the
-name of a particular service (found in [The IANA Port
-List](https://www.iana.org/assignments/port-numbers)^[https://www.iana.org/assignments/port-numbers]
-or the `/etc/services` file on your Unix machine) like "http" or "ftp" or
+Next is the parameter `service`, which can be a port number, like "80",
+or the name of a particular service (found in [fl[The IANA Port
+List|https://www.iana.org/assignments/port-numbers]] or the
+`/etc/services` file on your Unix machine) like "http" or "ftp" or
 "telnet" or "smtp" or whatever.
 
 Finally, the `hints` parameter points to a `struct addrinfo` that you've already
@@ -1443,10 +1438,9 @@ status = getaddrinfo("www.example.net", "3490", &hints, &servinfo);
 ```
 
 I keep saying that `servinfo` is a linked list with all kinds of address
-information. Let's write a quick demo program to show off this information.
-[This short
-program](https://beej.us/guide/bgnet/examples/showip.c)^[https://beej.us/guide/bgnet/examples/showip.c]
-will print the IP addresses for whatever host you specify on the command line:
+information. Let's write a quick demo program to show off this
+information. [flx[This short program|showip.c]] will print the IP
+addresses for whatever host you specify on the command line:
 
 ```{.c .numberLines}
 /*
@@ -2012,7 +2006,7 @@ As you can see, this call is basically the same as the call to `send()` with the
 addition of two other pieces of information. `to` is a pointer to a `struct
 sockaddr` (which will probably be another `struct sockaddr_in` or `struct
 sockaddr_in6` or `struct sockaddr_storage` that you cast at the last minute)
-which contains the destination [ix[IP} IP address and [ix[port]] port.
+which contains the destination [ix[IP]] IP address and [ix[port]] port.
 `tolen`, an `int` deep-down, can simply be set to `sizeof *to` or `sizeof(struct
 sockaddr_storage)`.
 
@@ -2142,9 +2136,8 @@ Once you have their address, you can use [ixtt[inet\_ntop()]]
 [ixtt[gethostbyaddr()]] `gethostbyaddr()` to print or get more
 information. No, you can't get their login name. (Ok, ok. If the other
 computer is running an ident daemon, this is possible. This, however, is
-beyond the scope of this document. Check out [RFC
-1413](https://tools.ietf.org/html/rfc1413)^[https://tools.ietf.org/html/rfc1413]
-for more info.)
+beyond the scope of this document. Check out [fl[RFC
+1413|https://tools.ietf.org/html/rfc1413]] for more info.)
 
 
 ## `gethostname()`---Who am I?
@@ -2212,7 +2205,7 @@ $ telnet remotehostname 3490
 
 where `remotehostname` is the name of the machine you're running it on.
 
-[The server code](https://beej.us/guide/bgnet/examples/server.c)^[https://beej.us/guide/bgnet/examples/server.c]:
+[flx[The server code|server.c]]:
 
 ```{.c .numberLines}
 /*
@@ -2370,8 +2363,7 @@ section.
 this client does is connect to the host you specify on the command line,
 port 3490. It gets the string that the server sends.
 
-[The client
-source](https://beej.us/guide/bgnet/examples/client.c)^[https://beej.us/guide/bgnet/examples/client.c]:
+[flx[The client source|client.c]]:
 
 ```{.c .numberLines}
 /*
@@ -2483,8 +2475,7 @@ programs: `talker.c` and `listener.c`.
 packet on port 4950. `talker` sends a packet to that port, on the specified
 machine, that contains whatever the user enters on the command line.
 
-Here is the [source for
-`listener.c`](https://beej.us/guide/bgnet/examples/listener.c)^[https://beej.us/guide/bgnet/examples/listener.c]:
+Here is the [flx[source for `listener.c`|listener.c]]:
 
 ```{.c .numberLines}
 /*
@@ -2588,8 +2579,7 @@ Notice that in our call to `getaddrinfo()` we're finally using `SOCK_DGRAM`.
 Also, note that there's no need to `listen()` or `accept()`. This is one of the
 perks of using unconnected datagram sockets!
 
-[ix[client!datagram]] Next comes the [source for
-`talker.c`](https://beej.us/guide/bgnet/examples/talker.c)^[https://beej.us/guide/bgnet/examples/talker.c]:
+[ix[client!datagram]] Next comes the [flx[source for `talker.c`|talker.c]]:
 
 ```{.c .numberLines}
 /*
@@ -2746,9 +2736,8 @@ see which are ready to read.
 > _A word of warning: `poll()` is horribly slow when it comes to giant
 > numbers of connections. In those circumstances, you'll get better
 > performance out of an event library such as
-> [libevent](https://libevent.org/)^[https://libevent.org/] that
-> attempts to use the fastest possible method availabile on your
-> system._
+> [fl[libevent|https://libevent.org/]] that attempts to use the fastest
+> possible method availabile on your system._
 
 So how can you avoid polling? Not slightly ironically, you can avoid
 polling by using the `poll()` system call. In a nutshell, we're going to
@@ -2811,10 +2800,8 @@ After `poll()` returns, you can check the `revents` field to see if
 (There's actually more that you can do with the `poll()` call. See the
 [`poll()` man page, below](#pollman), for more details.)
 
-Here's [an
-example](https://beej.us/guide/bgnet/examples/poll.c)^[https://beej.us/guide/bgnet/examples/poll.c]
-where we'll wait 2.5 seconds for data to be ready to read from standard
-input, i.e. when you hit `RETURN`:
+Here's [flx[an example|poll.c]] where we'll wait 2.5 seconds for data to
+be ready to read from standard input, i.e. when you hit `RETURN`:
 
 ``` {.c .numberLines}
 #include <stdio.h>
@@ -2883,11 +2870,10 @@ And when a connection is ready-to-read, we'll read the data from it and
 send that data to all the other connections so they can see what the
 other users typed.
 
-So give [this poll
-server](https://beej.us/guide/bgnet/examples/pollserver.c)^[https://beej.us/guide/bgnet/examples/pollserver.c]
-a try. Run it in one window, then `telnet localhost 9034` from a number
-of other terminal windows. You should be able to see what you type in
-one window in the other ones (after you hit RETURN).
+So give [flx[this poll server|pollserver.c]] a try. Run it in one
+window, then `telnet localhost 9034` from a number of other terminal
+windows. You should be able to see what you type in one window in the
+other ones (after you hit RETURN).
 
 Not only that, but if you hit `CTRL-]` and type `quit` to exit `telnet`,
 the server should detect the disconnection and remove you from the array
@@ -3136,9 +3122,8 @@ and which sockets have raised exceptions, if you really want to know that.
 > _A word of warning: `select()`, though very portable, is terribly slow
 > when it comes to giant numbers of connections. In those circumstances,
 > you'll get better performance out of an event library such as
-> [libevent](https://libevent.org/)^[https://libevent.org/] that
-> attempts to use the fastest possible method availabile on your
-> system._
+> [fl[libevent|https://libevent.org/]] that attempts to use the fastest
+> possible method availabile on your system._
 
 Without any further ado, I'll offer the synopsis of `select()`:
 
@@ -3212,9 +3197,8 @@ never timeout, and will wait until the first file descriptor is ready. Finally,
 if you don't care about waiting for a certain set, you can just set it to NULL
 in the call to `select()`.
 
-[The following code
-snippet](https://beej.us/guide/bgnet/examples/select.c)^[https://beej.us/guide/bgnet/examples/select.c]
-waits 2.5 seconds for something to appear on standard input:
+[flx[The following code snippet|select.c]] waits 2.5 seconds for
+something to appear on standard input:
 
 ```{.c .numberLines}
 /*
@@ -3283,11 +3267,10 @@ But, by popular demand, here is an in-depth example. Unfortunately, the
 difference between the dirt-simple example, above, and this one here is
 significant. But have a look, then read the description that follows it.
 
-[This
-program](https://beej.us/guide/bgnet/examples/selectserver.c)^[https://beej.us/guide/bgnet/examples/selectserver.c]
-acts like a simple multi-user chat server. Start it running in one window, then
-`telnet` to it ("`telnet hostname 9034`") from multiple other windows. When you
-type something in one `telnet` session, it should appear in all the others.
+[flx[This program|selectserver.c]] acts like a simple multi-user chat
+server. Start it running in one window, then `telnet` to it ("`telnet
+hostname 9034`") from multiple other windows. When you type something in
+one `telnet` session, it should appear in all the others.
 
 ```{.c .numberLines}
 /*
@@ -3597,13 +3580,13 @@ Actually all the methods, above, have their drawbacks and advantages, but, like
 I said, in general, I prefer the third method. First, though, let's talk about
 some of the drawbacks and advantages to the other two.
 
-The first method, encoding the numbers as text before sending, has the advantage
-that you can easily print and read the data that's coming over the wire.
-Sometimes a human-readable protocol is excellent to use in a
-non-bandwidth-intensive situation, such as with [ix[IRC]] [Internet Relay Chat
-(IRC)](https://en.wikipedia.org/wiki/Internet_Relay_Chat)^[https://en.wikipedia.org/wiki/Internet_Relay_Chat].
-However, it has the disadvantage that it is slow to convert, and the results
-almost always take up more space than the original number!
+The first method, encoding the numbers as text before sending, has the
+advantage that you can easily print and read the data that's coming over
+the wire.  Sometimes a human-readable protocol is excellent to use in a
+non-bandwidth-intensive situation, such as with [ix[IRC]] [fl[Internet
+Relay Chat (IRC)|https://en.wikipedia.org/wiki/Internet_Relay_Chat]].
+However, it has the disadvantage that it is slow to convert, and the
+results almost always take up more space than the original number!
 
 Method two: passing the raw data. This one is quite easy (but dangerous!): just
 take a pointer to the data to send, and call send with it.
@@ -3647,10 +3630,10 @@ But didn't I just get finished saying there wasn't any such function for other
 non-integer types? Yes. I did. And since there's no standard way in C to do
 this, it's a bit of a pickle (that a gratuitous pun there for you Python fans).
 
-The thing to do is to pack the data into a known format and send that over the
-wire for decoding. For example, to pack `float`s, here's [something quick and
-dirty with plenty of room for
-improvement:](https://beej.us/guide/bgnet/examples/pack.c)^[https://beej.us/guide/bgnet/examples/pack.c]
+The thing to do is to pack the data into a known format and send that
+over the wire for decoding. For example, to pack `float`s, here's
+[flx[something quick and dirty with plenty of room for
+improvement|pack.c]]:
 
 ```{.c .numberLines}
 #include <stdint.h>
@@ -3713,20 +3696,19 @@ number greater-than 32767 in there and it won't be very happy! You can also see
 in the above example that the last couple decimal places are not correctly
 preserved.
 
-What can we do instead? Well, _The_ Standard for storing floating point numbers
-is known as [ix[IEEE-754]]
-[IEEE-754](https://en.wikipedia.org/wiki/IEEE_754)^[https://en.wikipedia.org/wiki/IEEE_754].
-Most computers use this format internally for doing floating point math, so in
-those cases, strictly speaking, conversion wouldn't need to be done. But if you
-want your source code to be portable, that's an assumption you can't necessarily
-make. (On the other hand, if you want things to be fast, you should optimize
-this out on platforms that don't need to do it! That's what `htons()` and its
-ilk do.)
+What can we do instead? Well, _The_ Standard for storing floating point
+numbers is known as [ix[IEEE-754]]
+[fl[IEEE-754|https://en.wikipedia.org/wiki/IEEE_754]].  Most computers
+use this format internally for doing floating point math, so in those
+cases, strictly speaking, conversion wouldn't need to be done. But if
+you want your source code to be portable, that's an assumption you can't
+necessarily make. (On the other hand, if you want things to be fast, you
+should optimize this out on platforms that don't need to do it! That's
+what `htons()` and its ilk do.)
 
-[Here's some code that encodes floats and doubles into IEEE-754
-format](https://beej.us/guide/bgnet/examples/ieee754.c)^[https://beej.us/guide/bgnet/examples/ieee754.c].
-(Mostly---it doesn't encode NaN or Infinity, but it could be modified to do
-that.)
+[flx[Here's some code that encodes floats and doubles into IEEE-754
+format|ieee754.c]].  (Mostly---it doesn't encode NaN or Infinity, but it
+could be modified to do that.)
 
 ```{.c .numberLines}
 #define pack754_32(f) (pack754((f), 32, 8))
@@ -3856,28 +3838,25 @@ the other side.
 That's a lot of work, is what you're thinking. Yes, it is. One thing you can do
 is write a helper function to help pack the data for you. It'll be fun! Really!
 
-In the book [_The Practice of
-Programming_](https://beej.us/guide/url/tpop)^[https://beej.us/guide/url/tpop]
-by Kernighan and Pike, they implement `printf()`-like functions called `pack()`
-and `unpack()` that do exactly this. I'd link to them, but apparently those
+In the book [flr[_The Practice of Programming_|tpop]] by Kernighan and
+Pike, they implement `printf()`-like functions called `pack()` and
+`unpack()` that do exactly this. I'd link to them, but apparently those
 functions aren't online with the rest of the source from the book.
 
 (The Practice of Programming is an excellent read. Zeus saves a kitten every
 time I recommend it.)
 
-At this point, I'm going to drop a pointer to a [Protocol Buffers
-implementation in
-C](https://github.com/protobuf-c/protobuf-c)^[https://github.com/protobuf-c/protobuf-c]
-which I've never used, but looks completely respectable. Python and Perl
+At this point, I'm going to drop a pointer to a [fl[Protocol Buffers
+implementation in C|https://github.com/protobuf-c/protobuf-c]] which
+I've never used, but looks completely respectable. Python and Perl
 programmers will want to check out their language's `pack()` and
 `unpack()` functions for accomplishing the same thing. And Java has a
 big-ol' Serializable interface that can be used in a similar way.
 
-But if you want to write your own packing utility in C, K&P's trick is to use
-variable argument lists to make `printf()`-like functions to build the packets.
-[Here's a version I cooked
-up](https://beej.us/guide/bgnet/examples/pack2.c)^[https://beej.us/guide/bgnet/examples/pack2.c]
-on my own based on that which hopefully will be enough to give you an idea of
+But if you want to write your own packing utility in C, K&P's trick is
+to use variable argument lists to make `printf()`-like functions to
+build the packets.  [flx[Here's a version I cooked up|pack2.c]] on my
+own based on that which hopefully will be enough to give you an idea of
 how such a thing can work.
 
 (This code references the `pack754()` functions, above. The `packi*()` functions
@@ -4281,14 +4260,13 @@ void unpack(unsigned char *buf, char *format, ...)
 }
 ```
 
-And [here is a demonstration
-program](https://beej.us/guide/bgnet/examples/pack2.c)^[https://beej.us/guide/bgnet/examples/pack2.c]
-of the above code that packs some data into `buf` and then unpacks it into
-variables. Note that when calling `unpack()` with a string argument (format
-specifier "`s`"), it's wise to put a maximum length count in front of it to
-prevent a buffer overrun, e.g. "`96s`". Be wary when unpacking data you get over
-the network---a malicious user might send badly-constructed packets in an effort
-to attack your system!
+And [flx[here is a demonstration program|pack2.c]] of the above code
+that packs some data into `buf` and then unpacks it into variables. Note
+that when calling `unpack()` with a string argument (format specifier
+"`s`"), it's wise to put a maximum length count in front of it to
+prevent a buffer overrun, e.g. "`96s`". Be wary when unpacking data you
+get over the network---a malicious user might send badly-constructed
+packets in an effort to attack your system!
 
 ```{.c .numberLines}
 #include <stdio.h>
@@ -4331,13 +4309,13 @@ general set of data packing routines for the sake of keeping bugs in check,
 rather than packing each bit by hand each time.
 
 When packing the data, what's a good format to use? Excellent question.
-Fortunately, [ix[XDR]] [RFC
-4506](https://tools.ietf.org/html/rfc4506)^[https://tools.ietf.org/html/rfc4506],
-the External Data Representation Standard, already defines binary formats for a
-bunch of different types, like floating point types, integer types, arrays, raw
+Fortunately, [ix[XDR]] [fl[RFC
+4506|https://tools.ietf.org/html/rfc4506]], the External Data
+Representation Standard, already defines binary formats for a bunch of
+different types, like floating point types, integer types, arrays, raw
 data, etc. I suggest conforming to that if you're going to roll the data
-yourself. But you're not obligated to. The Packet Police are not right outside
-your door. At least, I don't _think_ they are.
+yourself. But you're not obligated to. The Packet Police are not right
+outside your door. At least, I don't _think_ they are.
 
 In any case, encoding the data somehow or another before you send it is the
 right way of doing things!
@@ -4562,10 +4540,9 @@ Yes, it's not happy at all...because we didn't set the `SO_BROADCAST` socket
 option. Do that, and now you can `sendto()` anywhere you want!
 
 In fact, that's the _only difference_ between a UDP application that can
-broadcast and one that can't. So let's take the old `talker` application and add
-one section that sets the `SO_BROADCAST` socket option. We'll call this program
-[
-`broadcaster.c`](https://beej.us/guide/bgnet/examples/broadcaster.c)^[https://beej.us/guide/bgnet/examples/broadcaster.c]:
+broadcast and one that can't. So let's take the old `talker` application
+and add one section that sets the `SO_BROADCAST` socket option. We'll
+call this program [flx[`broadcaster.c`|broadcaster.c]]:
 
 ```{.c .numberLines}
 /*
@@ -4732,17 +4709,16 @@ You can tell because `recv()` will return `0`.
 Where can I find out more about [ix[raw sockets]] raw sockets and
 `SOCK_RAW`?**
 
-All your raw sockets questions will be answered in [W. Richard Stevens' UNIX
-Network Programming books](#books). Also, look in the `ping/` subdirectory in
-Stevens' UNIX Network Programming source code, [available
-online](http://www.unpbook.com/src.html)^[http://www.unpbook.com/src.html].
+All your raw sockets questions will be answered in [W. Richard Stevens'
+UNIX Network Programming books](#books). Also, look in the `ping/`
+subdirectory in Stevens' UNIX Network Programming source code,
+[fl[available online|http://www.unpbook.com/src.html]].
 
 **How do I change or shorten the timeout on a call to `connect()`?**
 
-Instead of giving you exactly the same answer that W. Richard Stevens would give
-you, I'll just refer you to [`lib/connect_nonb.c` in the UNIX Network
-Programming source
-code](http://www.unpbook.com/src.html)^[http://www.unpbook.com/src.html].
+Instead of giving you exactly the same answer that W. Richard Stevens
+would give you, I'll just refer you to [fl[`lib/connect_nonb.c` in the
+UNIX Network Programming source code|http://www.unpbook.com/src.html]].
 
 The gist of it is that you make a socket descriptor with `socket()`, [set it to
 non-blocking](#blocking), call `connect()`, and if all goes well `connect()`
@@ -4870,10 +4846,9 @@ connection. So that return value is already spoken for, and `-1` means
 **How do I [ix[encryption]] encrypt or compress the data before sending it
 through the socket?**
 
-One easy way to do encryption is to use [ix[SSL]] SSL (secure sockets layer),
-but that's beyond the scope of this guide. ([ix[OpenSSL]] Check out the
-[OpenSSL project](https://www.openssl.org/)^[https://www.openssl.org/] for more
-info.)
+One easy way to do encryption is to use [ix[SSL]] SSL (secure sockets
+layer), but that's beyond the scope of this guide. ([ix[OpenSSL]] Check
+out the [fl[OpenSSL project|https://www.openssl.org/]] for more info.)
 
 But assuming you want to plug in or implement your own [ix[compression]]
 compressor or encryption system, it's just a matter of thinking of your data as
@@ -5024,9 +4999,8 @@ You'll have a socket of some type that you can read this data from.
 Unfortunately, the answer to the question varies depending on the
 platform, but if you Google for, for instance, "windows promiscuous
 [ixtt[ioctl()]] ioctl" you'll probably get somewhere.  For Linux,
-there's what looks like a [useful Stack Overflow
-thread](https://stackoverflow.com/questions/21323023/)^[https://stackoverflow.com/questions/21323023/],
-as well.
+there's what looks like a [fl[useful Stack Overflow
+thread|https://stackoverflow.com/questions/21323023/]], as well.
 
 **How can I set a custom [ix[timeout, setting]] timeout value for a TCP or UDP
 socket?**
@@ -5051,13 +5025,13 @@ you try to `bind()`. Choose another port. (It's a good idea to allow the user of
 your software to specify an alternate port either with a config file or a
 command line switch.)
 
-There is a [list of official port
-numbers](https://www.iana.org/assignments/port-numbers)^[https://www.iana.org/assignments/port-numbers]
-maintained by the Internet Assigned Numbers Authority (IANA). Just because
-something (over 1023) is in that list doesn't mean you can't use the port. For
-instance, Id Software's DOOM uses the same port as "mdqs", whatever that is. All
-that matters is that no one else _on the same machine_ is using that port when
-you want to use it.
+There is a [fl[list of official port
+numbers|https://www.iana.org/assignments/port-numbers]] maintained by
+the Internet Assigned Numbers Authority (IANA). Just because something
+(over 1023) is in that list doesn't mean you can't use the port. For
+instance, Id Software's DOOM uses the same port as "mdqs", whatever that
+is. All that matters is that no one else _on the same machine_ is using
+that port when you want to use it.
 
 
 # Man Pages
@@ -5470,12 +5444,12 @@ address can be either a host name, like "www.example.com", or an IPv4 or IPv6
 address (passed as a string). This parameter can also be `NULL` if you're using
 the `AI_PASSIVE` flag (see below).
 
-The `servname` parameter is basically the port number. It can be a port number
-(passed as a string, like "80"), or it can be a service name, like "http" or
-"tftp" or "smtp" or "pop", etc. Well-known service names can be found in the
-[IANA Port
-List](https://www.iana.org/assignments/port-numbers)^[https://www.iana.org/assignments/port-numbers]
-or in your `/etc/services` file.
+The `servname` parameter is basically the port number. It can be a port
+number (passed as a string, like "80"), or it can be a service name,
+like "http" or "tftp" or "smtp" or "pop", etc. Well-known service names
+can be found in the [fl[IANA Port
+List|https://www.iana.org/assignments/port-numbers]] or in your
+`/etc/services` file.
 
 Lastly, for input parameters, we have `hints`. This is really where you get to
 define what the `getaddrinfo()` function is going to do. Zero the whole
@@ -7292,166 +7266,139 @@ to learn more about all this stuff?
 hold-it-in-your-hand pulp paper books, try some of the following
 excellent books. These redirect to affiliate links with a popular
 bookseller, giving me nice kickbacks. If you're merely feeling generous,
-you can paypal a donation to [`beej@beej.us`](beej@beej.us).  `:-)`
+you can paypal a donation to [`beej@beej.us`](mailto:beej@beej.us).  `:-)`
 
 **Unix Network Programming, volumes 1-2**
 by W. Richard Stevens. Published by Addison-Wesley Professional and
 Prentice Hall.
-ISBNs for volumes 1-2:
-[978-0131411555](https://beej.us/guide/url/unixnet1)^[https://beej.us/guide/url/unixnet1], 
-[978-0130810816](https://beej.us/guide/url/unixnet2)^[https://beej.us/guide/url/unixnet2].
+ISBNs for volumes 1-2: [flr[978-0131411555|unixnet1]], 
+[flr[978-0130810816|unixnet2]].
 
 **Internetworking with TCP/IP, volume I**
 by Douglas E. Comer. Published by Pearson.
-ISBN
-[978-0136085300](https://beej.us/guide/url/intertcp1)^[https://beej.us/guide/url/intertcp1], 
+ISBN [flr[978-0136085300|intertcp1]].
 
 **TCP/IP Illustrated, volumes 1-3**
 by W. Richard Stevens and Gary R. Wright. Published by Addison Wesley.
 ISBNs for volumes 1, 2, and 3 (and a 3-volume set):
-[978-0201633467](https://beej.us/guide/url/tcpi1)^[https://beej.us/guide/url/tcpi1], 
-[978-0201633542](https://beej.us/guide/url/tcpi2)^[https://beej.us/guide/url/tcpi2], 
-[978-0201634952](https://beej.us/guide/url/tcpi3)^[https://beej.us/guide/url/tcpi3], 
-([978-0201776317](https://beej.us/guide/url/tcpi123)^[https://beej.us/guide/url/tcpi123]).
+[flr[978-0201633467|tcpi1]], [flr[978-0201633542|tcpi2]], 
+[flr[978-0201634952|tcpi3]], ([flr[978-0201776317|tcpi123]]).
 
 **TCP/IP Network Administration**
 by Craig Hunt. Published by O'Reilly & Associates, Inc.
-ISBN
-[978-0596002978](https://beej.us/guide/url/tcpna)^[https://beej.us/guide/url/tcpna].
+ISBN [flr[978-0596002978|tcpna]].
 
 **Advanced Programming in the UNIX Environment**
 by W. Richard Stevens. Published by Addison Wesley.
-ISBN
-[978-0321637734](https://beej.us/guide/url/advunix)^[https://beej.us/guide/url/advunix].
+ISBN [flr[978-0321637734|advunix]].
 
 
 ## Web References
 
 [ix[references!web-based]] On the web:
 
-**[ BSD Sockets: A Quick And Dirty
-Primer](https://cis.temple.edu/~giorgio/old/cis307s96/readings/docs/sockets.html)^[https://cis.temple.edu/~giorgio/old/cis307s96/readings/docs/sockets.html]**
+**[fl[BSD Sockets: A Quick And Dirty
+Primer|https://cis.temple.edu/~giorgio/old/cis307s96/readings/docs/sockets.html]]**
 (Unix system programming info, too!)
 
-**[The Unix Socket
-FAQ](https://developerweb.net/?f=70)^[https://developerweb.net/?f=70]**
+**[fl[The Unix Socket FAQ|https://developerweb.net/?f=70]]**
 
-**[TCP/IP
-FAQ](http://www.faqs.org/faqs/internet/tcp-ip/tcp-ip-faq/part1/)^[http://www.faqs.org/faqs/internet/tcp-ip/tcp-ip-faq/part1/]**
+**[fl[TCP/IP
+FAQ|http://www.faqs.org/faqs/internet/tcp-ip/tcp-ip-faq/part1/]]**
 
-**[The Winsock
-FAQ](https://tangentsoft.net/wskfaq/)^[https://tangentsoft.net/wskfaq/]**
+**[fl[The Winsock FAQ|https://tangentsoft.net/wskfaq/]]**
 
 And here are some relevant Wikipedia pages:
 
-**[Berkeley
-Sockets](https://en.wikipedia.org/wiki/Berkeley_sockets)^[https://en.wikipedia.org/wiki/Berkeley_sockets]**
+**[fl[Berkeley
+Sockets|https://en.wikipedia.org/wiki/Berkeley_sockets]]**
 
-**[Internet Protocol
-(IP)](https://en.wikipedia.org/wiki/Internet_Protocol)^[https://en.wikipedia.org/wiki/Internet_Protocol]**
+**[fl[Internet Protocol
+(IP)|https://en.wikipedia.org/wiki/Internet_Protocol]]**
 
-**[Transmission Control Protocol
-(TCP)](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)^[https://en.wikipedia.org/wiki/Transmission_Control_Protocol]**
+**[fl[Transmission Control Protocol
+(TCP)|https://en.wikipedia.org/wiki/Transmission_Control_Protocol]]**
 
-**[User Datagram Protocol
-(UDP)](https://en.wikipedia.org/wiki/User_Datagram_Protocol)^[https://en.wikipedia.org/wiki/User_Datagram_Protocol]**
+**[fl[User Datagram Protocol
+(UDP)|https://en.wikipedia.org/wiki/User_Datagram_Protocol]]**
 
-**[Client-Server](https://en.wikipedia.org/wiki/Client-server)^[https://en.wikipedia.org/wiki/Client-server]**
+**[fl[Client-Server|https://en.wikipedia.org/wiki/Client-server]]**
 
-**[Serialization](https://en.wikipedia.org/wiki/Serialization)^[https://en.wikipedia.org/wiki/Serialization]**
+**[fl[Serialization|https://en.wikipedia.org/wiki/Serialization]]**
 (packing and unpacking data)
 
 
 ## RFCs
 
-
 [ix[RFCs]]
-[RFCs](https://www.rfc-editor.org/)^[https://www.rfc-editor.org/]---the real dirt!
-These are documents that describe assigned numbers, programming APIs, and
-protocols that are used on the Internet. I've included links to a few of them
-here for your enjoyment, so grab a bucket of popcorn and put on your thinking
-cap:
 
-**[RFC 1](https://tools.ietf.org/html/rfc1)^[https://tools.ietf.org/html/rfc1]**
+[fl[RFCs|https://www.rfc-editor.org/]]---the real dirt!  These are
+documents that describe assigned numbers, programming APIs, and
+protocols that are used on the Internet. I've included links to a few of
+them here for your enjoyment, so grab a bucket of popcorn and put on
+your thinking cap:
+
+**[fl[RFC 1|https://tools.ietf.org/html/rfc1]]**
 ---The First RFC; this gives you an idea of what the "Internet" was like just as
 it was coming to life, and an insight into how it was being designed from the
 ground up. (This RFC is completely obsolete, obviously!)
 
-[ix[UDP]] **[RFC
-768](https://tools.ietf.org/html/rfc768)^[https://tools.ietf.org/html/rfc768]**
+[ix[UDP]] **[fl[RFC 768|https://tools.ietf.org/html/rfc768]]**
 ---The User Datagram Protocol (UDP)
 
-[ix[IP]] **[RFC
-791](https://tools.ietf.org/html/rfc791)^[https://tools.ietf.org/html/rfc791]**
+[ix[IP]] **[fl[RFC 791|https://tools.ietf.org/html/rfc791]]**
 ---The Internet Protocol (IP)
 
-[ix[TCP]] **[RFC
-793](https://tools.ietf.org/html/rfc793)^[https://tools.ietf.org/html/rfc793]**
+[ix[TCP]] **[fl[RFC 793|https://tools.ietf.org/html/rfc793]]**
 ---The Transmission Control Protocol (TCP)
 
-[ix[telnet]] **[RFC
-854](https://tools.ietf.org/html/rfc854)^[https://tools.ietf.org/html/rfc854]**
+[ix[telnet]] **[fl[RFC 854|https://tools.ietf.org/html/rfc854]]**
 ---The Telnet Protocol
 
-[ix[FTP]] **[RFC
-959](https://tools.ietf.org/html/rfc959)^[https://tools.ietf.org/html/rfc959]**
+[ix[FTP]] **[fl[RFC 959|https://tools.ietf.org/html/rfc959]]**
 ---File Transfer Protocol (FTP)
 
-[ix[TFTP]] **[RFC
-1350](https://tools.ietf.org/html/rfc1350)^[https://tools.ietf.org/html/rfc1350]**
+[ix[TFTP]] **[fl[RFC 1350|https://tools.ietf.org/html/rfc1350]]**
 ---The Trivial File Transfer Protocol (TFTP)
 
-[ix[IRC]] **[RFC
-1459](https://tools.ietf.org/html/rfc1459)^[https://tools.ietf.org/html/rfc1459]**
+[ix[IRC]] **[fl[RFC 1459|https://tools.ietf.org/html/rfc1459]]**
 ---Internet Relay Chat Protocol (IRC)
 
-**[RFC
-1918](https://tools.ietf.org/html/rfc1918)^[https://tools.ietf.org/html/rfc1918]**
+**[fl[RFC 1918|https://tools.ietf.org/html/rfc1918]]**
 ---Address Allocation for Private Internets
 
-[ix[DHCP]] **[RFC
-2131](https://tools.ietf.org/html/rfc2131)^[https://tools.ietf.org/html/rfc2131]**
+[ix[DHCP]] **[fl[RFC 2131|https://tools.ietf.org/html/rfc2131]]**
 ---Dynamic Host Configuration Protocol (DHCP)
 
-[ix[HTTP protocol]] **[RFC
-2616](https://tools.ietf.org/html/rfc2616)^[https://tools.ietf.org/html/rfc2616]**
+[ix[HTTP protocol]] **[fl[RFC 2616|https://tools.ietf.org/html/rfc2616]]**
 ---Hypertext Transfer Protocol (HTTP)
 
-[ix[SMTP]] **[RFC
-2821](https://tools.ietf.org/html/rfc2821)^[https://tools.ietf.org/html/rfc2821]**
+[ix[SMTP]] **[fl[RFC 2821|https://tools.ietf.org/html/rfc2821]]**
 ---Simple Mail Transfer Protocol (SMTP)
 
-**[RFC
-3330](https://tools.ietf.org/html/rfc3330)^[https://tools.ietf.org/html/rfc3330]**
+**[fl[RFC 3330|https://tools.ietf.org/html/rfc3330]]**
 ---Special-Use IPv4 Addresses
 
-**[RFC
-3493](https://tools.ietf.org/html/rfc3493)^[https://tools.ietf.org/html/rfc3493]**
+**[fl[RFC 3493|https://tools.ietf.org/html/rfc3493]]**
 ---Basic Socket Interface Extensions for IPv6
 
-**[RFC
-3542](https://tools.ietf.org/html/rfc3542)^[https://tools.ietf.org/html/rfc3542]**
+**[fl[RFC 3542|https://tools.ietf.org/html/rfc3542]]**
 ---Advanced Sockets Application Program Interface (API) for IPv6
 
-**[RFC
-3849](https://tools.ietf.org/html/rfc3849)^[https://tools.ietf.org/html/rfc3849]**
+**[fl[RFC 3849|https://tools.ietf.org/html/rfc3849]]**
 ---IPv6 Address Prefix Reserved for Documentation
 
-[ix[XMPP]] **[RFC
-3920](https://tools.ietf.org/html/rfc3920)^[https://tools.ietf.org/html/rfc3920]**
+[ix[XMPP]] **[fl[RFC 3920|https://tools.ietf.org/html/rfc3920]]**
 ---Extensible Messaging and Presence Protocol (XMPP)
 
-[ix[NNTP]] **[RFC
-3977](https://tools.ietf.org/html/rfc3977)^[https://tools.ietf.org/html/rfc3977]**
+[ix[NNTP]] **[fl[RFC 3977|https://tools.ietf.org/html/rfc3977]]**
 ---Network News Transfer Protocol (NNTP)
 
-**[RFC
-4193](https://tools.ietf.org/html/rfc4193)^[https://tools.ietf.org/html/rfc4193]**
+**[fl[RFC 4193|https://tools.ietf.org/html/rfc4193]]**
 ---Unique Local IPv6 Unicast Addresses
 
-[ix[XDR]] **[RFC
-4506](https://tools.ietf.org/html/rfc4506)^[https://tools.ietf.org/html/rfc4506]**
+[ix[XDR]] **[fl[RFC 4506|https://tools.ietf.org/html/rfc4506]]**
 ---External Data Representation Standard (XDR)
 
-The IETF has a nice online tool for [searching and browsing
-RFCs](https://tools.ietf.org/rfc/)^[https://tools.ietf.org/rfc/].
+The IETF has a nice online tool for [fl[searching and browsing
+RFCs|https://tools.ietf.org/rfc/]].
