@@ -4,8 +4,14 @@
 [nh[x]] \hyphenation{x}   # no hyphen, no underscores allowed
 [ix[x]] \index{x}         # index straight up
 [ixtt[x]] \index{x@\texttt{x}}         # index tt
+
+fl = footnote link
+flx = footnote link to example https://beej.us/guide/bgnet/examples/file
+flr = footnote link to redirect https://beej.us/guide/url/id
+
 [fl[link|url]] [link](url)^[url]
 [flx[link|file]] [link](https://beej.us/guide/bgnet/examples/file)^[https://beej.us/guide/bgnet/examples/file]
+[flr[link|id]] [link](https://beej.us/guide/url/id)^[https://beej.us/guide/url/id]
 """
 
 import sys
@@ -27,6 +33,7 @@ filedata = re.sub(r'\[ix\[(.+?)\]\]', r'\\index{\1}', filedata, flags=re.DOTALL)
 filedata = re.sub(r'\[ixtt\[(.+?)\]\]', r'\\index{\1@\\texttt{\1}}', filedata, flags=re.DOTALL)
 filedata = re.sub(r'\[fl\[(.+?)\|(.+?)\]\]', r'[\1](\2)^[\2]', filedata, flags=re.DOTALL)
 filedata = re.sub(r'\[flx\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/bgnet/examples/\2)^[https://beej.us/guide/bgnet/examples/\2]', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[flr\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/url/\2)^[https://beej.us/guide/url/\2]', filedata, flags=re.DOTALL)
 
 fout = open(outfile, "w")
 fout.write(filedata)
