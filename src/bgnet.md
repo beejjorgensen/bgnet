@@ -340,7 +340,7 @@ which is, unfortunately, used in some of my examples. Maybe you have to
 link in a POSIX library or something to get it to work, or you can use
 [ixtt[CreateProcess()]] `CreateProcess()` instead.  `fork()` takes no
 arguments, and `CreateProcess()` takes about 48 billion arguments. If
-you're not up to that, the [ix[CreateThread()]] `CreateThread()` is a
+you're not up to that, the [ixtt[CreateThread()]] `CreateThread()` is a
 little easier to digest...unfortunately a discussion about
 multithreading is beyond the scope of this document. I can only talk
 about so much, you know!
@@ -484,14 +484,14 @@ Smarty-Pants?" is probably the last question on your mind right now, but
 I'm going to answer it anyway: You make a call to the [ixtt[socket()]]
 `socket()` system routine. It returns the [ix[socket descriptor]] socket
 descriptor, and you communicate through it using the specialized
-[ixtt[send()]] `send()` and [ix[recv()]] `recv()` ([`man
+[ixtt[send()]] `send()` and [ixtt[recv()]] `recv()` ([`man
 send`](#sendman), [`man recv`](#recvman)) socket calls.
 
 "But, hey!" you might be exclaiming right about now. "If it's a file
 descriptor, why in the name of Neptune can't I just use the normal
 [ixtt[read()]] `read()` and [ixtt[write()]] `write()` calls to
 communicate through the socket?"  The short answer is, "You can!"  The
-longer answer is, "You can, but [ixtt[send()]] `send()` and [ix[recv()]]
+longer answer is, "You can, but [ixtt[send()]] `send()` and [ixtt[recv()]]
 `recv()` offer much greater control over your data transmission."
 
 What next? How about this: there are all kinds of sockets. There are
@@ -675,7 +675,7 @@ and other data.
 
 In the good old days back when Ben Kenobi was still called Obi Wan Kenobi, there
 was a wonderful network routing system called The Internet Protocol Version 4,
-also called [ix[Pv4]] IPv4. It had addresses made up of four bytes (A.K.A.
+also called [ix[IPv4]] IPv4. It had addresses made up of four bytes (A.K.A.
 four "octets"), and was commonly written in "dots and numbers" form, like so:
 `192.0.2.111`.
 
@@ -906,7 +906,7 @@ You can use every combination of "n", "h", "s", and "l" you want, not counting
 the really stupid ones. For example, there is NOT a `stolh()` ("Short to Long
 Host") function---not at this party, anyway. But there are:
 
-[ixtt[htons()]] [ixtt[htonl()]] [ix[ntohs()]] [ix[ntohl()]]
+[ixtt[htons()]] [ixtt[htonl()]] [ixtt[ntohs()]] [ixtt[ntohl()]]
 
 | Function  | Description                   |
 |-----------|-------------------------------|
@@ -1606,7 +1606,7 @@ make any sense.
 ## `bind()`---What port am I on? {#bind}
 
 [ixtt[bind()]] Once you have a socket, you might have to associate that
-socket with a [ix[ports]] port on your local machine. (This is commonly
+socket with a [ix[port]] port on your local machine. (This is commonly
 done if you're going to [ixtt[listen()]] `listen()` for incoming
 connections on a specific port---multiplayer network games do this when
 they tell you to "connect to 192.168.5.10 port 3490".) The port number
@@ -1690,7 +1690,7 @@ assigned into the `sin6_addr` field of your `struct sockaddr_in6`. (There is
 also a macro `IN6ADDR_ANY_INIT` that you can use in a variable initializer.)
 
 Another thing to watch out for when calling `bind()`: don't go underboard with
-your port numbers. [ix[ports]] All ports below 1024 are RESERVED (unless
+your port numbers. [ix[port]] All ports below 1024 are RESERVED (unless
 you're the superuser)! You can have any port number above that, right up to
 65535 (provided they aren't already being used by another program).
 
@@ -2033,7 +2033,7 @@ int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
 ```
 
 Again, this is just like `recv()` with the addition of a couple fields.
-`from` is a pointer to a local [ix[struct sockaddr]] `struct
+`from` is a pointer to a local [ixtt[struct sockaddr]] `struct
 sockaddr_storage` that will be filled with the IP address and port of
 the originating machine. `fromlen` is a pointer to a local `int` that
 should be initialized to `sizeof *from` or `sizeof(struct
@@ -4901,7 +4901,7 @@ code in there that does the encryption.
 
 **What is this "`PF_INET`" I keep seeing? Is it related to `AF_INET`?**
 
-[ixtt[PF\_INET]] [ix[AF\_INET]]
+[ixtt[PF\_INET]] [ixtt[AF\_INET]]
 
 Yes, yes it is. See [the section on `socket()`](#socket) for details.
 
@@ -6435,10 +6435,10 @@ char *strerror(int errnum);
 
 #### Description 
 
-[ixtt[perror()]] [ix[strerror()]] Since so many functions return `-1` on
-error and set the value of the variable [ix[errno]] `errno` to be some
-number, it would sure be nice if you could easily print that in a form
-that made sense to you.
+[ixtt[perror()]] [ixtt[strerror()]] Since so many functions return `-1`
+on error and set the value of the variable [ixtt[errno]] `errno` to be
+some number, it would sure be nice if you could easily print that in a
+form that made sense to you.
 
 Mercifully, `perror()` does that. If you want more description to be
 printed before the error, you can point the parameter `s` to it (or you
