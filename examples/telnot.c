@@ -140,15 +140,17 @@ int main(int argc, char *argv[])
 				}
 
 				char *p = buf;
+				int remainingbytes = readbytes;
 
 				// Write all data out
-				while (p - buf < readbytes) {
-					if ((writebytes = write(outfd, p, readbytes)) == -1) {
+				while (remainingbytes > 0) {
+					if ((writebytes = write(outfd, p, remainingbytes)) == -1) {
 						perror("read");
 						exit(2);
 					}
 
 					p += writebytes;
+					remainingbytes -= writebytes;
 				}
 			}
 		}
