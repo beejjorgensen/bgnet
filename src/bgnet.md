@@ -497,13 +497,12 @@ twice, it'll dump the HTML back at you!
 
 How do stream sockets achieve this high level of data transmission
 quality?  They use a protocol called "The Transmission Control
-Protocol", otherwise known as [ix[TCP]] "TCP" (see [fl[RFC
-793|https://tools.ietf.org/html/rfc793]] for extremely detailed info on
-TCP). TCP makes sure your data arrives sequentially and error-free. You
-may have heard "TCP" before as the better half of "TCP/IP" where
-[ix[IP]]  "IP" stands for "Internet Protocol" (see [fl[RFC
-791|https://tools.ietf.org/html/rfc791]]).  IP deals primarily with
-Internet routing and is not generally responsible for data integrity.
+Protocol", otherwise known as [ix[TCP]] "TCP" (see [flrfc[RFC 793|793]]
+for extremely detailed info on TCP). TCP makes sure your data arrives
+sequentially and error-free. You may have heard "TCP" before as the
+better half of "TCP/IP" where [ix[IP]]  "IP" stands for "Internet
+Protocol" (see [flrfc[RFC 791|791]]).  IP deals primarily with Internet
+routing and is not generally responsible for data integrity.
 
 Cool. [ix[socket!datagram]] What about Datagram sockets? Why are they
 called connectionless? What is the deal, here, anyway? Why are they
@@ -512,8 +511,8 @@ arrive. It may arrive out of order. If it arrives, the data within the
 packet will be error-free.
 
 Datagram sockets also use IP for routing, but they don't use TCP; they
-use the "User Datagram Protocol", or [ix[UDP]] "UDP" (see [fl[RFC
-768|https://tools.ietf.org/html/rfc768]]).
+use the "User Datagram Protocol", or [ix[UDP]] "UDP" (see [flrfc[RFC
+768|768]]).
 
 Why are they connectionless? Well, basically, it's because you don't
 have to maintain an open connection as you do with stream sockets. You
@@ -625,8 +624,8 @@ So ends our brief foray into network theory. Oh yes, I forgot to tell
 you everything I wanted to say about routing: nothing! That's right, I'm
 not going to talk about it at all. The router strips the packet to the
 IP header, consults its routing table, [ix[blah blah blah]] _blah blah
-blah_. Check out the [fl[IP RFC|https://tools.ietf.org/html/rfc791]] if
-you really really care. If you never learn about it, well, you'll live.
+blah_. Check out the [flrfc[IP RFC|791]] if you really really care. If
+you never learn about it, well, you'll live.
 
 
 # IP Addresses, `struct`s, and Data Munging
@@ -1209,11 +1208,10 @@ firewall! It's doing NAT!
 `10.x.x.x` is one of a few reserved networks that are only to be used
 either on fully disconnected networks, or on networks that are behind
 firewalls.  The details of which private network numbers are available
-for you to use are outlined in [fl[RFC
-1918|https://tools.ietf.org/html/rfc1918]], but some common ones you'll
-see are [ix[10.x.x.x]] `10.x.x.x` and [ix[192.168.x.x]] `192.168.x.x`,
-where `x` is 0-255, generally. Less common is `172.y.x.x`, where `y`
-goes between 16 and 31.
+for you to use are outlined in [flrfc[RFC 1918|1918]], but some common
+ones you'll see are [ix[10.x.x.x]] `10.x.x.x` and [ix[192.168.x.x]]
+`192.168.x.x`, where `x` is 0-255, generally. Less common is
+`172.y.x.x`, where `y` goes between 16 and 31.
 
 Networks behind a NATing firewall don't _need_ to be on one of these
 reserved networks, but they commonly are.
@@ -1223,13 +1221,13 @@ reserved networks, but they commonly are.
 be used in documentation, just like this guide! Wowzers!)
 
 [ix[IPv6]] IPv6 has private networks, too, in a sense. They'll start
-with `fdXX:` (or maybe in the future `fcXX:`), as per [fl[RFC
-4193|https://tools.ietf.org/html/rfc4193]].  NAT and IPv6 don't
-generally mix, however (unless you're doing the IPv6 to IPv4 gateway
-thing which is beyond the scope of this document)---in theory you'll
-have so many addresses at your disposal that you won't need to use NAT
-any longer. But if you want to allocate addresses for yourself on a
-network that won't route outside, this is how to do it.
+with `fdXX:` (or maybe in the future `fcXX:`), as per [flrfc[RFC
+4193|4193]].  NAT and IPv6 don't generally mix, however (unless you're
+doing the IPv6 to IPv4 gateway thing which is beyond the scope of this
+document)---in theory you'll have so many addresses at your disposal
+that you won't need to use NAT any longer. But if you want to allocate
+addresses for yourself on a network that won't route outside, this is
+how to do it.
 
 
 # Jumping from IPv4 to IPv6
@@ -2146,8 +2144,8 @@ Once you have their address, you can use [ixtt[inet\_ntop()]]
 [ixtt[gethostbyaddr()]] `gethostbyaddr()` to print or get more
 information. No, you can't get their login name. (Ok, ok. If the other
 computer is running an ident daemon, this is possible. This, however, is
-beyond the scope of this document. Check out [fl[RFC
-1413|https://tools.ietf.org/html/rfc1413]] for more info.)
+beyond the scope of this document. Check out [flrfc[RFC 1413|1413]] for
+more info.)
 
 
 ## `gethostname()`---Who am I?
@@ -4348,8 +4346,7 @@ to have a general set of data packing routines for the sake of keeping
 bugs in check, rather than packing each bit by hand each time.
 
 When packing the data, what's a good format to use? Excellent question.
-Fortunately, [ix[XDR]] [fl[RFC
-4506|https://tools.ietf.org/html/rfc4506]], the External Data
+Fortunately, [ix[XDR]] [flrfc[RFC 4506|4506]], the External Data
 Representation Standard, already defines binary formats for a bunch of
 different types, like floating point types, integer types, arrays, raw
 data, etc. I suggest conforming to that if you're going to roll the data
@@ -7447,67 +7444,67 @@ protocols that are used on the Internet. I've included links to a few of
 them here for your enjoyment, so grab a bucket of popcorn and put on
 your thinking cap:
 
-**[fl[RFC 1|https://tools.ietf.org/html/rfc1]]**
+**[flrfc[RFC 1|1]]**
 ---The First RFC; this gives you an idea of what the "Internet" was like
 just as it was coming to life, and an insight into how it was being
 designed from the ground up. (This RFC is completely obsolete,
 obviously!)
 
-[ix[UDP]] **[fl[RFC 768|https://tools.ietf.org/html/rfc768]]**
+[ix[UDP]] **[flrfc[RFC 768|768]]**
 ---The User Datagram Protocol (UDP)
 
-[ix[IP]] **[fl[RFC 791|https://tools.ietf.org/html/rfc791]]**
+[ix[IP]] **[flrfc[RFC 791|791]]**
 ---The Internet Protocol (IP)
 
-[ix[TCP]] **[fl[RFC 793|https://tools.ietf.org/html/rfc793]]**
+[ix[TCP]] **[flrfc[RFC 793|793]]**
 ---The Transmission Control Protocol (TCP)
 
-[ix[telnet]] **[fl[RFC 854|https://tools.ietf.org/html/rfc854]]**
+[ix[telnet]] **[flrfc[RFC 854|854]]**
 ---The Telnet Protocol
 
-[ix[FTP]] **[fl[RFC 959|https://tools.ietf.org/html/rfc959]]**
+[ix[FTP]] **[flrfc[RFC 959|959]]**
 ---File Transfer Protocol (FTP)
 
-[ix[TFTP]] **[fl[RFC 1350|https://tools.ietf.org/html/rfc1350]]**
+[ix[TFTP]] **[flrfc[RFC 1350|1350]]**
 ---The Trivial File Transfer Protocol (TFTP)
 
-[ix[IRC]] **[fl[RFC 1459|https://tools.ietf.org/html/rfc1459]]**
+[ix[IRC]] **[flrfc[RFC 1459|1459]]**
 ---Internet Relay Chat Protocol (IRC)
 
-**[fl[RFC 1918|https://tools.ietf.org/html/rfc1918]]**
+**[flrfc[RFC 1918|1918]]**
 ---Address Allocation for Private Internets
 
-[ix[DHCP]] **[fl[RFC 2131|https://tools.ietf.org/html/rfc2131]]**
+[ix[DHCP]] **[flrfc[RFC 2131|2131]]**
 ---Dynamic Host Configuration Protocol (DHCP)
 
-[ix[HTTP protocol]] **[fl[RFC 2616|https://tools.ietf.org/html/rfc2616]]**
+[ix[HTTP protocol]] **[flrfc[RFC 2616|2616]]**
 ---Hypertext Transfer Protocol (HTTP)
 
-[ix[SMTP]] **[fl[RFC 2821|https://tools.ietf.org/html/rfc2821]]**
+[ix[SMTP]] **[flrfc[RFC 2821|2821]]**
 ---Simple Mail Transfer Protocol (SMTP)
 
-**[fl[RFC 3330|https://tools.ietf.org/html/rfc3330]]**
+**[flrfc[RFC 3330|3330]]**
 ---Special-Use IPv4 Addresses
 
-**[fl[RFC 3493|https://tools.ietf.org/html/rfc3493]]**
+**[flrfc[RFC 3493|3493]]**
 ---Basic Socket Interface Extensions for IPv6
 
-**[fl[RFC 3542|https://tools.ietf.org/html/rfc3542]]**
+**[flrfc[RFC 3542|3542]]**
 ---Advanced Sockets Application Program Interface (API) for IPv6
 
-**[fl[RFC 3849|https://tools.ietf.org/html/rfc3849]]**
+**[flrfc[RFC 3849|3849]]**
 ---IPv6 Address Prefix Reserved for Documentation
 
-[ix[XMPP]] **[fl[RFC 3920|https://tools.ietf.org/html/rfc3920]]**
+[ix[XMPP]] **[flrfc[RFC 3920|3920]]**
 ---Extensible Messaging and Presence Protocol (XMPP)
 
-[ix[NNTP]] **[fl[RFC 3977|https://tools.ietf.org/html/rfc3977]]**
+[ix[NNTP]] **[flrfc[RFC 3977|3977]]**
 ---Network News Transfer Protocol (NNTP)
 
-**[fl[RFC 4193|https://tools.ietf.org/html/rfc4193]]**
+**[flrfc[RFC 4193|4193]]**
 ---Unique Local IPv6 Unicast Addresses
 
-[ix[XDR]] **[fl[RFC 4506|https://tools.ietf.org/html/rfc4506]]**
+[ix[XDR]] **[flrfc[RFC 4506|4506]]**
 ---External Data Representation Standard (XDR)
 
 The IETF has a nice online tool for [fl[searching and browsing

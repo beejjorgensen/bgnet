@@ -45,6 +45,13 @@ These are brought to life with the `bin/preproc` script.
    `https://beej.us/guide/url/` to the link id and shows the URL in a
    footnote.
 
+* `[flrfc[link|num]]`
+
+   Footnote Link to RFC. Automatically prepends
+   `https://tools.ietf.org/html/rfc` to the RFC number and shows the URL
+   in a footnote.
+   
+
 ## pandoc markdown quirks
 
 If you have multiple inline footnotes in the same paragraph but on
