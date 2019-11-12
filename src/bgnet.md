@@ -2786,6 +2786,8 @@ have had an event occur.
 
 Let's have a look at that `struct`:
 
+[ixtt[struct pollfd]]
+
 ``` {.c}
 struct pollfd {
     int fd;         // the socket descriptor
