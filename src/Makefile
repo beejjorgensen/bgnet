@@ -1,7 +1,7 @@
 TITLE="Beej's Guide to Network Programming"
 SUBTITLE="Using Internet Sockets"
 AUTHOR='Brian "Beej Jorgensen" Hall'
-VERSION_DATE="v3.1.0, Copyright © November 10, 2019"
+VERSION_DATE="v3.1.1, Copyright © November 11, 2019"
 
 PDF_MAINFONT="Liberation Serif"
 PDF_SANSFONT="Liberation Sans"

@@ -57,6 +57,7 @@
     3.0.22:     C99 updates, bug fixes, markdown
     3.0.23:     Book reference and URL updates
     3.1.0:      Section on poll()
+    3.1.1:      Add WSL note, telnot
 -->
 
 <!-- prevent hyphenation of the following words: -->
@@ -230,6 +231,12 @@ One cool thing you can do is install [ix[Cygwin]]
 [fl[Cygwin|https://cygwin.com/]], which is a collection of Unix tools
 for Windows. I've heard on the grapevine that doing so allows all these
 programs to compile unmodified.
+
+Another thing that you should consider is [ix[WSL]] [ix[Windows
+Subsystem For Linux]] the [fl[Windows Subsystem for
+Linux|https://docs.microsoft.com/en-us/windows/wsl/about]]. This
+basically allows you to install a Linux VM-ish thing on Windows 10. That
+will also definitely get you situated.
 
 But some of you might want to do things the Pure Windows Way. That's
 very gutsy of you, and this is what you have to do: run out and get Unix
@@ -494,6 +501,13 @@ them, right?  Also, web browsers use the [ix[HTTP protocol]] HTTP
 protocol which uses stream sockets to get pages. Indeed, if you telnet
 to a web site on port 80, and type "`GET / HTTP/1.0`" and hit RETURN
 twice, it'll dump the HTML back at you!
+
+> If you don't have `telnet` installed and don't want to install it, or
+> your `telnet` is being picky about connecting to clients, the guide
+> comes with a `telnet`-like program called [flx[`telnot`|telnot.c]].
+> This should work well for all the needs of the guide. (Note that
+> telnet is actually a [flrfc[spec'd networking protocol|854]], and
+> `telnot` doesn't implement this protocol at all.)
 
 How do stream sockets achieve this high level of data transmission
 quality?  They use a protocol called "The Transmission Control
