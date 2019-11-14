@@ -58,6 +58,7 @@
     3.0.23:     Book reference and URL updates
     3.1.0:      Section on poll()
     3.1.1:      Add WSL note, telnot
+    3.1.2:      pollserver.c bugfix
 -->
 
 <!-- prevent hyphenation of the following words: -->
@@ -407,12 +408,11 @@ Contact [`beej@beej.us`](mailto:beej@beej.us) for more information.
 ## Dedication
 
 Thanks to everyone who has helped in the past and future with me getting
-this guide written. Thanks to Ashley for helping me coax the cover
-design into the best programmer art I could. Thank you to all the people
-who produce the Free software and packages that I use to make the Guide:
-GNU, Linux, Slackware, vim, Python, Inkscape, pandoc, many others. And
-finally a big thank-you to the literally thousands of you who have
-written in with suggestions for improvements and words of encouragement.
+this guide written. And thank you to all the people who produce the Free
+software and packages that I use to make the Guide: GNU, Linux,
+Slackware, vim, Python, Inkscape, pandoc, many others. And finally a big
+thank-you to the literally thousands of you who have written in with
+suggestions for improvements and words of encouragement.
 
 I dedicate this guide to some of my biggest heroes and inpirators in the
 world of computers: Donald Knuth, Bruce Schneier, W. Richard Stevens,
@@ -3057,7 +3057,7 @@ int main(void)
         }
 
         // Run through the existing connections looking for data to read
-        for(int i = 0; i <= fd_count; i++) {
+        for(int i = 0; i < fd_count; i++) {
 
             // Check if someone's ready to read
             if (pfds[i].revents & POLLIN) { // We got one!!

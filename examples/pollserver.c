@@ -144,7 +144,7 @@ int main(void)
         }
 
         // Run through the existing connections looking for data to read
-        for(int i = 0; i <= fd_count; i++) {
+        for(int i = 0; i < fd_count; i++) {
 
             // Check if someone's ready to read
             if (pfds[i].revents & POLLIN) { // We got one!!
