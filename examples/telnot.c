@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 				// Write all data out
 				while (remainingbytes > 0) {
 					if ((writebytes = write(outfd, p, remainingbytes)) == -1) {
-						perror("read");
+						perror("write");
 						exit(2);
 					}
 
