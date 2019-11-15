@@ -13,6 +13,7 @@ can easily clone it.
 You'll need:
 
 * [Gnu make](https://www.gnu.org/software/make/)
+* [Python 3+](https://www.python.org/)
 * [Pandoc 2.7.3+](https://pandoc.org/)
 
 1. Type `make` from the top-level directory.
