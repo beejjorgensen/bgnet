@@ -3,6 +3,8 @@ SUBTITLE="Using Internet Sockets"
 AUTHOR='Brian "Beej Jorgensen" Hall'
 VERSION_DATE="v3.1.2, Copyright © November 13, 2019"
 
+GUIDE_ID=bgnet
+
 PDF_MAINFONT="Liberation Serif"
 PDF_SANSFONT="Liberation Sans"
 PDF_MONOFONT="Liberation Mono"
@@ -10,16 +12,16 @@ PDF_MONOFONT="Liberation Mono"
 #PDF_SANSFONT="DejaVu Sans"
 #PDF_MONOFONT="DejaVu Sans Mono"
 
-USLETTER_COLOR=bgnet_usl_c_1.pdf bgnet_usl_c_2.pdf
-USLETTER_BW=bgnet_usl_bw_1.pdf bgnet_usl_bw_2.pdf
-A4_COLOR=bgnet_a4_c_1.pdf bgnet_a4_c_2.pdf
-A4_BW=bgnet_a4_bw_1.pdf bgnet_a4_bw_2.pdf
-BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR) bgnet_lulu.pdf
+USLETTER_COLOR=$(GUIDE_ID)_usl_c_1.pdf $(GUIDE_ID)_usl_c_2.pdf
+USLETTER_BW=$(GUIDE_ID)_usl_bw_1.pdf $(GUIDE_ID)_usl_bw_2.pdf
+A4_COLOR=$(GUIDE_ID)_a4_c_1.pdf $(GUIDE_ID)_a4_c_2.pdf
+A4_BW=$(GUIDE_ID)_a4_bw_1.pdf $(GUIDE_ID)_a4_bw_2.pdf
+BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR) $(GUIDE_ID)_lulu.pdf
 
-HTML=bgnet.html
+HTML=$(GUIDE_ID).html
 
 PREPROC=../bin/preproc
-PREPROC_MD=bgnet_temp_preproc.md
+PREPROC_MD=$(GUIDE_ID)_temp_preproc.md
 
 COMMON_OPTS= \
 	--variable title:$(TITLE) \
@@ -37,7 +39,7 @@ PDF_OPTS= \
 	--variable monofont=$(PDF_MONOFONT) \
 	--variable geometry:"top=1in,bottom=1in" \
 	-V documentclass=book \
-	-o bgnet_temp.tex \
+	-o $(GUIDE_ID)_temp.tex \
 	$(COMMON_OPTS)
 
 HTML_OPTS=$(COMMON_OPTS) \
@@ -56,114 +58,114 @@ BW=--no-highlight  # black and white options
 
 all: $(HTML) $(BOOKS)
 
-bgnet.html: bgnet.md bg-css.html
+$(GUIDE_ID).html: $(GUIDE_ID).md bg-css.html
 	$(PREPROC) $< $(PREPROC_MD)
-	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o bgnet.html -H bg-css.html
-	sed -i 's/src="\(.*\)\.pdf"/src="\1.svg"/g' bgnet.html  # use svg images
-	rm -f bgnet_temp*
+	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o $(GUIDE_ID).html -H bg-css.html
+	sed -i 's/src="\(.*\)\.pdf"/src="\1.svg"/g' $(GUIDE_ID).html  # use svg images
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_usl_c_1.pdf: bgnet.md
+$(GUIDE_ID)_usl_c_1.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_usl_c_2.pdf: bgnet.md
+$(GUIDE_ID)_usl_c_2.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_a4_c_1.pdf: bgnet.md
+$(GUIDE_ID)_a4_c_1.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_a4_c_2.pdf: bgnet.md
+$(GUIDE_ID)_a4_c_2.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_usl_bw_1.pdf: bgnet.md
+$(GUIDE_ID)_usl_bw_1.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(USLETTER) $(ONESIDE) $(BW) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_usl_bw_2.pdf: bgnet.md
+$(GUIDE_ID)_usl_bw_2.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(USLETTER) $(TWOSIDE) $(BW) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_a4_bw_1.pdf: bgnet.md
+$(GUIDE_ID)_a4_bw_1.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(A4) $(ONESIDE) $(BW) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_a4_bw_2.pdf: bgnet.md
+$(GUIDE_ID)_a4_bw_2.pdf: $(GUIDE_ID).md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(A4) $(TWOSIDE) $(BW) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_lulu.pdf: bgnet_lulu.md
+$(GUIDE_ID)_lulu.pdf: $(GUIDE_ID)_lulu.md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(TWOSIDE) $(CROWNQUARTO) $(BLANKLAST) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
-bgnet_amazon.pdf: bgnet_amazon.md
+$(GUIDE_ID)_amazon.pdf: $(GUIDE_ID)_amazon.md
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(PDF_OPTS) $(TWOSIDE) $(SIZE_75x925_AMAZON) $(BLANKLAST) $(PREPROC_MD)
-	xelatex bgnet_temp.tex
-	makeindex bgnet_temp.idx
-	xelatex bgnet_temp.tex
-	xelatex bgnet_temp.tex
-	mv bgnet_temp.pdf $@
-	rm -f bgnet_temp*
+	xelatex $(GUIDE_ID)_temp.tex
+	makeindex $(GUIDE_ID)_temp.idx
+	xelatex $(GUIDE_ID)_temp.tex
+	xelatex $(GUIDE_ID)_temp.tex
+	mv $(GUIDE_ID)_temp.pdf $@
+	rm -f $(GUIDE_ID)_temp*
 
 clean:
-	rm -f bgnet_temp*
+	rm -f $(GUIDE_ID)_temp*
 
 pristine: clean
 	rm -f $(HTML) $(BOOKS)
