@@ -1,4 +1,8 @@
-<!-- Beej's Guide to Network Programming book source -->
+<!--
+Beej's Guide to Network Programming book source
+
+# vim: ts=4:sw=4:nosi:et:tw=72
+-->
 
 <!--
 	History:
