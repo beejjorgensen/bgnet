@@ -184,7 +184,7 @@ to specify some extra command-line switches for linking in the proper
 libraries. In order to do this, simply add "`-lnsl -lsocket -lresolv`"
 to the end of the compile command, like so:
 
-```shell
+```
 $ cc -o server server.c -lnsl -lsocket -lresolv
 ```
 
@@ -429,8 +429,8 @@ Community.
 This book is written in Markdown using the vim editor on an Arch Linux
 box loaded with GNU tools. The cover "art" and diagrams are produced
 with Inkscape.  The Markdown is converted to HTML and LaTex/PDF by
-pandoc and xeLaTex, using Liberation fonts. The toolchain is composed of
-100% Free and Open Source Software.
+Python, Pandoc and XeLaTeX, using Liberation fonts. The toolchain is
+composed of 100% Free and Open Source Software.
 
 
 # What is a socket?
@@ -1003,7 +1003,6 @@ struct sockaddr {
     unsigned short    sa_family;    // address family, AF_xxx
     char              sa_data[14];  // 14 bytes of protocol address
 }; 
-
 ```
 
 `sa_family` can be a variety of things, but it'll be [ixtt[AF\_INET]]
@@ -1030,7 +1029,6 @@ struct sockaddr_in {
     struct in_addr     sin_addr;    // Internet address
     unsigned char      sin_zero[8]; // Same size as struct sockaddr
 };
-
 ```
 
 This structure makes it easy to reference elements of the socket
@@ -1528,7 +1526,7 @@ about that! I'm not sure of a better way around it.)
 
 Sample run! Everyone loves screenshots:
 
-```shell
+```
 $ showip www.example.net
 IP addresses for www.example.net:
 
@@ -1556,7 +1554,6 @@ I guess I can put it off no longer---I have to talk about the
 #include <sys/socket.h>
 
 int socket(int domain, int type, int protocol); 
-
 ```
 
 But what are these arguments? They allow you to say what kind of socket
@@ -1630,7 +1627,6 @@ Here is the synopsis for the `bind()` system call:
 #include <sys/socket.h>
 
 int bind(int sockfd, struct sockaddr *my_addr, int addrlen);
-
 ```
 
 `sockfd` is the socket file descriptor returned by `socket()`. `my_addr`
@@ -1724,7 +1720,6 @@ if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
     perror("setsockopt");
     exit(1);
 } 
-
 ```
 
 [ixtt[bind()]] One small extra final note about `bind()`: there are
@@ -1755,7 +1750,6 @@ The `connect()` call is as follows:
 #include <sys/socket.h>
 
 int connect(int sockfd, struct sockaddr *serv_addr, int addrlen); 
-
 ```
 
 `sockfd` is our friendly neighborhood socket file descriptor, as
@@ -1819,7 +1813,6 @@ The listen call is fairly simple, but requires a bit of explanation:
 
 ```{.c}
 int listen(int sockfd, int backlog); 
-
 ```
 
 `sockfd` is the usual socket file descriptor from the `socket()` system
@@ -1844,7 +1837,6 @@ socket();
 bind();
 listen();
 /* accept() goes here */ 
-
 ```
 
 I'll just leave that in the place of sample code, since it's fairly
@@ -1873,7 +1865,6 @@ The call is as follows:
 #include <sys/socket.h>
 
 int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen); 
-
 ```
 
 `sockfd` is the `listen()`ing socket descriptor. Easy enough. `addr`
@@ -1952,7 +1943,6 @@ datagram sockets, you'll need to see the section on [`sendto()` and
 
 ```{.c}
 int send(int sockfd, const void *msg, int len, int flags); 
-
 ```
 
 `sockfd` is the socket descriptor you want to send data to (whether it's
@@ -1974,7 +1964,6 @@ bytes_sent = send(sockfd, msg, len, 0);
 .
 .
 . 
-
 ```
 
 `send()` returns the number of bytes actually sent out---_this might be
@@ -2087,7 +2076,6 @@ descriptor [ixtt[close()]] `close()` function:
 
 ```{.c}
 close(sockfd); 
-
 ```
 
 This will prevent any more reads and writes to the socket. Anyone
@@ -2101,7 +2089,6 @@ to cut off communication in a certain direction, or both ways (just like
 
 ```{.c}
 int shutdown(int sockfd, int how); 
-
 ```
 
 `sockfd` is the socket file descriptor you want to shutdown, and `how`
@@ -2146,7 +2133,6 @@ connected stream socket. The synopsis:
 #include <sys/socket.h>
 
 int getpeername(int sockfd, struct sockaddr *addr, int *addrlen); 
-
 ```
 
 `sockfd` is the descriptor of the connected stream socket, `addr` is a
@@ -2181,7 +2167,6 @@ pertain to socket programming. Anyway, here's the breakdown:
 #include <unistd.h>
 
 int gethostname(char *hostname, size_t size); 
-
 ```
 
 The arguments are simple: `hostname` is a pointer to an array of chars that will
@@ -2225,7 +2210,7 @@ next section.
 world!`" out over a stream connection. All you need to do to test this
 server is run it in one window, and telnet to it from another with:
 
-```shell
+```
 $ telnet remotehostname 3490
 ```
 
@@ -2738,7 +2723,6 @@ fcntl(sockfd, F_SETFL, O_NONBLOCK);
 .
 .
 . 
-
 ```
 
 By setting a socket to non-blocking, you can effectively "poll" the
@@ -3127,7 +3111,6 @@ int main(void)
     
     return 0;
 }
-
 ```
 
 In the next section, we'll look at a similar, older function called
@@ -3170,7 +3153,6 @@ Without any further ado, I'll offer the synopsis of `select()`:
 
 int select(int numfds, fd_set *readfds, fd_set *writefds,
            fd_set *exceptfds, struct timeval *timeout); 
-
 ```
 
 The function monitors "sets" of file descriptors; in particular
@@ -3213,7 +3195,6 @@ struct timeval {
     int tv_sec;     // seconds
     int tv_usec;    // microseconds
 }; 
-
 ```
 
 Just set `tv_sec` to the number of seconds to wait, and set `tv_usec` to
@@ -3272,7 +3253,6 @@ int main(void)
 
     return 0;
 } 
-
 ```
 
 If you're on a line buffered terminal, the key you hit should be RETURN
@@ -3556,7 +3536,6 @@ int sendall(int s, char *buf, int *len)
 
     return n==-1?-1:0; // return -1 on failure, 0 on success
 } 
-
 ```
 
 In this example, `s` is the socket you want to send the data to, `buf`
@@ -3581,7 +3560,6 @@ if (sendall(s, buf, &len) == -1) {
     perror("sendall");
     printf("We only sent %d bytes because of the error!\n", len);
 } 
-
 ```
 
 What happens on the receiver's end when part of a packet arrives? If the
@@ -3866,7 +3844,7 @@ int main(void)
 
 The above code produces this output:
 
-```shell
+```
 float before : 3.1415925
 float encoded: 0x40490FDA
 float after  : 3.1415925
@@ -4400,7 +4378,7 @@ say, "Hey guys what is up?"
 So you `send()` all this stuff to the clients as it comes in. Your
 outgoing data stream looks like this:
 
-```shell
+```
 t o m H i B e n j a m i n H e y g u y s w h a t i s u p ?
 ```
 
@@ -4438,18 +4416,16 @@ field, or whatever.  The choice is up to you.
 Using the above packet definition, the first packet would consist of the
 following information (in hex and ASCII):
 
-```shell
+```
    0A     74 6F 6D 00 00 00 00 00      48 69
 (length)  T  o  m    (padding)         H  i
-
 ```
 
 And the second is similar:
 
-```shell
+```
    18     42 65 6E 6A 61 6D 69 6E      48 65 79 20 67 75 79 73 20 77 ...
 (length)  B  e  n  j  a  m  i  n       H  e  y     g  u  y  s     w  ...
-
 ```
 
 (The length is stored in Network Byte Order, of course. In this case,
@@ -4591,7 +4567,7 @@ So what happens if you try to send data on the broadcast address without
 first setting the `SO_BROADCAST` socket option? Well, let's fire up good
 old [`talker` and `listener`](#datagram) and see what happens.
 
-```shell
+```
 $ talker 192.168.1.2 foo
 sent 3 bytes to 192.168.1.2
 $ talker 192.168.1.255 foo
@@ -4685,7 +4661,7 @@ UDP [`listener`](#datagram) program in one window, and `broadcaster` in
 another. You should be now be able to do all those sends that failed,
 above.
 
-```shell
+```
 $ broadcaster 192.168.1.2 foo
 sent 3 bytes to 192.168.1.2
 $ broadcaster 192.168.1.255 foo
@@ -4740,7 +4716,7 @@ Check out the [ixtt[bind()]] [section on `bind()`](#bind) and the
 Use the [ix[netstat]] `netstat`. Check the `man` page for full details,
 but you should get some good output just typing:
 
-```shell
+```
 $ netstat
 ```
 
@@ -4850,7 +4826,6 @@ if ((err = select(fdmax+1, &readfds, NULL, NULL, NULL)) == -1) {
     // handle the real error here:
     perror("select");
 } 
-
 ```
 
 Sure, you don't _need_ to use `goto` in this case; you can use other
@@ -4910,7 +4885,6 @@ else if (n == -2) {
 .
 .
 . 
-
 ```
 
 Notice that [ixtt[recvtimeout()]] `recvtimeout()` returns `-2` in case
@@ -4992,7 +4966,6 @@ if (!strncmp(str, "foobar", 6)) {
     sprintf(sysstr, "%s > /tmp/server.out", str);
     system(sysstr);
 } 
-
 ```
 
 But you're still unsafe, unfortunately: what if the client enters
@@ -5948,7 +5921,6 @@ getnameinfo(&sa, sizeof sa, host, sizeof host, service, sizeof service, 0);
 
 printf("   host: %s\n", host);    // e.g. "www.example.com"
 printf("service: %s\n", service); // e.g. "http"
-
 ```
 
 #### See Also
@@ -6407,6 +6379,7 @@ inet_ntop(AF_INET6, &(sa.sin6_addr), str, INET6_ADDRSTRLEN);
 
 printf("%s\n", str); // prints "2001:db8:8714:3a90::12"
 ```
+
 ```{.c .numberLines}
 // Helper function you can use:
 
@@ -6773,7 +6746,6 @@ connect(sockfd, res->ai_addr, res->ai_addrlen);
 // all right! now that we're connected, we can receive some data!
 byte_count = recv(sockfd, buf, sizeof buf, 0);
 printf("recv()'d %d bytes of data in buf\n", byte_count);
-
 ```
 
 ```{.c .numberLines}
@@ -6808,8 +6780,6 @@ printf("from IP address %s\n",
             ((struct sockadd_in *)&addr)->sin_addr:
             ((struct sockadd_in6 *)&addr)->sin6_addr,
         ipstr, sizeof ipstr);
-
-
 ```
 
 #### See Also
@@ -7359,6 +7329,7 @@ inet_pton(AF_INET, "10.0.0.1", &ip4addr.sin_addr);
 s = socket(PF_INET, SOCK_STREAM, 0);
 bind(s, (struct sockaddr*)&ip4addr, sizeof ip4addr);
 ```
+
 ```{.c .numberLines}
 // IPv6:
 
