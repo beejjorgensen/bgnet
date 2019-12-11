@@ -8,3 +8,4 @@ stage/
 src/bgnet.html
 src/bgnet_*.pdf
 
+__pycache__

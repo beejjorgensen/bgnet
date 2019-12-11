@@ -6,6 +6,9 @@ performing the following regex substitutions:
 
 [[pagebreak]]
 
+[nobr[s]]   # Substitute spaces with `\ ` to mark as nonbreaking
+            # Doesn't work inside code markdown, alas
+
 [nh[x]] \hyphenation{x}   # no hyphen, no underscores allowed
 [ix[x]] \index{x}         # index straight up
 [ixtt[x]] \index{x@\texttt{x}}         # index tt
@@ -18,10 +21,14 @@ flr = footnote link to redirect https://beej.us/guide/url/id
 [flx[link|file]] [link](https://beej.us/guide/bgnet/examples/file)^[https://beej.us/guide/bgnet/examples/file]
 [flr[link|id]] [link](https://beej.us/guide/url/id)^[https://beej.us/guide/url/id]
 [flrfc[link|num]] [link](https://tools.ietf.org/html/rfcnum)^[https://tools.ietf.org/html/rfcnum]
+
+Also puts a blank line between files.
+
 """
 
 import sys
 import re
+import preproc_config
 
 if len(sys.argv) < 3:
     print("usage: preproc infile [infile ... ] outputfile", file=sys.stdout)
@@ -30,23 +37,47 @@ if len(sys.argv) < 3:
 infiles = sys.argv[1:-1]
 outfile = sys.argv[-1]
 
-fout = open(outfile, "w")
+filedata = []
+
+def nobr_replace(mo):
+    return re.sub(r'\s', r'\ ', mo.group(1))
 
 for infile in infiles:
     fin = open(infile)
-    filedata = fin.read()
+    filedata.append(fin.read())
     fin.close()
 
-    filedata = re.sub(r'\[\[pagebreak\]\]', r'\\newpage', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[nh\[(.+?)\]\]', r'\\hyphenation{\1}', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[ix\[(.+?)\]\]', r'\\index{\1}', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[ixtt\[(.+?)\]\]', r'\\index{\1@\\texttt{\1}}', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[fl\[(.+?)\|(.+?)\]\]', r'[\1](\2)^[\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flx\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/bgnet/examples/\2)^[https://beej.us/guide/bgnet/examples/\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flr\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/url/\2)^[https://beej.us/guide/url/\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flrfc\[(.+?)\|(.+?)\]\]', r'[\1](https://tools.ietf.org/html/rfc\2)^[https://tools.ietf.org/html/rfc\2]', filedata, flags=re.DOTALL)
+filedata = '\n'.join(filedata)
 
-    fout.write(filedata)
+filedata = re.sub(r'\t', "    ", filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[nobr\[(.+?)\]\]', nobr_replace, filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[\[pagebreak\]\]', r'\\newpage', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[nh\[(.+?)\]\]', r'\\hyphenation{\1}', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[ix\[(.+?)\]\]', r'\\index{\1}', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[ixtt\[(.+?)\]\]', r'\\index{\1@\\texttt{\1}}', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[fl\[(.+?)\|(.+?)\]\]', r'[\1](\2)^[\2]', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[flx\[(.+?)\|(.+?)\]\]', r'[\1](' + preproc_config.EXAMPLE_URL + r'\2)^[' + preproc_config.EXAMPLE_URL + r'\2]', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[flr\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/url/\2)^[https://beej.us/guide/url/\2]', filedata, flags=re.DOTALL)
+filedata = re.sub(r'\[flrfc\[(.+?)\|(.+?)\]\]', r'[\1](https://tools.ietf.org/html/rfc\2)^[https://tools.ietf.org/html/rfc\2]', filedata, flags=re.DOTALL)
+
+fout = open(outfile, "w")
+in_fence = False
+this_line_fence = False
+number_lines = False
+
+# Go through a line at a time indenting if we're in unnumbered fenced code
+for line in filedata.splitlines(True):
+	if line.strip()[:3] == '```':
+		number_lines = line.lower().find("numberlines") != -1
+		this_line_fence = True
+		in_fence = not in_fence
+	else:
+		this_line_fence = False
+
+	if in_fence and not this_line_fence and not number_lines:
+		fout.write("    ")   # indent
+
+	fout.write(line)
 
 fout.close()
 
