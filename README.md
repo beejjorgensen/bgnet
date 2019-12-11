@@ -10,11 +10,26 @@ can easily clone it.
 
 ## Build Instructions
 
-You'll need:
+### Dependencies
 
-* [Gnu make](https://www.gnu.org/software/make/)
+* [Gnu make](https://www.gnu.org/software/make/) (XCode make works, too)
 * [Python 3+](https://www.python.org/)
 * [Pandoc 2.7.3+](https://pandoc.org/)
+* XeLaTeX (can be found in [TeX Live](https://www.tug.org/texlive/))
+* [Liberation fonts](https://en.wikipedia.org/wiki/Liberation_fonts) (sans, serif, mono)
+
+Mac dependencies install (reopen terminal after doing this):
+
+```
+xcode-select --install                  # installs make
+brew install python                     # installs Python3
+brew install pandoc
+brew cask install mactex                # installs XeLaTeX
+brew tap homebrew/cask-fonts
+brew cask install font-liberation-sans  # installs sans, serif, and mono
+```
+
+### Build
 
 1. Type `make` from the top-level directory.
 

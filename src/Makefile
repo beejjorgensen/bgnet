@@ -1,6 +1,6 @@
 TITLE="Beej's Guide to Network Programming"
 SUBTITLE="Using Internet Sockets"
-AUTHOR='Brian "Beej Jorgensen" Hall'
+AUTHOR='Brian “Beej Jorgensen” Hall'
 VERSION_DATE="v3.1.2, Copyright © November 13, 2019"
 
 GUIDE_ID=bgnet
@@ -16,7 +16,7 @@ USLETTER_COLOR=$(GUIDE_ID)_usl_c_1.pdf $(GUIDE_ID)_usl_c_2.pdf
 USLETTER_BW=$(GUIDE_ID)_usl_bw_1.pdf $(GUIDE_ID)_usl_bw_2.pdf
 A4_COLOR=$(GUIDE_ID)_a4_c_1.pdf $(GUIDE_ID)_a4_c_2.pdf
 A4_BW=$(GUIDE_ID)_a4_bw_1.pdf $(GUIDE_ID)_a4_bw_2.pdf
-BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR) $(GUIDE_ID)_lulu.pdf
+BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR)
 
 HTML=$(GUIDE_ID).html
 
@@ -61,7 +61,8 @@ all: $(HTML) $(BOOKS)
 $(GUIDE_ID).html: $(GUIDE_ID).md bg-css.html
 	$(PREPROC) $< $(PREPROC_MD)
 	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o $(GUIDE_ID).html -H bg-css.html
-	sed -i 's/src="\(.*\)\.pdf"/src="\1.svg"/g' $(GUIDE_ID).html  # use svg images
+	sed 's/src="\(.*\)\.pdf"/src="\1.svg"/g' $(GUIDE_ID).html > $(GUIDE_ID)_temp.html # use svg images
+	mv $(GUIDE_ID)_temp.html $(GUIDE_ID).html
 	rm -f $(GUIDE_ID)_temp*
 
 $(GUIDE_ID)_usl_c_1.pdf: $(GUIDE_ID).md
