@@ -121,6 +121,7 @@ you, Knuth, but... daaahm.
 -->
 [nh[hostent]]
 [nh[addrinfo]]
+[nh[closesocket]]
 
 # Intro
 
