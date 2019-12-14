@@ -27,6 +27,10 @@ stage:
 upload: pristine all stage
 	rsync -rv -e ssh --delete ${BUILDDIR}/* $(UPLOADDIR)
 
+.PHONY: fastupload
+fastupload: all stage
+	rsync -rv -e ssh --delete ${BUILDDIR}/* $(UPLOADDIR)
+
 .PHONY: pristine
 pristine: clean
 	$(MAKE) -C src $@
