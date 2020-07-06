@@ -2864,7 +2864,7 @@ elements in the array (you still have to scan for that), but it does
 tell you how many entries have a non-zero `revents` field (so you can
 stop scanning after you find that many).
 
-A couple questions might come up here: how to I add new file descriptors
+A couple questions might come up here: how to add new file descriptors
 to the set I pass to `poll()`? For this, simply make sure you have
 enough space in the array for all you need, or `realloc()` more space as
 needed.
