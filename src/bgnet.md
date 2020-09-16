@@ -63,6 +63,7 @@ Beej's Guide to Network Programming book source
     3.1.0:      Section on poll()
     3.1.1:      Add WSL note, telnot
     3.1.2:      pollserver.c bugfix
+    3.1.3:      Fix freeaddrinfo memleak
 -->
 
 <!-- prevent hyphenation of the following words: -->
@@ -2963,12 +2964,12 @@ int get_listener_socket(void)
         break;
     }
 
+    freeaddrinfo(ai); // All done with this
+
     // If we got here, it means we didn't get bound
     if (p == NULL) {
         return -1;
     }
-
-    freeaddrinfo(ai); // All done with this
 
     // Listen
     if (listen(listener, 10) == -1) {

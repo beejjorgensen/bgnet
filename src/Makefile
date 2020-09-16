@@ -1,7 +1,7 @@
 TITLE="Beej's Guide to Network Programming"
 SUBTITLE="Using Internet Sockets"
 AUTHOR='Brian “Beej Jorgensen” Hall'
-VERSION_DATE="v3.1.2, Copyright © November 13, 2019"
+VERSION_DATE="v3.1.3, Copyright © September 16, 2020"
 
 GUIDE_ID=bgnet
 
