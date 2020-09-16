@@ -14,7 +14,7 @@ stage:
 	cp -v src/bgnet*.pdf $(BUILDDIR)/pdf
 	cp -v src/bgnet.html $(BUILDDIR)/html/index.html
 	cp -v src/{cs,dataencap}.svg $(BUILDDIR)/html/
-	cp -v translations/*.pdf $(BUILDDIR)/translations 2>/dev/null || : 
+	cp -v translations/*.{pdf,html} $(BUILDDIR)/translations 2>/dev/null || : 
 	cp -v examples/*.c $(BUILDDIR)/examples
 	cp -v examples/{Makefile,README.md} $(BUILDDIR)/examples
 	mkdir -p $(BUILDTMP)/bgnet_examples
