@@ -503,8 +503,8 @@ anyone tries to claim otherwise.
 What uses [ix[socket!stream]] stream sockets? Well, you may have heard
 of the [ix[telnet]] `telnet` application, yes? It uses stream sockets.
 All the characters you type need to arrive in the same order you type
-them, right?  Also, web browsers use the [ix[HTTP protocol]] HTTP
-protocol which uses stream sockets to get pages. Indeed, if you telnet
+them, right? Also, web browsers use the Hypertext Transfer Protocol [ix[HTTP]]
+(HTTP) which uses stream sockets to get pages. Indeed, if you telnet
 to a web site on port 80, and type "`GET / HTTP/1.0`" and hit RETURN
 twice, it'll dump the HTML back at you!
 
