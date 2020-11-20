@@ -1888,7 +1888,7 @@ code fragment for your perusal:
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
+#include <netdb.h>
 
 #define MYPORT "3490"  // the port users will be connecting to
 #define BACKLOG 10     // how many pending connections queue will hold
