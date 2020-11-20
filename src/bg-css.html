@@ -2,70 +2,21 @@
 
 <!-- BG custom styling -->
 <style type="text/css">
-body {
-	max-width: 800px;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 10px;
-	font-family: "Roboto", sans-serif;
+/* Fix for line numbers not visible */
+pre.numberSource code > span {
+	left: -1em;
+}
+pre.numberSource {
+	margin-left: initial;
 }
 
-figure {
-	text-align: center;
-	font-style: italic;
-}
-
-pre {
-	font-family: "Roboto Mono", monospace;
-	padding: 10px;
-}
-
-/*
-pre.shell {
-    margin-left: 3em;
-    border-left: 1px solid #aaaaaa;
-    padding-left: 4px;
-}
-
-pre.sourceCode {
-    margin-left: 3em;
-    border-left: 1px solid #aaaaaa;
-    padding-left: 4px;
-}
-*/
-
-code {
-	font-family: "Roboto Mono", monospace;
-}
-
-td, th {
-	padding: 0 10px 0 10px;
-}
-
-thead {
-	text-decoration: underline;
-}
-
-table {
-	border-top: 2px solid black;
-	border-bottom: 2px solid black;
-	margin-left: auto;
-	margin-right: auto;
-	padding: 8px 0 10px 0;
-	margin-block-start: 1em;
-	margin-block-end: 1em;
-}
-
-div.sourceCode {
-	overflow: inherit; /* override */
-}
-
+/* Hide underlines on code number links */
 pre > code.sourceCode > span > a:first-child::before {
-    text-decoration: none; /* override */
+    text-decoration: none;
 }
 
-p.subtitle {
-	font-size: 1.3em;
-	font-weight: bold;
+/* Keep code tags from wrapping in tables */
+tbody code {
+	white-space: nowrap;
 }
 </style>
