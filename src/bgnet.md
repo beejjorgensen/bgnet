@@ -1813,7 +1813,7 @@ for incoming connections and handle them in some way. The process is two
 step: first you `listen()`, then you [ixtt[accept()]] `accept()` (see
 below).
 
-The listen call is fairly simple, but requires a bit of explanation:
+The `listen()` call is fairly simple, but requires a bit of explanation:
 
 ```{.c}
 int listen(int sockfd, int backlog); 
