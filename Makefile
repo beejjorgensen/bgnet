@@ -13,6 +13,7 @@ stage:
 	cp -v website/* website/.htaccess $(BUILDDIR)
 	cp -v src/bgnet*.pdf $(BUILDDIR)/pdf
 	cp -v src/bgnet.html $(BUILDDIR)/html/index.html
+	cp -v src/bgnet-wide.html $(BUILDDIR)/html/index-wide.html
 	cp -v src/{cs,dataencap}.svg $(BUILDDIR)/html/
 	cp -v translations/*.{pdf,html} $(BUILDDIR)/translations 2>/dev/null || : 
 	cp -v examples/*.c $(BUILDDIR)/examples

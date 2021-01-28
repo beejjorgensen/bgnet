@@ -18,7 +18,7 @@ A4_COLOR=$(GUIDE_ID)_a4_c_1.pdf $(GUIDE_ID)_a4_c_2.pdf
 A4_BW=$(GUIDE_ID)_a4_bw_1.pdf $(GUIDE_ID)_a4_bw_2.pdf
 BOOKS=$(USLETTER_BW) $(USLETTER_COLOR) $(A4_BW) $(A4_COLOR)
 
-HTML=$(GUIDE_ID).html
+HTML=$(GUIDE_ID).html $(GUIDE_ID)-wide.html
 
 PREPROC=../bin/preproc
 PREPROC_MD=$(GUIDE_ID)_temp_preproc.md
@@ -28,6 +28,7 @@ COMMON_OPTS= \
 	--variable subtitle:$(SUBTITLE) \
 	--variable author:$(AUTHOR) \
 	--variable date:$(VERSION_DATE) \
+	--number-sections \
 	--toc
 
 PDF_OPTS= \
@@ -43,7 +44,8 @@ PDF_OPTS= \
 	$(COMMON_OPTS)
 
 HTML_OPTS=$(COMMON_OPTS) \
-	--metadata title:$(TITLE)
+	--metadata title:$(TITLE) \
+	--mathjax
 
 ONESIDE=--variable classoption:oneside
 TWOSIDE=--variable classoption:twoside
@@ -58,11 +60,21 @@ BW=--no-highlight  # black and white options
 
 all: $(HTML) $(BOOKS)
 
+bg-css-wide.html: bg-css.html body-wide-css.html
+	cat $^ > $@
+
 $(GUIDE_ID).html: $(GUIDE_ID).md bg-css.html
 	$(PREPROC) $< $(PREPROC_MD)
-	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o $(GUIDE_ID).html -H bg-css.html
-	sed 's/src="\(.*\)\.pdf"/src="\1.svg"/g' $(GUIDE_ID).html > $(GUIDE_ID)_temp.html # use svg images
-	mv $(GUIDE_ID)_temp.html $(GUIDE_ID).html
+	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o $@ -H bg-css.html
+	sed 's/src="\(.*\)\.pdf"/src="\1.svg"/g' $@ > $(GUIDE_ID)_temp.html # use svg images
+	mv $(GUIDE_ID)_temp.html $@
+	rm -f $(GUIDE_ID)_temp*
+
+$(GUIDE_ID)-wide.html: $(GUIDE_ID).md bg-css-wide.html
+	$(PREPROC) $< $(PREPROC_MD)
+	pandoc $(HTML_OPTS) -s $(PREPROC_MD) -o $@ -H bg-css-wide.html
+	sed 's/src="\(.*\)\.pdf"/src="\1.svg"/g' $@ > $(GUIDE_ID)_temp.html # use svg images
+	mv $(GUIDE_ID)_temp.html $@
 	rm -f $(GUIDE_ID)_temp*
 
 $(GUIDE_ID)_usl_c_1.pdf: $(GUIDE_ID).md
@@ -166,7 +178,7 @@ $(GUIDE_ID)_amazon.pdf: $(GUIDE_ID)_amazon.md
 	rm -f $(GUIDE_ID)_temp*
 
 clean:
-	rm -f $(GUIDE_ID)_temp*
+	rm -f $(GUIDE_ID)_temp* bg-css-wide.html
 
 pristine: clean
 	rm -f $(HTML) $(BOOKS)

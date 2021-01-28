@@ -10,6 +10,11 @@ pre.numberSource {
 	margin-left: initial;
 }
 
+/* Put some space after the section numbers */
+span.toc-section-number::after {
+    content: "\a0\a0\a0";  /* non-breaking whitespace */
+}
+
 /* Hide underlines on code number links */
 pre > code.sourceCode > span > a:first-child::before {
     text-decoration: none;
