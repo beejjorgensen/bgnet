@@ -1621,7 +1621,7 @@ connections on a specific port---multiplayer network games do this when
 they tell you to "connect to 192.168.5.10 port 3490".) The port number
 is used by the kernel to match an incoming packet to a certain process's
 socket descriptor. If you're going to only be doing a [ixtt[connect()]]
-`connect()` (because you're the client, not the server), this is
+`connect()` (because you're the client, not the server), this will
 probably be unnecessary. Read it anyway, just for kicks.
 
 Here is the synopsis for the `bind()` system call:
