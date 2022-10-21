@@ -1318,9 +1318,9 @@ _Et voila_!
 This is the section where we get into the system calls (and other
 library calls) that allow you to access the network functionality of a
 Unix box, or any box that supports the sockets API for that matter (BSD,
-Windows, Linux, Mac, what-have-you.) When you call one of these
+Windows, Linux, Mac, what-you-have.) When you call one of these
 functions, the kernel takes over and does all the work for you
-automagically.
+automatically.
 
 The place most people get stuck around here is what order to call these
 things in. In that, the `man` pages are no use, as you've probably
