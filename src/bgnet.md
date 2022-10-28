@@ -2694,7 +2694,7 @@ past: [ix[connect()@\texttt{connect()}!on datagram sockets]] connected
 datagram sockets. I need to talk about this here, since we're in the
 datagram section of the document. Let's say that `talker` calls
 `connect()` and specifies the `listener`'s address. From that point on,
-`talker` may only sent to and receive from the address specified by
+`talker` may only send to and receive from the address specified by
 `connect()`. For this reason, you don't have to use `sendto()` and
 `recvfrom()`; you can simply use `send()` and `recv()`.
 
