@@ -1621,8 +1621,8 @@ connections on a specific port---multiplayer network games do this when
 they tell you to "connect to 192.168.5.10 port 3490".) The port number
 is used by the kernel to match an incoming packet to a certain process's
 socket descriptor. If you're going to only be doing a [ixtt[connect()]]
-`connect()` (because you're the client, not the server), this will
-probably be unnecessary. Read it anyway, just for kicks.
+`connect()` (because you're the client, not the server), this is
+probably unnecessary. Read it anyway, just for kicks.
 
 Here is the synopsis for the `bind()` system call:
 
@@ -2694,7 +2694,7 @@ past: [ix[connect()@\texttt{connect()}!on datagram sockets]] connected
 datagram sockets. I need to talk about this here, since we're in the
 datagram section of the document. Let's say that `talker` calls
 `connect()` and specifies the `listener`'s address. From that point on,
-`talker` may only sent to and receive from the address specified by
+`talker` may only send to and receive from the address specified by
 `connect()`. For this reason, you don't have to use `sendto()` and
 `recvfrom()`; you can simply use `send()` and `recv()`.
 
@@ -4685,7 +4685,7 @@ sent 3 bytes to 255.255.255.255
 
 And you should see `listener` responding that it got the packets. (If
 `listener` doesn't respond, it could be because it's bound to an IPv6
-address. Try changing the `AF_UNSPEC` in `listener.c` to `AF_INET` to
+address. Try changing the `AF_INET6` in `listener.c` to `AF_INET` to
 force IPv4.)
 
 Well, that's kind of exciting. But now fire up `listener` on another
