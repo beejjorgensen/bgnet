@@ -4685,7 +4685,7 @@ sent 3 bytes to 255.255.255.255
 
 And you should see `listener` responding that it got the packets. (If
 `listener` doesn't respond, it could be because it's bound to an IPv6
-address. Try changing the `AF_UNSPEC` in `listener.c` to `AF_INET` to
+address. Try changing the `AF_INET6` in `listener.c` to `AF_INET` to
 force IPv4.)
 
 Well, that's kind of exciting. But now fire up `listener` on another
