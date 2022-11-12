@@ -113,3 +113,7 @@ hr.singleline {
 	max-width: 800px;
 }
 
+.small {
+    font-size: 0.8em;
+}
+
