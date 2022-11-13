@@ -30,7 +30,7 @@ making sense... `:-)`
 ## Platform and Compiler
 
 The code contained within this document was compiled on a Linux PC using
-Gnu's [ix[compilers!gcc]] `gcc` compiler. It should, however, build on
+Gnu's [i[Compilers-->GCC]] `gcc` compiler. It should, however, build on
 just about any platform that uses `gcc`. Naturally, this doesn't apply
 if you're programming for Windows---see the [section on Windows
 programming](#windows), below.
@@ -55,8 +55,8 @@ document-writing lifestyle!
 
 ## Note for Solaris/SunOS Programmers {#solaris}
 
-When compiling for [ix[Solaris]] Solaris or [ix[SunOS]] SunOS, you need
-to specify some extra command-line switches for linking in the proper
+When compiling for [i[Solaris]] Solaris or [i[SunOS]] SunOS, you need to
+specify some extra command-line switches for linking in the proper
 libraries. In order to do this, simply add "`-lnsl -lsocket -lresolv`"
 to the end of the compile command, like so:
 
@@ -89,7 +89,7 @@ information---it's just what people have told me through email.
 ## Note for Windows Programmers {#windows}
 
 At this point in the guide, historically, I've done a bit of bagging on
-[ix[Windows]] Windows, simply due to the fact that I don't like it very
+[i[Windows]] Windows, simply due to the fact that I don't like it very
 much. But I should really be fair and tell you that Windows has a huge
 install base and is obviously a perfectly fine operating system.
 
@@ -100,21 +100,21 @@ I'm much happier! As such, I can sit back and safely say, "Sure, feel
 free to use Windows!"  ...Ok yes, it does make me grit my teeth to say
 that.
 
-So I still encourage you to try [ix[Linux]]
-[fl[Linux|https://www.linux.com/]], [fl[BSD|https://bsd.org/]], or some
-flavor of Unix, instead.
+So I still encourage you to try [i[Linux]]
+[fl[Linux|https://www.linux.com/]], [i[BSD]] [fl[BSD|https://bsd.org/]],
+or some flavor of Unix, instead.
 
 But people like what they like, and you Windows folk will be pleased to
 know that this information is generally applicable to you guys, with a
 few minor changes, if any.
 
-One cool thing you can do is install [ix[Cygwin]]
+One cool thing you can do is install [i[Cygwin]]
 [fl[Cygwin|https://cygwin.com/]], which is a collection of Unix tools
 for Windows. I've heard on the grapevine that doing so allows all these
 programs to compile unmodified.
 
-Another thing that you should consider is [ix[WSL]] [ix[Windows
-Subsystem For Linux]] the [fl[Windows Subsystem for
+Another thing that you should consider is [i[WSL]] [i[Windows Subsystem
+For Linux]] the [fl[Windows Subsystem for
 Linux|https://docs.microsoft.com/en-us/windows/wsl/about]]. This
 basically allows you to install a Linux VM-ish thing on Windows 10. That
 will also definitely get you situated.
@@ -128,13 +128,13 @@ This is what you'll have to do (unless you install
 [Cygwin](https://cygwin.com/)!): first, ignore pretty much all of the
 system header files I mention in here. All you need to include is:
 
-[ix[Winsock]]
+[i[Winsock]]
 
 ```{.c}
 #include <winsock.h>
 ```
 
-Wait! You also have to make a call to [ixtt[WSAStartup()]]
+Wait! You also have to make a call to [i[`WSAStartup()` function]]
 `WSAStartup()` before doing anything else with the sockets library. The
 code to do that looks something like this:
 
@@ -162,36 +162,37 @@ preference) to that list.
 
 Or so I hear.
 
-Finally, you need to call [ixtt[WSACleanup()]] `WSACleanup()` when
-you're all through with the sockets library. See your online help for
-details.
+Finally, you need to call [i[`WSACleanup()` function]] `WSACleanup()`
+when you're all through with the sockets library. See your online help
+for details.
 
 Once you do that, the rest of the examples in this tutorial should
 generally apply, with a few exceptions. For one thing, you can't use
-`close()` to close a socket---you need to use [ixtt[closesocket()]]
-`closesocket()`, instead. Also, [ixtt[select()]] `select()` only works
-with socket descriptors, not file descriptors (like `0` for `stdin`).
+`close()` to close a socket---you need to use [i[`closesocket()`
+function]] `closesocket()`, instead. Also, [i[`select()` function]]
+`select()` only works with socket descriptors, not file descriptors
+(like `0` for `stdin`).
 
-There is also a socket class that you can use, [ixtt[CSocket]]
+There is also a socket class that you can use, [i[`CSocket` class]]
 `CSocket`. Check your compilers help pages for more information.
 
-To get more information about Winsock, read the [ix[Winsock!FAQ]]
+To get more information about Winsock, read the [i[Winsock-->FAQ]]
 [fl[Winsock FAQ|https://tangentsoft.net/wskfaq/]] and go from there.
 
-Finally, I hear that Windows has no [ixtt[fork()]] `fork()` system call
-which is, unfortunately, used in some of my examples. Maybe you have to
-link in a POSIX library or something to get it to work, or you can use
-[ixtt[CreateProcess()]] `CreateProcess()` instead.  `fork()` takes no
-arguments, and `CreateProcess()` takes about 48 billion arguments. If
-you're not up to that, the [ixtt[CreateThread()]] `CreateThread()` is a
-little easier to digest...unfortunately a discussion about
-multithreading is beyond the scope of this document. I can only talk
-about so much, you know!
+Finally, I hear that Windows has no [i[`fork()` function]] `fork()`
+system call which is, unfortunately, used in some of my examples. Maybe
+you have to link in a POSIX library or something to get it to work, or
+you can use [i[`CreateProcess()` function]] `CreateProcess()` instead.
+`fork()` takes no arguments, and `CreateProcess()` takes about 48
+billion arguments. If you're not up to that, the [i[`CreateThread()`
+function]] `CreateThread()` is a little easier to digest...unfortunately
+a discussion about multithreading is beyond the scope of this document.
+I can only talk about so much, you know!
 
 
 ## Email Policy
 
-I'm generally available to help out with [ix[email to Beej]] email
+I'm generally available to help out with [i[Emailing Beej]] email
 questions so feel free to write in, but I can't guarantee a response. I
 lead a pretty busy life and there are times when I just can't answer a
 question you have. When that's the case, I usually just delete the
@@ -219,18 +220,18 @@ me to hear that it is being used for good! `:-)` Thank you!
 
 ## Mirroring
 
-[ix[mirroring]] You are more than welcome to mirror this site, whether
-publicly or privately. If you publicly mirror the site and want me to
-link to it from the main page, drop me a line at
+[i[Mirroring the Guide]] You are more than welcome to mirror this site,
+whether publicly or privately. If you publicly mirror the site and want
+me to link to it from the main page, drop me a line at
 [`beej@beej.us`](beej@beej.us).
 
 
 ## Note for Translators
 
-[ix[translations]] If you want to translate the guide into another
-language, write me at [`beej@beej.us`](beej@beej.us) and I'll link to
-your translation from the main page. Feel free to add your name and
-contact info to the translation.
+[i[Translating the Guide]] If you want to translate the guide into
+another language, write me at [`beej@beej.us`](beej@beej.us) and I'll
+link to your translation from the main page. Feel free to add your name
+and contact info to the translation.
 
 This source markdown document uses UTF-8 encoding.
 

@@ -11,18 +11,21 @@ things you might want to learn about sockets. Have at it!
 
 ## Blocking {#blocking}
 
-[ix[blocking]] Blocking. You've heard about it---now what the heck is
-it? In a nutshell, "block" is techie jargon for "sleep". You probably
-noticed that when you run `listener`, above, it just sits there until a
-packet arrives. What happened is that it called `recvfrom()`, there was
-no data, and so `recvfrom()` is said to "block" (that is, sleep there)
+[i[Blocking]<]
+
+Blocking. You've heard about it---now what the heck is it? In a
+nutshell, "block" is techie jargon for "sleep". You probably noticed
+that when you run `listener`, above, it just sits there until a packet
+arrives. What happened is that it called `recvfrom()`, there was no
+data, and so `recvfrom()` is said to "block" (that is, sleep there)
 until some data arrives.
 
 Lots of functions block. `accept()` blocks. All the `recv()` functions
 block.  The reason they can do this is because they're allowed to. When
 you first create the socket descriptor with `socket()`, the kernel sets
-it to blocking.  [ix[non-blocking sockets]] If you don't want a socket
-to be blocking, you have to make a call to [ixtt[fcntl()]] `fcntl()`:
+it to blocking.  [i[Non-blocking sockets]] If you don't want a socket to
+be blocking, you have to make a call to [i[`fcntl()` function]]
+`fcntl()`:
 
 ```{.c .numberLines}
 #include <unistd.h>
@@ -40,24 +43,27 @@ fcntl(sockfd, F_SETFL, O_NONBLOCK);
 By setting a socket to non-blocking, you can effectively "poll" the
 socket for information. If you try to read from a non-blocking socket
 and there's no data there, it's not allowed to block---it will return
-`-1` and `errno` will be set to [ixtt[EAGAIN@]] `EAGAIN` or
-[ixtt[EWOULDBLOCK]] `EWOULDBLOCK`.
+`-1` and `errno` will be set to [i[`EAGAIN` macro]] `EAGAIN` or
+[i[`EWOULDBLOCK` macro]] `EWOULDBLOCK`.
 
-(Wait---it can return [ixtt[EAGAIN]] `EAGAIN` _or_ [ixtt[EWOULDBLOCK]]
-`EWOULDBLOCK`? Which do you check for?  The specification doesn't
-actually specify which your system will return, so for portability,
-check them both.)
+(Wait---it can return [i[`EAGAIN` macro]] `EAGAIN` _or_
+[i[`EWOULDBLOCK` macro]] `EWOULDBLOCK`? Which do you check for?  The
+specification doesn't actually specify which your system will return, so
+for portability, check them both.)
 
 Generally speaking, however, this type of polling is a bad idea. If you
 put your program in a busy-wait looking for data on the socket, you'll
 suck up CPU time like it was going out of style. A more elegant solution
 for checking to see if there's data waiting to be read comes in the
-following section on [ixtt[poll()]] `poll()`.
+following section on [i[`poll()` function]] `poll()`.
 
+[i[Blocking]>]
 
 ## `poll()`---Synchronous I/O Multiplexing {#poll}
 
-[ixtt[poll()]] What you really want to be able to do is somehow monitor
+[i[poll()]<]
+
+What you really want to be able to do is somehow monitor
 a _bunch_ of sockets at once and then handle the ones that have data
 ready. This way you don't have to continously poll all those sockets to
 see which are ready to read.
@@ -98,7 +104,7 @@ have had an event occur.
 
 Let's have a look at that `struct`:
 
-[ixtt[struct pollfd]]
+[i[`struct pollfd` type]]
 
 ``` {.c}
 struct pollfd {
@@ -432,13 +438,17 @@ might be slightly more portable, but is perhaps a little clunkier in
 use. Choose the one you like the best, as long as it's supported on your
 system.
 
+[i[poll()]>]
+
 
 ## `select()`---Synchronous I/O Multiplexing, Old School {#select}
 
-[ixtt[select()]] This function is somewhat strange, but it's very
-useful. Take the following situation: you are a server and you want to
-listen for incoming connections as well as keep reading from the
-connections you already have.
+[i[`select()` function]<]
+
+This function is somewhat strange, but it's very useful. Take the
+following situation: you are a server and you want to listen for
+incoming connections as well as keep reading from the connections you
+already have.
 
 No problem, you say, just an `accept()` and a couple of `recv()`s. Not
 so fast, buster! What if you're blocking on an `accept()` call? How are
@@ -483,22 +493,22 @@ Before progressing much further, I'll talk about how to manipulate these
 sets.  Each set is of the type `fd_set`. The following macros operate on
 this type:
 
-[ixtt[FD\_SET()]] [ixtt[FD\_CLR()]] [ixtt[FD\_ISSET()]] [ixtt[FD\_ZERO()]]
-
 | Function                         | Description                          |
 |----------------------------------|--------------------------------------|
-| `FD_SET(int fd, fd_set *set);`   | Add `fd` to the `set`.               |
-| `FD_CLR(int fd, fd_set *set);`   | Remove `fd` from the `set`.          |
-| `FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`. |
-| `FD_ZERO(fd_set *set);`          | Clear all entries from the `set`.    |
+| [i[`FD_SET()` macro]]`FD_SET(int fd, fd_set *set);`   | Add `fd` to the `set`.               |
+| [i[`FD_CLR()` macro]]`FD_CLR(int fd, fd_set *set);`   | Remove `fd` from the `set`.          |
+| [i[`FD_ISSET()` macro]]`FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`. |
+| [i[`FD_ZERO()` macro]]`FD_ZERO(fd_set *set);`          | Clear all entries from the `set`.    |
 
-Finally, what is this weirded out [ixtt[struct timeval]] `struct
-timeval`? Well, sometimes you don't want to wait forever for someone to
-send you some data. Maybe every 96 seconds you want to print "Still
-Going..." to the terminal even though nothing has happened. This time
-structure allows you to specify a timeout period. If the time is
-exceeded and `select()` still hasn't found any ready file descriptors,
-it'll return so you can continue processing.
+[i[`struct timeval` type]<]
+
+Finally, what is this weirded-out  `struct timeval`? Well, sometimes you
+don't want to wait forever for someone to send you some data. Maybe
+every 96 seconds you want to print "Still Going..." to the terminal even
+though nothing has happened. This time structure allows you to specify a
+timeout period. If the time is exceeded and `select()` still hasn't
+found any ready file descriptors, it'll return so you can continue
+processing.
 
 The `struct timeval` has the follow fields:
 
@@ -578,8 +588,10 @@ man page says on the matter if you want to attempt it.
 Some Unices update the time in your `struct timeval` to reflect the
 amount of time still remaining before a timeout. But others do not.
 Don't rely on that occurring if you want to be portable. (Use
-[ixtt[gettimeofday()]] `gettimeofday()` if you need to track time
+[i[`gettimeofday()` function]] `gettimeofday()` if you need to track time
 elapsed. It's a bummer, I know, but that's the way it is.)
+
+[i[`struct timeval` type]>]
 
 What happens if a socket in the read set closes the connection? Well, in
 that case, `select()` returns with that socket descriptor set as "ready
@@ -587,8 +599,8 @@ to read".  When you actually do `recv()` from it, `recv()` will return
 `0`. That's how you know the client has closed the connection.
 
 One more note of interest about `select()`: if you have a socket that is
-[ix[select()@\texttt{select()}!with listen()@with \texttt{listen()}]]
-[ix[listen()@\texttt{listen()}!with select()@with \texttt{select()}]]
+[i[`select()` function-->with `listen()`]]
+[i[`listen()` function-->with `select()`]]
 `listen()`ing, you can check to see if there is a new connection by
 putting that socket's file descriptor in the `readfds` set.
 
@@ -802,16 +814,17 @@ Quick note to all you Linux fans out there: sometimes, in rare
 circumstances, Linux's `select()` can return "ready-to-read" and then
 not actually be ready to read! This means it will block on the `read()`
 after the `select()` says it won't! Why you little---! Anyway, the
-workaround solution is to set the [ixtt[O\_NONBLOCK]] `O_NONBLOCK` flag
-on the receiving socket so it errors with `EWOULDBLOCK` (which you can
-just safely ignore if it occurs). See the [`fcntl()` reference
+workaround solution is to set the [i[`O_NONBLOCK` macro]] `O_NONBLOCK`
+flag on the receiving socket so it errors with `EWOULDBLOCK` (which you
+can just safely ignore if it occurs). See the [`fcntl()` reference
 page](#fcntlman) for more info on setting a socket to non-blocking.
 
 In addition, here is a bonus afterthought: there is another function
-called [ixtt[poll()]] `poll()` which behaves much the same way
+called [i[`poll()` function]] `poll()` which behaves much the same way
 `select()` does, but with a different system for managing the file
 descriptor sets. [Check it out!](#pollman)
 
+[i[`select()` function]>]
 
 ## Handling Partial `send()`s {#sendall}
 
@@ -825,7 +838,8 @@ circumstances beyond your control, the kernel decided not to send all
 the data out in one chunk, and now, my friend, it's up to you to get the
 data out there.
 
-[ixtt[sendall()]] You could write a function like this to do it, too:
+[i[`sendall()` function]<]
+You could write a function like this to do it, too:
 
 ```{.c .numberLines}
 #include <sys/types.h>
@@ -874,10 +888,12 @@ if (sendall(s, buf, &len) == -1) {
 } 
 ```
 
+[i[`sendall()` function]>]
+
 What happens on the receiver's end when part of a packet arrives? If the
 packets are variable length, how does the receiver know when one packet
 ends and another begins? Yes, real-world scenarios are a royal pain in
-the [ix[donkeys]] donkeys. You probably have to [ix[data encapsulation]]
+the [i[Donkeys]] donkeys. You probably have to [i[Data encapsulation]]
 _encapsulate_ (remember that from the [data encapsulation
 section](#lowlevel) way back there at the beginning?)  Read on for
 details!
@@ -885,10 +901,11 @@ details!
 
 ## Serialization---How to Pack Data {#serialization}
 
-[ix[serialization]] It's easy enough to send text data across the
-network, you're finding, but what happens if you want to send some
-"binary" data like `int`s or `float`s? It turns out you have a few
-options.
+[i[Serialization]<]
+
+It's easy enough to send text data across the network, you're finding,
+but what happens if you want to send some "binary" data like `int`s or
+`float`s? It turns out you have a few options.
 
 1. Convert the number into text with a function like `sprintf()`, then
    send the text. The receiver will parse the text back into a number
@@ -921,7 +938,7 @@ let's talk about some of the drawbacks and advantages to the other two.
 The first method, encoding the numbers as text before sending, has the
 advantage that you can easily print and read the data that's coming over
 the wire.  Sometimes a human-readable protocol is excellent to use in a
-non-bandwidth-intensive situation, such as with [ix[IRC]] [fl[Internet
+non-bandwidth-intensive situation, such as with [i[IRC]] [fl[Internet
 Relay Chat (IRC)|https://en.wikipedia.org/wiki/Internet_Relay_Chat]].
 However, it has the disadvantage that it is slow to convert, and the
 results almost always take up more space than the original number!
@@ -950,11 +967,11 @@ same bit representation or even the same byte ordering! The code is
 decidedly non-portable. (Hey---maybe you don't need portability, in
 which case this is nice and fast.)
 
-When packing integer types, we've already seen how the [ixtt[htons()]]
-`htons()`-class of functions can help keep things portable by
-transforming the numbers into [ix[byte ordering]] Network Byte Order,
-and how that's the Right Thing to do. Unfortunately, there are no
-similar functions for `float` types. Is all hope lost?
+When packing integer types, we've already seen how the [i[`htons()`
+function]] `htons()`-class of functions can help keep things portable by
+transforming the numbers into [i[Byte ordering]] Network Byte Order, and
+how that's the Right Thing to do. Unfortunately, there are no similar
+functions for `float` types. Is all hope lost?
 
 Fear not! (Were you afraid there for a second? No? Not even a little
 bit?) There is something we can do: we can pack (or "marshal", or
@@ -1039,7 +1056,7 @@ You can also see in the above example that the last couple decimal
 places are not correctly preserved.
 
 What can we do instead? Well, _The_ Standard for storing floating point
-numbers is known as [ix[IEEE-754]]
+numbers is known as [i[IEEE-754]]
 [fl[IEEE-754|https://en.wikipedia.org/wiki/IEEE_754]].  Most computers
 use this format internally for doing floating point math, so in those
 cases, strictly speaking, conversion wouldn't need to be done. But if
@@ -1654,7 +1671,7 @@ to have a general set of data packing routines for the sake of keeping
 bugs in check, rather than packing each bit by hand each time.
 
 When packing the data, what's a good format to use? Excellent question.
-Fortunately, [ix[XDR]] [flrfc[RFC 4506|4506]], the External Data
+Fortunately, [i[XDR]] [flrfc[RFC 4506|4506]], the External Data
 Representation Standard, already defines binary formats for a bunch of
 different types, like floating point types, integer types, arrays, raw
 data, etc. I suggest conforming to that if you're going to roll the data
@@ -1664,6 +1681,7 @@ outside your door. At least, I don't _think_ they are.
 In any case, encoding the data somehow or another before you send it is
 the right way of doing things!
 
+[i[Serialization]>]
 
 ## Son of Data Encapsulation {#sonofdataencap}
 
@@ -1696,7 +1714,7 @@ t o m H i B e n j a m i n H e y g u y s w h a t i s u p ?
 
 And so on. How does the client know when one message starts and another
 stops?  You could, if you wanted, make all messages the same length and
-just call the [ixtt[sendall()]] `sendall()` we implemented,
+just call the [i[`sendall()` function]] `sendall()` we implemented,
 [above](#sendall). But that wastes bandwidth! We don't want to `send()`
 1024 bytes just so "tom" can say "Hi".
 
@@ -1814,7 +1832,7 @@ structures book and go from there.)
 
 I never said it was easy. Ok, I did say it was easy. And it is; you just
 need practice and pretty soon it'll come to you naturally. By
-[ix[Excalibur]] Excalibur I swear it!
+[i[Excalibur]] Excalibur I swear it!
 
 
 ## Broadcast Packets---Hello, World!
@@ -1823,19 +1841,19 @@ So far, this guide has talked about sending data from one host to one
 other host. But it is possible, I insist, that you can, with the proper
 authority, send data to multiple hosts _at the same time_!
 
-With [ix[UDP]] UDP (only UDP, not TCP) and standard IPv4, this is done
-through a mechanism called [ix[broadcast]] _broadcasting_. With IPv6,
+With [i[UDP]] UDP (only UDP, not TCP) and standard IPv4, this is done
+through a mechanism called [i[Broadcast]] _broadcasting_. With IPv6,
 broadcasting isn't supported, and you have to resort to the often
 superior technique of _multicasting_, which, sadly I won't be discussing
 at this time. But enough of the starry-eyed future---we're stuck in the
 32-bit present.
 
 But wait! You can't just run off and start broadcasting willy-nilly; You
-have to [ixtt[setsockopt()]] set the socket option [ixtt[SO\_BROADCAST]]
-`SO_BROADCAST` before you can send a broadcast packet out on the
-network. It's like a one of those little plastic covers they put over
-the missile launch switch! That's just how much power you hold in your
-hands!
+have to [i[`setsockopt()` function]] set the socket option
+[i[`SO_BROADCAST` macro]] `SO_BROADCAST` before you can send a broadcast
+packet out on the network. It's like a one of those little plastic
+covers they put over the missile launch switch! That's just how much
+power you hold in your hands!
 
 But seriously, though, there is a danger to using broadcast packets, and
 that is: every system that receives a broadcast packet must undo all the
@@ -1868,12 +1886,12 @@ common ways:
    smurf could start flooding their LAN with broadcast traffic.)
 
 2. Send the data to the "global" broadcast address. This is
-   [ix[255.255.255.255]] `255.255.255.255`, aka
-   [ixtt[INADDR\_BROADCAST]] `INADDR_BROADCAST`. Many machines will
-   automatically bitwise AND this with your network number to convert it
-   to a network broadcast address, but some won't. It varies. Routers do
-   not forward this type of broadcast packet off your local network,
-   ironically enough.
+   [i[`255.255.255.255`]] `255.255.255.255`, aka [i[`INADDR_BROADCAST`
+   macro]] `INADDR_BROADCAST`. Many machines will automatically bitwise
+   AND this with your network number to convert it to a network
+   broadcast address, but some won't. It varies. Routers do not forward
+   this type of broadcast packet off your local network, ironically
+   enough.
 
 So what happens if you try to send data on the broadcast address without
 first setting the `SO_BROADCAST` socket option? Well, let's fire up good
@@ -1994,10 +2012,10 @@ broadcast address... Hey! Both `listener`s get the packet even though
 you only called `sendto()` once! Cool!
 
 If the `listener` gets data you send directly to it, but not data on the
-broadcast address, it could be that you have a [ix[firewall]] firewall
-on your local machine that is blocking the packets. (Yes, [ix[Pat]] Pat
-and [ix[Bapper]] Bapper, thank you for realizing before I did that this
-is why my sample code wasn't working. I told you I'd mention you in the
+broadcast address, it could be that you have a [i[Firewall]] firewall on
+your local machine that is blocking the packets. (Yes, [i[Pat]] Pat and
+[i[Bapper]] Bapper, thank you for realizing before I did that this is
+why my sample code wasn't working. I told you I'd mention you in the
 guide, and here you are. So _nyah_.)
 
 Again, be careful with broadcast packets. Since every machine on the LAN

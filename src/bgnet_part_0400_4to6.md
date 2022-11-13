@@ -1,7 +1,9 @@
 # Jumping from IPv4 to IPv6
 
-[ix[IPv6]] But I just want to know what to change in my code to get it
-going with IPv6! Tell me now!
+[i[IPv6]]
+
+But I just want to know what to change in my code to get it going with
+IPv6! Tell me now!
 
 Ok! Ok!
 
@@ -9,7 +11,7 @@ Almost everything in here is something I've gone over, above, but it's
 the short version for the impatient. (Of course, there is more than
 this, but this is what applies to the guide.)
 
-1. First of all, try to use [ixtt[getaddrinfo()]]
+1. First of all, try to use [i[`getaddrinfo()` function]]
    [`getaddrinfo()`](#structs) to get all the `struct sockaddr` info,
    instead of packing the structures by hand. This will keep you IP
    version-agnostic, and will eliminate many of the subsequent steps.
@@ -52,9 +54,9 @@ this, but this is what applies to the guide.)
 
 10. Instead of `gethostbyname()`, use the superior `getaddrinfo()`.
 
-11. Instead of `gethostbyaddr()`, use the superior
-    [ixtt[getnameinfo()]] `getnameinfo()` (although `gethostbyaddr()`
-    can still work with IPv6).
+11. Instead of `gethostbyaddr()`, use the superior [i[`getnameinfo()`
+    function]] `getnameinfo()` (although `gethostbyaddr()` can still
+    work with IPv6).
 
 12. `INADDR_BROADCAST` no longer works. Use IPv6 multicast instead.
 

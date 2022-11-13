@@ -2,23 +2,24 @@
 
 **Where can I get those header files?**
 
-[ix[header files]] If you don't have them on your system already, you
+[i[Header files]] If you don't have them on your system already, you
 probably don't need them. Check the manual for your particular platform.
-If you're building for [ix[Windows]] Windows, you only need to `#include
+If you're building for [i[Windows]] Windows, you only need to `#include
 <winsock.h>`.
 
-**What do I do when `bind()` reports [ix[Address already in use]]
+**What do I do when `bind()` reports [i[Address already in use]]
 "Address already in use"?**
 
-You have to use [ixtt[setsockopt()]] `setsockopt()` with the
-[ixtt[SO\_REUSEADDR]] `SO_REUSEADDR` option on the listening socket.
-Check out the [ixtt[bind()]] [section on `bind()`](#bind) and the
-[ixtt[select()]] [section on `select()`](#select) for an example.
+You have to use [i[`setsockopt()` function]] `setsockopt()` with the
+[i[`SO_REUSEADDR` macro]] `SO_REUSEADDR` option on the listening socket.
+Check out the [i[`bind()` function]] [section on `bind()`](#bind) and
+the [i[`select()` function]] [section on `select()`](#select) for an
+example.
 
 **How do I get a list of open sockets on the system?**
 
-Use the [ix[netstat]] `netstat`. Check the `man` page for full details,
-but you should get some good output just typing:
+Use the [i[`netstat` command]] `netstat`. Check the `man` page for full
+details, but you should get some good output just typing:
 
 ```
 $ netstat
@@ -29,22 +30,23 @@ program.  `:-)`
 
 **How can I view the routing table?**
 
-Run the [ix[route]] `route` command (in `/sbin` on most Linuxes) or the
-command [ix[netstat]] `netstat -r`.
+Run the [i[`route` command]] `route` command (in `/sbin` on most
+Linuxes) or the command [i[`netstat` command]] `netstat -r`. Or the
+command [i[`ip route` command]] `ip route`.
 
 **How can I run the client and server programs if I only have one
 computer?  Don't I need a network to write network programs?**
 
-Fortunately for you, virtually all machines implement a [ix[loopback
+Fortunately for you, virtually all machines implement a [i[Loopback
 device]] loopback network "device" that sits in the kernel and pretends
 to be a network card. (This is the interface listed as "`lo`" in the
 routing table.)
 
-Pretend you're logged into a machine named [ix[goat]] "`goat`". Run the
+Pretend you're logged into a machine named [i[Goat]] "`goat`". Run the
 client in one window and the server in another. Or start the server in
 the background ("`server &`") and run the client in the same window. The
 upshot of the loopback device is that you can either `client goat` or
-[ix[localhost]] `client localhost` (since "`localhost`" is likely
+[i[`localhost`]] `client localhost` (since "`localhost`" is likely
 defined in your `/etc/hosts` file) and you'll have the client talking to
 the server without a network!
 
@@ -55,9 +57,11 @@ a single non-networked machine! Huzzah!
 
 You can tell because `recv()` will return `0`.
 
-**How do I implement a [ixtt[ping]] "ping" utility? What is [ixtt[ICMP]]
-ICMP?  Where can I find out more about [ix[raw sockets]] raw sockets and
-`SOCK_RAW`?**
+**How do I implement a [i[`ping` command]] "ping" utility? What is
+[i[ICMP]] ICMP?  Where can I find out more about [i[Raw sockets]] raw
+sockets and `SOCK_RAW`?**
+
+[i[`SOCK_RAW` macro]]
 
 All your raw sockets questions will be answered in [W. Richard Stevens'
 UNIX Network Programming books](#books). Also, look in the `ping/`
@@ -110,15 +114,16 @@ this.
 **Why does `select()` keep falling out on a signal?**
 
 Signals tend to cause blocked system calls to return `-1` with `errno`
-set to `EINTR`. When you set up a signal handler with
-[ixtt[sigaction()]] `sigaction()`, you can set the flag
-[ixtt[SA\_RESTART]] `SA_RESTART`, which is supposed to restart the
-system call after it was interrupted.
+set to `EINTR`. When you set up a signal handler with [i[`sigaction()`
+function]] `sigaction()`, you can set the flag [i[`SA_RESTART` macro]]
+`SA_RESTART`, which is supposed to restart the system call after it was
+interrupted.
 
 Naturally, this doesn't always work.
 
-My favorite solution to this involves a [ix[goto]] `goto` statement. You
-know this irritates your professors to no end, so go for it!
+My favorite solution to this involves a [i[`goto` statement]] `goto`
+statement. You know this irritates your professors to no end, so go for
+it!
 
 ```{.c .numberLines}
 select_restart:
@@ -138,7 +143,7 @@ cleaner.
 
 **How can I implement a timeout on a call to `recv()`?**
 
-[ix[recv()@\texttt{recv()}!timeout]] Use [ixtt[select()]]
+[i[`recv()` function-->timeout]] Use [i[`select()` function]]
 [`select()`](#select)! It allows you to specify a timeout parameter for
 socket descriptors that you're looking to read from. Or, you could wrap
 the entire functionality in a single function, like this:
@@ -191,20 +196,20 @@ else if (n == -2) {
 . 
 ```
 
-Notice that [ixtt[recvtimeout()]] `recvtimeout()` returns `-2` in case
-of a timeout. Why not return `0`? Well, if you recall, a return value of
-`0` on a call to `recv()` means that the remote side closed the
+Notice that [i[`recvtimeout()` function]] `recvtimeout()` returns `-2`
+in case of a timeout. Why not return `0`? Well, if you recall, a return
+value of `0` on a call to `recv()` means that the remote side closed the
 connection. So that return value is already spoken for, and `-1` means
 "error", so I chose `-2` as my timeout indicator.
 
-**How do I [ix[encryption]] encrypt or compress the data before sending
+**How do I [i[Encryption]] encrypt or compress the data before sending
 it through the socket?**
 
-One easy way to do encryption is to use [ix[SSL]] SSL (secure sockets
-layer), but that's beyond the scope of this guide. [ix[OpenSSL]] (Check
+One easy way to do encryption is to use [i[SSL]] SSL (secure sockets
+layer), but that's beyond the scope of this guide. [i[OpenSSL]] (Check
 out the [fl[OpenSSL project|https://www.openssl.org/]] for more info.)
 
-But assuming you want to plug in or implement your own [ix[compression]]
+But assuming you want to plug in or implement your own [i[Compression]]
 compressor or encryption system, it's just a matter of thinking of your
 data as running through a sequence of steps between both ends. Each step
 changes the data in some way.
@@ -232,7 +237,7 @@ and stick some code in there that does the encryption.
 
 **What is this "`PF_INET`" I keep seeing? Is it related to `AF_INET`?**
 
-[ixtt[PF\_INET]] [ixtt[AF\_INET]]
+[i[`PF_INET` macro]] [i[`AF_INET` macro]]
 
 Yes, yes it is. See [the section on `socket()`](#socket) for details.
 
@@ -256,7 +261,7 @@ Meanwhile, the server is handling the data and executing it:
 3. `close()` the connection
 4. `system(str)` to run the command
 
-[ix[security]] _Beware!_  Having the server execute what the client says
+[i[Security]] _Beware!_  Having the server execute what the client says
 is like giving remote shell access and people can do things to your
 account when they connect to the server. For instance, in the above
 example, what if the client sends "`rm -rf ~`"? It deletes everything in
@@ -285,7 +290,7 @@ executing things the client sends.
 bytes or 1460 bytes at a time. But if I run it on my local machine, it
 receives all the data at the same time. What's going on?**
 
-You're hitting the [ix[MTU]] MTU---the maximum size the physical medium
+You're hitting the [i[MTU]] MTU---the maximum size the physical medium
 can handle. On the local machine, you're using the loopback device which
 can handle 8K or more no problem. But on Ethernet, which can only handle
 1500 bytes with a header, you hit that limit. Over a modem, with 576 MTU
@@ -303,22 +308,22 @@ details on receiving complete packets of data using multiple calls to
 **I'm on a Windows box and I don't have the `fork()` system call or any
 kind of `struct sigaction`. What to do?**
 
-[ixtt[fork()]] If they're anywhere, they'll be in POSIX libraries that
-may have shipped with your compiler. Since I don't have a Windows box, I
-really can't tell you the answer, but I seem to remember that Microsoft
-has a POSIX compatibility layer and that's where `fork()` would be. (And
-maybe even `sigaction`.)
+[i[`fork()` function]] If they're anywhere, they'll be in POSIX
+libraries that may have shipped with your compiler. Since I don't have a
+Windows box, I really can't tell you the answer, but I seem to remember
+that Microsoft has a POSIX compatibility layer and that's where `fork()`
+would be. (And maybe even `sigaction`.)
 
 Search the help that came with VC++ for "fork" or "POSIX" and see if it
 gives you any clues.
 
 If that doesn't work at all, ditch the `fork()`/`sigaction` stuff and
-replace it with the Win32 equivalent: [ixtt[CreateProcess()]]
+replace it with the Win32 equivalent: [i[`CreateProcess()` function]]
 `CreateProcess()`. I don't know how to use `CreateProcess()`---it takes
 a bazillion arguments, but it should be covered in the docs that came
 with VC++.
 
-**[ix[firewall]] I'm behind a firewall---how do I let people outside the
+**[i[Firewall]] I'm behind a firewall---how do I let people outside the
 firewall know my IP address so they can connect to my machine?**
 
 Unfortunately, the purpose of a firewall is to prevent people outside
@@ -330,7 +335,7 @@ This isn't to say that all is lost. For one thing, you can still often
 or NAT or something like that. Just design your programs so that you're
 always the one initiating the connection, and you'll be fine.
 
-[ix[firewall!poking holes in]] If that's not satisfactory, you can ask
+[i[Firewall-->poking holes in]] If that's not satisfactory, you can ask
 your sysadmins to poke a hole in the firewall so that people can connect
 to you. The firewall can forward to you either through it's NAT
 software, or through a proxy or something like that.
@@ -342,7 +347,7 @@ than you might imagine.
 
 Don't make your sysadmin mad at me. `;-)`
 
-**[ix[packet sniffer]] [ix[promiscuous mode]] How do I write a packet
+**[i[Packet sniffer]] [i[Promiscuous mode]] How do I write a packet
 sniffer? How do I put my Ethernet interface into promiscuous mode?**
 
 For those not in the know, when a network card is in "promiscuous mode",
@@ -359,17 +364,17 @@ data from.
 
 Unfortunately, the answer to the question varies depending on the
 platform, but if you Google for, for instance, "windows promiscuous
-[ixtt[ioctl()]] ioctl" you'll probably get somewhere.  For Linux,
-there's what looks like a [fl[useful Stack Overflow
+[i[`ioctl()` function]] ioctl" you'll probably get somewhere.  For
+Linux, there's what looks like a [fl[useful Stack Overflow
 thread|https://stackoverflow.com/questions/21323023/]], as well.
 
-**How can I set a custom [ix[timeout, setting]] timeout value for a TCP
+**How can I set a custom [i[Timeout-->setting]] timeout value for a TCP
 or UDP socket?**
 
-It depends on your system. You might search the net for
-[ixtt[SO\_RCVTIMEO]] `SO_RCVTIMEO` and [ixtt[SO\_SNDTIMEO]]
-`SO_SNDTIMEO` (for use with [ixtt[setsockopt()]] `setsockopt()`) to see
-if your system supports such functionality.
+It depends on your system. You might search the net for [i[`SO_RCVTIMEO`
+macro]] `SO_RCVTIMEO` and [i[`SO_SNDTIMEO` macro]] `SO_SNDTIMEO` (for
+use with [i[`setsockopt()` function]] `setsockopt()`) to see if your
+system supports such functionality.
 
 The Linux man page suggests using `alarm()` or `setitimer()` as a
 substitute.

@@ -3,18 +3,18 @@
 Here's the part of the game where we get to talk code for a change.
 
 But first, let's discuss more non-code! Yay! First I want to talk about
-[ix[IP]] IP addresses and ports for just a tad so we have that sorted
-out.  Then we'll talk about how the sockets API stores and manipulates
-IP addresses and other data.
+[i[IP address]] IP addresses and ports for just a tad so we have that
+sorted out.  Then we'll talk about how the sockets API stores and
+manipulates IP addresses and other data.
 
 
 ## IP Addresses, versions 4 and 6
 
 In the good old days back when Ben Kenobi was still called Obi Wan
 Kenobi, there was a wonderful network routing system called The Internet
-Protocol Version 4, also called [ix[IPv4]] IPv4. It had addresses made
-up of four bytes (A.K.A.  four "octets"), and was commonly written in
-"dots and numbers" form, like so: `192.0.2.111`.
+Protocol Version 4, also called [i[IPv4]] IPv4. It had addresses made up
+of four bytes (A.K.A.  four "octets"), and was commonly written in "dots
+and numbers" form, like so: `192.0.2.111`.
 
 You've probably seen it around.
 
@@ -26,8 +26,7 @@ naysayer by the name of Vint Cerf warned everyone that we were about to
 run out of IPv4 addresses!
 
 (Besides warning everyone of the Coming IPv4 Apocalypse Of Doom And
-Gloom, [ix[Vint Cerf]] [fl[Vint
-Cerf|https://en.wikipedia.org/wiki/Vint_Cerf]] is also well-known for
+Gloom, [i[Vint Cerf]] [flw[Vint Cerf|Vint_Cerf]] is also well-known for
 being The Father Of The Internet. So I really am in no position to
 second-guess his judgment.)
 
@@ -50,13 +49,12 @@ But now we're living in an era where we're talking about every human
 having an IP address, every computer, every calculator, every phone,
 every parking meter, and (why not) every puppy dog, as well.
 
-And so, [ix[IPv6]] IPv6 was born. Since Vint Cerf is probably immortal
+And so, [i[IPv6]] IPv6 was born. Since Vint Cerf is probably immortal
 (even if his physical form should pass on, heaven forbid, he is probably
-already existing as some kind of hyper-intelligent
-[fl[ELIZA|https://en.wikipedia.org/wiki/ELIZA]] program out in the
-depths of the Internet2), no one wants to have to hear him say again "I
-told you so" if we don't have enough addresses in the next version of
-the Internet Protocol.
+already existing as some kind of hyper-intelligent [flw[ELIZA|ELIZA]]
+program out in the depths of the Internet2), no one wants to have to
+hear him say again "I told you so" if we don't have enough addresses in
+the next version of the Internet Protocol.
 
 What does this suggest to you?
 
@@ -201,7 +199,7 @@ And that's about it!
 
 ## Byte Order
 
-[ix[byte ordering]] By Order of the Realm! There shall be two byte
+[i[Byte ordering]] By Order of the Realm! There shall be two byte
 orderings, hereafter to be known as Lame and Magnificent!
 
 I joke, but one really is better than the other. `:-)`
@@ -257,14 +255,12 @@ counting the really stupid ones. For example, there is NOT a `stolh()`
 ("Short to Long Host") function---not at this party, anyway. But there
 are:
 
-[ixtt[htons()]] [ixtt[htonl()]] [ixtt[ntohs()]] [ixtt[ntohl()]]
-
 | Function  | Description                   |
 |-----------|-------------------------------|
-| `htons()` | `h`ost `to` `n`etwork `s`hort |
-| `htonl()` | `h`ost `to` `n`etwork `l`ong  |
-| `ntohs()` | `n`etwork `to` `h`ost `s`hort |
-| `ntohl()` | `n`etwork `to` `h`ost `l`ong  |
+| [i[`htons()` function]]`htons()` | `h`ost `to` `n`etwork `s`hort |
+| [i[`htonl()` function]]`htonl()` | `h`ost `to` `n`etwork `l`ong  |
+| [i[`ntohs()` function]]`ntohs()` | `n`etwork `to` `h`ost `s`hort |
+| [i[`ntohl()` function]]`ntohl()` | `n`etwork `to` `h`ost `l`ong  |
 
 Basically, you'll want to convert the numbers to Network Byte Order
 before they go out on the wire, and convert them to Host Byte Order as
@@ -284,8 +280,8 @@ Well, we're finally here. It's time to talk about programming. In this
 section, I'll cover various data types used by the sockets interface,
 since some of them are a real bear to figure out.
 
-First the easy one: a [ix[socket descriptor]] socket descriptor. A
-socket descriptor is the following type:
+First the easy one: a [i[Socket descriptor]] socket descriptor. A socket
+descriptor is the following type:
 
 ```{.c}
 int
@@ -295,7 +291,7 @@ Just a regular `int`.
 
 Things get weird from here, so just read through and bear with me.
 
-My First Struct™---`struct addrinfo`. [ixtt[struct addrinfo]] This
+My First Struct™---`struct addrinfo`. [i[`struct addrinfo` type]] This
 structure is a more recent invention, and is used to prep the socket
 address structures for subsequent use. It's also used in host name
 lookups, and service name lookups. That'll make more sense later when we
@@ -316,9 +312,9 @@ struct addrinfo {
 };
 ```
 
-You'll load this struct up a bit, and then call [ixtt[getaddrinfo()]]
-`getaddrinfo()`. It'll return a pointer to a new linked list of these
-structures filled out with all the goodies you need.
+You'll load this struct up a bit, and then call [i[`getaddrinfo()`
+function]] `getaddrinfo()`. It'll return a pointer to a new linked list
+of these structures filled out with all the goodies you need.
 
 You can force it to use IPv4 or IPv6 in the `ai_family` field, or leave
 it as `AF_UNSPEC` to use whatever. This is cool because your code can be
@@ -330,9 +326,9 @@ the first result that worked, but you might have different business
 needs; I don't know everything, man!
 
 You'll see that the `ai_addr` field in the `struct addrinfo` is a
-pointer to a [ixtt[struct sockaddr]] `struct sockaddr`. This is where we
-start getting into the nitty-gritty details of what's inside an IP
-address structure.
+pointer to a [i[`struct sockaddr` type]] `struct sockaddr`. This is
+where we start getting into the nitty-gritty details of what's inside an
+IP address structure.
 
 You might not usually need to write to these structures; oftentimes, a
 call to `getaddrinfo()` to fill out your `struct addrinfo` for you is
@@ -357,14 +353,14 @@ struct sockaddr {
 }; 
 ```
 
-`sa_family` can be a variety of things, but it'll be [ixtt[AF\_INET]]
-`AF_INET` (IPv4) or [ixtt[AF\_INET6]] `AF_INET6` (IPv6) for everything
-we do in this document. `sa_data` contains a destination address and
-port number for the socket. This is rather unwieldy since you don't want
-to tediously pack the address in the `sa_data` by hand.
+`sa_family` can be a variety of things, but it'll be [i[`AF_INET`
+macro]] `AF_INET` (IPv4) or [i[`AF_INET6` macro]] `AF_INET6` (IPv6) for
+everything we do in this document. `sa_data` contains a destination
+address and port number for the socket. This is rather unwieldy since
+you don't want to tediously pack the address in the `sa_data` by hand.
 
 To deal with `struct sockaddr`, programmers created a parallel
-structure: [ixtt[struct sockaddr]] `struct sockaddr_in` ("in" for
+structure: [i[`struct sockaddr` type]] `struct sockaddr_in` ("in" for
 "Internet") to be used with IPv4.
 
 And _this is the important_ bit: a pointer to a `struct sockaddr_in` can
@@ -388,8 +384,8 @@ address. Note that `sin_zero` (which is included to pad the structure to
 the length of a `struct sockaddr`) should be set to all zeros with the
 function `memset()`.  Also, notice that `sin_family` corresponds to
 `sa_family` in a `struct sockaddr` and should be set to "`AF_INET`".
-Finally, the `sin_port` must be in [ix[byte ordering]] _Network Byte
-Order_ (by using [ixtt[htons()]] `htons()`!)
+Finally, the `sin_port` must be in [i[Byte ordering]] _Network Byte
+Order_ (by using [i[`htons()` function]] `htons()`!)
 
 Let's dig deeper! You see the `sin_addr` field is a `struct in_addr`.
 What is that thing? Well, not to be overly dramatic, but it's one of the
@@ -412,7 +408,7 @@ uses the God-awful union for `struct in_addr`, you can still reference
 the 4-byte IP address in exactly the same way as I did above (this due
 to `#define`s).
 
-What about [ix[IPv6]] IPv6? Similar `struct`s exist for it, as well:
+What about [i[IPv6]] IPv6? Similar `struct`s exist for it, as well:
 
 ```{.c}
 // (IPv6 only--see struct sockaddr_in and struct in_addr for IPv4)
@@ -463,17 +459,17 @@ What's important is that you can see the address family in the
 ## IP Addresses, Part Deux
 
 Fortunately for you, there are a bunch of functions that allow you to
-manipulate [ix[IP]] IP addresses. No need to figure them out by hand and
-stuff them in a `long` with the `<<` operator.
+manipulate [i[IP address]] IP addresses. No need to figure them out by
+hand and stuff them in a `long` with the `<<` operator.
 
 First, let's say you have a `struct sockaddr_in ina`, and you have an IP
 address "`10.12.110.57`" or "`2001:db8:63b3:1::3490`" that you want to
-store into it.  The function you want to use, [ixtt[inet\_pton()]]
-`inet_pton()`, converts an IP address in numbers-and-dots notation into
-either a `struct in_addr` or a `struct in6_addr` depending on whether
-you specify `AF_INET` or `AF_INET6`. ("`pton`" stands for "presentation
-to network"---you can call it "printable to network" if that's easier to
-remember.) The conversion can be made as follows:
+store into it.  The function you want to use, [i[`inet_pton()`
+function]] `inet_pton()`, converts an IP address in numbers-and-dots
+notation into either a `struct in_addr` or a `struct in6_addr` depending
+on whether you specify `AF_INET` or `AF_INET6`. ("`pton`" stands for
+"presentation to network"---you can call it "printable to network" if
+that's easier to remember.) The conversion can be made as follows:
 
 ```{.c}
 struct sockaddr_in sa; // IPv4
@@ -484,9 +480,9 @@ inet_pton(AF_INET6, "2001:db8:63b3:1::3490", &(sa6.sin6_addr)); // IPv6
 ```
 
 (Quick note: the old way of doing things used a function called
-[ixtt[inet\_addr()]] `inet_addr()` or another function called
-[ixtt[inet\_aton()]] `inet_aton()`; these are now obsolete and don't
-work with IPv6.)
+[i[`inet_addr()` function]] `inet_addr()` or another function called
+[i[`inet_aton()` function]] `inet_aton()`; these are now obsolete and
+don't work with IPv6.)
 
 Now, the above code snippet isn't very robust because there is no error
 checking. See, `inet_pton()` returns `-1` on error, or 0 if the address
@@ -498,7 +494,7 @@ representations. What about the other way around? What if you have a
 `struct in_addr` and you want to print it in numbers-and-dots notation?
 (Or a `struct in6_addr` that you want in, uh, "hex-and-colons"
 notation.) In this case, you'll want to use the function
-[ixtt[inet\_ntop()]] `inet_ntop()` ("ntop" means "network to
+[i[`inet_ntop()` function]] `inet_ntop()` ("ntop" means "network to
 presentation"---you can call it "network to printable" if that's easier
 to remember), like this:
 
@@ -531,8 +527,8 @@ string you'll need to hold the largest IPv4 or IPv6 address:
 
 (Another quick note to mention once again the old way of doing things:
 the historical function to do this conversion was called
-[ixtt[inet\_ntoa()]] `inet_ntoa()`. It's also obsolete and won't work
-with IPv6.)
+[i[`inet_ntoa()` function]] `inet_ntoa()`. It's also obsolete and won't
+work with IPv6.)
 
 Lastly, these functions only work with numeric IP addresses---they won't
 do any nameserver DNS lookup on a hostname, like "`www.example.com`".
@@ -541,11 +537,11 @@ You will use `getaddrinfo()` to do that, as you'll see later on.
 
 ### Private (Or Disconnected) Networks
 
-[ix[private network]] Lots of places have a [ix[firewall]] firewall that
+[i[Private network]] Lots of places have a [i[Firewall]] firewall that
 hides the network from the rest of the world for their own protection.
 And often times, the firewall translates "internal" IP addresses to
 "external" (that everyone else in the world knows) IP addresses using a
-process called _Network Address Translation_, or [ix[NAT]] NAT.
+process called _Network Address Translation_, or [i[NAT]] NAT.
 
 Are you getting nervous yet? "Where's he going with all this weird
 stuff?"
@@ -577,7 +573,7 @@ firewall! It's doing NAT!
 either on fully disconnected networks, or on networks that are behind
 firewalls.  The details of which private network numbers are available
 for you to use are outlined in [flrfc[RFC 1918|1918]], but some common
-ones you'll see are [ix[10.x.x.x]] `10.x.x.x` and [ix[192.168.x.x]]
+ones you'll see are [i[`10.x.x.x`]] `10.x.x.x` and [i[`192.168.x.x`]]
 `192.168.x.x`, where `x` is 0-255, generally. Less common is
 `172.y.x.x`, where `y` goes between 16 and 31.
 
@@ -588,11 +584,10 @@ reserved networks, but they commonly are.
 `192.0.2.x` network is reserved for make-believe "real" IP addresses to
 be used in documentation, just like this guide! Wowzers!)
 
-[ix[IPv6]] IPv6 has private networks, too, in a sense. They'll start
-with `fdXX:` (or maybe in the future `fcXX:`), as per [flrfc[RFC
-4193|4193]].  NAT and IPv6 don't generally mix, however (unless you're
-doing the IPv6 to IPv4 gateway thing which is beyond the scope of this
-document)---in theory you'll have so many addresses at your disposal
-that you won't need to use NAT any longer. But if you want to allocate
-addresses for yourself on a network that won't route outside, this is
-how to do it.
+[i[IPv6]] IPv6 has private networks, too, in a sense. They'll start with
+`fdXX:` (or maybe in the future `fcXX:`), as per [flrfc[RFC 4193|4193]].
+NAT and IPv6 don't generally mix, however (unless you're doing the IPv6
+to IPv4 gateway thing which is beyond the scope of this document)---in
+theory you'll have so many addresses at your disposal that you won't
+need to use NAT any longer. But if you want to allocate addresses for
+yourself on a network that won't route outside, this is how to do it.

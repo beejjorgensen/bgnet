@@ -1,6 +1,8 @@
 # Client-Server Background
 
-[ix[client/server]] It's a client-server world, baby. Just about
+[i[Client/Server]<]
+
+It's a client-server world, baby. Just about
 everything on the network deals with client processes talking to server
 processes and vice-versa. Take `telnet`, for instance. When you connect
 to a remote host on port 23 with telnet (the client), a program on that
@@ -19,17 +21,19 @@ examples of client-server pairs are `telnet`/`telnetd`, `ftp`/`ftpd`, or
 `ftpd`, that serves you.
 
 Often, there will only be one server on a machine, and that server will
-handle multiple clients using [ixtt[fork()]] `fork()`. The basic routine
-is: server will wait for a connection, `accept()` it, and `fork()` a
-child process to handle it. This is what our sample server does in the
-next section.
+handle multiple clients using [i[`fork()` function]] `fork()`. The basic
+routine is: server will wait for a connection, `accept()` it, and
+`fork()` a child process to handle it. This is what our sample server
+does in the next section.
 
 
 ## A Simple Stream Server
 
-[ix[server!stream]] All this server does is send the string "`Hello,
-world!`" out over a stream connection. All you need to do to test this
-server is run it in one window, and telnet to it from another with:
+[i[Server-->stream]<]
+
+All this server does is send the string "`Hello, world!`" out over a
+stream connection. All you need to do to test this server is run it in
+one window, and telnet to it from another with:
 
 ```
 $ telnet remotehostname 3490
@@ -179,20 +183,23 @@ In case you're curious, I have the code in one big `main()` function for
 (I feel) syntactic clarity. Feel free to split it into smaller functions
 if it makes you feel better.
 
-(Also, this whole [ixtt[sigaction()]] `sigaction()` thing might be new
-to you---that's ok. The code that's there is responsible for reaping
-[ix[zombie process]] zombie processes that appear as the `fork()`ed
-child processes exit. If you make lots of zombies and don't reap them,
-your system administrator will become agitated.)
+(Also, this whole [i[`sigaction()` function]] `sigaction()` thing might
+be new to you---that's OK. The code that's there is responsible for
+reaping [i[Zombie process]] zombie processes that appear as the
+`fork()`ed child processes exit. If you make lots of zombies and don't
+reap them, your system administrator will become agitated.)
 
 You can get the data from this server by using the client listed in the
 next section.
 
+[i[Server-->stream]>]
 
 ## A Simple Stream Client
 
-[ix[client!stream]] This guy's even easier than the server. All this
-client does is connect to the host you specify on the command line, port
+[i[Client-->stream]<]
+
+This guy's even easier than the server. All this client does is connect
+to the host you specify on the command line, port
 3490. It gets the string that the server sends.
 
 [flx[The client source|client.c]]:
@@ -294,20 +301,22 @@ int main(int argc, char *argv[])
 ```
 
 Notice that if you don't run the server before you run the client,
-`connect()` returns [ix[Connection refused]] "Connection refused". Very
+`connect()` returns [i[Connection refused]] "Connection refused". Very
 useful.
 
+[i[Client-->stream]>]
 
 ## Datagram Sockets {#datagram}
+
+[i[Server-->datagram]<]
 
 We've already covered the basics of UDP datagram sockets with our
 discussion of `sendto()` and `recvfrom()`, above, so I'll just present a
 couple of sample programs: `talker.c` and `listener.c`.
 
-[ix[server!datagram]] `listener` sits on a machine waiting for an
-incoming packet on port 4950. `talker` sends a packet to that port, on
-the specified machine, that contains whatever the user enters on the
-command line.
+`listener` sits on a machine waiting for an incoming packet on port
+4950. `talker` sends a packet to that port, on the specified machine,
+that contains whatever the user enters on the command line.
 
 Because datagram sockets are connectionless and just fire packets off
 into the ether with callous disregard for success, we are going to tell
@@ -423,8 +432,11 @@ Notice that in our call to `getaddrinfo()` we're finally using
 `accept()`. This is one of the perks of using unconnected datagram
 sockets!
 
-[ix[client!datagram]] Next comes the [flx[source for
-`talker.c`|talker.c]]:
+[i[Server-->datagram]>]
+
+[i[Client-->datagram]<]
+
+Next comes the [flx[source for `talker.c`|talker.c]]:
 
 ```{.c .numberLines}
 /*
@@ -506,11 +518,15 @@ disappear if no one is ready with a `recvfrom()` on the other side.
 Remember: data sent using UDP datagram sockets isn't guaranteed to
 arrive!
 
+[i[Client-->datagram]>]
+
 Except for one more tiny detail that I've mentioned many times in the
-past: [ix[connect()@\texttt{connect()}!on datagram sockets]] connected
-datagram sockets. I need to talk about this here, since we're in the
-datagram section of the document. Let's say that `talker` calls
-`connect()` and specifies the `listener`'s address. From that point on,
-`talker` may only send to and receive from the address specified by
-`connect()`. For this reason, you don't have to use `sendto()` and
-`recvfrom()`; you can simply use `send()` and `recv()`.
+past: [i[`connect()` function-->on datagram sockets]] connected datagram
+sockets. I need to talk about this here, since we're in the datagram
+section of the document. Let's say that `talker` calls `connect()` and
+specifies the `listener`'s address. From that point on, `talker` may
+only send to and receive from the address specified by `connect()`. For
+this reason, you don't have to use `sendto()` and `recvfrom()`; you can
+simply use `send()` and `recv()`.
+
+[i[Client/Server]>]

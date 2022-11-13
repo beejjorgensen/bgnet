@@ -28,9 +28,9 @@ stand-alone programs, though, so use those as a model.)_
 
 ## `getaddrinfo()`---Prepare to launch!
 
-[ixtt[getaddrinfo()]] This is a real workhorse of a function with a lot
-of options, but usage is actually pretty simple. It helps set up the
-`struct`s you need later on.
+[i[`getaddrinfo()` function]] This is a real workhorse of a function
+with a lot of options, but usage is actually pretty simple. It helps set
+up the `struct`s you need later on.
 
 A tiny bit of history: it used to be that you would use a function
 called `gethostbyname()` to do DNS lookups. Then you'd load that
@@ -236,7 +236,7 @@ our network connection established! Keep reading!
 ## `socket()`---Get the File Descriptor! {#socket}
 
 I guess I can put it off no longer---I have to talk about the
-[ixtt[socket()]] `socket()` system call. Here's the breakdown:
+[i[`socket()` function]] `socket()` system call. Here's the breakdown:
 
 ```{.c}
 #include <sys/types.h>
@@ -254,7 +254,7 @@ still do that. (`domain` is `PF_INET` or `PF_INET6`, `type` is
 choose the proper protocol for the given `type`. Or you can call
 `getprotobyname()` to look up the protocol you want, "tcp" or "udp".)
 
-(This `PF_INET` thing is a close relative of the [ixtt[AF\_INET]]
+(This `PF_INET` thing is a close relative of the [i[`AF_INET` macro]]
 `AF_INET` that you can use when initializing the `sin_family` field in
 your `struct sockaddr_in`. In fact, they're so closely related that they
 actually have the same value, and many programmers will call `socket()`
@@ -299,15 +299,16 @@ calls for it to make any sense.
 
 ## `bind()`---What port am I on? {#bind}
 
-[ixtt[bind()]] Once you have a socket, you might have to associate that
-socket with a [ix[port]] port on your local machine. (This is commonly
-done if you're going to [ixtt[listen()]] `listen()` for incoming
-connections on a specific port---multiplayer network games do this when
-they tell you to "connect to 192.168.5.10 port 3490".) The port number
-is used by the kernel to match an incoming packet to a certain process's
-socket descriptor. If you're going to only be doing a [ixtt[connect()]]
-`connect()` (because you're the client, not the server), this is
-probably unnecessary. Read it anyway, just for kicks.
+[i[`bind()` function]] Once you have a socket, you might have to
+associate that socket with a [i[Port]] port on your local machine. (This
+is commonly done if you're going to [i[`listen()` function]] `listen()`
+for incoming connections on a specific port---multiplayer network games
+do this when they tell you to "connect to 192.168.5.10 port 3490".) The
+port number is used by the kernel to match an incoming packet to a
+certain process's socket descriptor. If you're going to only be doing a
+[i[`connect()`] function] `connect()` (because you're the client, not
+the server), this is probably unnecessary. Read it anyway, just for
+kicks.
 
 Here is the synopsis for the `bind()` system call:
 
@@ -320,8 +321,8 @@ int bind(int sockfd, struct sockaddr *my_addr, int addrlen);
 
 `sockfd` is the socket file descriptor returned by `socket()`. `my_addr`
 is a pointer to a `struct sockaddr` that contains information about your
-address, namely, port and [ix[IP]] IP address. `addrlen` is the length
-in bytes of that address.
+address, namely, port and [i[IP address]] IP address. `addrlen` is the
+length in bytes of that address.
 
 Whew. That's a bit to absorb in one chunk. Let's have an example that
 binds the socket to the host the program is running on, port 3490:
@@ -386,19 +387,20 @@ your `struct sockaddr_in6`. (There is also a macro `IN6ADDR_ANY_INIT`
 that you can use in a variable initializer.)
 
 Another thing to watch out for when calling `bind()`: don't go
-underboard with your port numbers. [ix[port]] All ports below 1024 are
+underboard with your port numbers. [i[Port]] All ports below 1024 are
 RESERVED (unless you're the superuser)! You can have any port number
 above that, right up to 65535 (provided they aren't already being used
 by another program).
 
 Sometimes, you might notice, you try to rerun a server and `bind()`
-fails, claiming [ix[Address already in use]] "Address already in use."
+fails, claiming [i[Address already in use]] "Address already in use."
 What does that mean? Well, a little bit of a socket that was connected
 is still hanging around in the kernel, and it's hogging the port. You
 can either wait for it to clear (a minute or so), or add code to your
 program allowing it to reuse the port, like this:
 
-[ixtt[setsockopt()]] [ixtt[SO\_REUSEADDR]]
+[i[`setsockopt()` function]]
+ [i[`SO_REUSEADDR` macro]]
 
 ```{.c .numberLines}
 int yes=1;
@@ -411,22 +413,22 @@ if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
 } 
 ```
 
-[ixtt[bind()]] One small extra final note about `bind()`: there are
-times when you won't absolutely have to call it. If you are
-[ixtt[connect()]] `connect()`ing to a remote machine and you don't care
-what your local port is (as is the case with `telnet` where you only
-care about the remote port), you can simply call `connect()`, it'll
-check to see if the socket is unbound, and will `bind()` it to an unused
-local port if necessary.
+[i[`bind()` function]] One small extra final note about `bind()`: there
+are times when you won't absolutely have to call it. If you are
+[i[`connect()` function]] `connect()`ing to a remote machine and you
+don't care what your local port is (as is the case with `telnet` where
+you only care about the remote port), you can simply call `connect()`,
+it'll check to see if the socket is unbound, and will `bind()` it to an
+unused local port if necessary.
 
 
 ## `connect()`---Hey, you! {#connect}
 
-[ixtt[connect()]] Let's just pretend for a few minutes that you're a
-telnet application. Your user commands you (just like in the movie
-[ix[TRON]] _TRON_) to get a socket file descriptor. You comply and call
-`socket()`. Next, the user tells you to connect to "`10.12.110.57`" on
-port "`23`" (the standard telnet port). Yow! What do you do now?
+[i[`connect()` function]] Let's just pretend for a few minutes that
+you're a telnet application. Your user commands you (just like in the
+movie [i[TRON]] _TRON_) to get a socket file descriptor. You comply and
+call `socket()`. Next, the user tells you to connect to "`10.12.110.57`"
+on port "`23`" (the standard telnet port). Yow! What do you do now?
 
 Lucky for you, program, you're now perusing the section on
 `connect()`---how to connect to a remote host. So read furiously onward!
@@ -481,8 +483,7 @@ note in the [`bind()` section](#bind), above.
 Be sure to check the return value from `connect()`---it'll return `-1`
 on error and set the variable `errno`.
 
-<!-- latex index here so we can get the subindex entry after the tt -->
-[ix[bind()@\texttt{bind()}!implicit]]
+[i[`bind()` function-->implicit]]
 
 Also, notice that we didn't call `bind()`. Basically, we don't care
 about our local port number; we only care where we're going (the remote
@@ -492,11 +493,11 @@ connect to will automatically get this information from us. No worries.
 
 ## `listen()`---Will somebody please call me? {#listen}
 
-[ixtt[listen()]] Ok, time for a change of pace. What if you don't want
-to connect to a remote host. Say, just for kicks, that you want to wait
-for incoming connections and handle them in some way. The process is two
-step: first you `listen()`, then you [ixtt[accept()]] `accept()` (see
-below).
+[i[`listen()` function]] OK, time for a change of pace. What if you
+don't want to connect to a remote host. Say, just for kicks, that you
+want to wait for incoming connections and handle them in some way. The
+process is two step: first you `listen()`, then you [i[`accept()`
+function]] `accept()` (see below).
 
 The `listen()` call is fairly simple, but requires a bit of explanation:
 
@@ -505,8 +506,8 @@ int listen(int sockfd, int backlog);
 ```
 
 `sockfd` is the usual socket file descriptor from the `socket()` system
-call.  [ix[listen()@\texttt{listen()}!backlog]] `backlog` is the number
-of connections allowed on the incoming queue. What does that mean? Well,
+call.  [i[`listen()` function-->backlog]] `backlog` is the number of
+connections allowed on the incoming queue. What does that mean? Well,
 incoming connections are going to wait in this queue until you
 `accept()` them (see below) and this is the limit on how many can queue
 up. Most systems silently limit this number to about 20; you can
@@ -536,16 +537,16 @@ complete.) The really tricky part of this whole sha-bang is the call to
 
 ## `accept()`---"Thank you for calling port 3490."
 
-[ixtt[accept()]] Get ready---the `accept()` call is kinda weird! What's
-going to happen is this: someone far far away will try to `connect()` to
-your machine on a port that you are `listen()`ing on. Their connection
-will be queued up waiting to be `accept()`ed. You call `accept()` and
-you tell it to get the pending connection. It'll return to you a _brand
-new socket file descriptor_ to use for this single connection! That's
-right, suddenly you have _two socket file descriptors_ for the price of
-one! The original one is still listening for more new connections, and
-the newly created one is finally ready to `send()` and `recv()`. We're
-there! 
+[i[`accept()` function]] Get ready---the `accept()` call is kinda weird!
+What's going to happen is this: someone far far away will try to
+`connect()` to your machine on a port that you are `listen()`ing on.
+Their connection will be queued up waiting to be `accept()`ed. You call
+`accept()` and you tell it to get the pending connection. It'll return
+to you a _brand new socket file descriptor_ to use for this single
+connection! That's right, suddenly you have _two socket file
+descriptors_ for the price of one! The original one is still listening
+for more new connections, and the newly created one is finally ready to
+`send()` and `recv()`. We're there! 
 
 The call is as follows:
 
@@ -628,7 +629,7 @@ connected datagram sockets. If you want to use regular unconnected
 datagram sockets, you'll need to see the section on [`sendto()` and
 `recvfrom()`](#sendtorecv), below.
 
-[ixtt[send()]] The `send()` call:
+[i[`send()` function]] The `send()` call:
 
 ```{.c}
 int send(int sockfd, const void *msg, int len, int flags); 
@@ -665,7 +666,7 @@ this: if the packet is small (less than 1K or so) it will _probably_
 manage to send the whole thing all in one go.  Again, `-1` is returned
 on error, and `errno` is set to the error number.
 
-[ixtt[recv()]] The `recv()` call is similar in many respects:
+[i[`recv()` function]] The `recv()` call is similar in many respects:
 
 ```{.c}
 int recv(int sockfd, void *buf, int len, int flags);
@@ -689,7 +690,7 @@ stream sockets! Whee! You're a Unix Network Programmer!
 
 ## `sendto()` and `recvfrom()`---Talk to me, DGRAM-style {#sendtorecv}
 
-[ixtt[SOCK\_DGRAM]] "This is all fine and dandy," I hear you saying,
+[i[`SOCK_DGRAM` macro]] "This is all fine and dandy," I hear you saying,
 "but where does this leave me with unconnected datagram sockets?" No
 problemo, amigo. We have just the thing.
 
@@ -706,9 +707,9 @@ As you can see, this call is basically the same as the call to `send()`
 with the addition of two other pieces of information. `to` is a pointer
 to a `struct sockaddr` (which will probably be another `struct
 sockaddr_in` or `struct sockaddr_in6` or `struct sockaddr_storage` that
-you cast at the last minute) which contains the destination [ix[IP]] IP
-address and [ix[port]] port.  `tolen`, an `int` deep-down, can simply be
-set to `sizeof *to` or `sizeof(struct sockaddr_storage)`.
+you cast at the last minute) which contains the destination [i[IP
+address]] IP address and [i[Port]] port. `tolen`, an `int` deep-down,
+can simply be set to `sizeof *to` or `sizeof(struct sockaddr_storage)`.
 
 To get your hands on the destination address structure, you'll probably
 either get it from `getaddrinfo()`, or from `recvfrom()`, below, or
@@ -718,8 +719,8 @@ Just like with `send()`, `sendto()` returns the number of bytes actually
 sent (which, again, might be less than the number of bytes you told it
 to send!), or `-1` on error.
 
-Equally similar are `recv()` and [ixtt[recvfrom()]] `recvfrom()`. The
-synopsis of `recvfrom()` is:
+Equally similar are `recv()` and [i[`recvfrom()` function]]
+`recvfrom()`. The synopsis of `recvfrom()` is:
 
 ```{.c}
 int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
@@ -727,7 +728,7 @@ int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
 ```
 
 Again, this is just like `recv()` with the addition of a couple fields.
-`from` is a pointer to a local [ixtt[struct sockaddr]] `struct
+`from` is a pointer to a local [i[`struct sockaddr` type]] `struct
 sockaddr_storage` that will be filled with the IP address and port of
 the originating machine. `fromlen` is a pointer to a local `int` that
 should be initialized to `sizeof *from` or `sizeof(struct
@@ -749,7 +750,7 @@ extraneous and redundant, huh. The answer is, it just isn't big enough,
 and I'd guess that changing it at this point would be Problematic. So
 they made a new one.)
 
-Remember, if you [ix[connect()@\texttt{connect()}!on datagram sockets]]
+Remember, if you [i[`connect()` function-->on datagram sockets]]
 `connect()` a datagram socket, you can then simply use `send()` and
 `recv()` for all your transactions. The socket itself is still a
 datagram socket and the packets still use UDP, but the socket interface
@@ -761,7 +762,7 @@ will automatically add the destination and source information for you.
 Whew! You've been `send()`ing and `recv()`ing data all day long, and
 you've had it. You're ready to close the connection on your socket
 descriptor. This is easy. You can just use the regular Unix file
-descriptor [ixtt[close()]] `close()` function:
+descriptor [i[`close()` function]] `close()` function:
 
 ```{.c}
 close(sockfd); 
@@ -772,9 +773,9 @@ attempting to read or write the socket on the remote end will receive an
 error.
 
 Just in case you want a little more control over how the socket closes,
-you can use the [ixtt[shutdown()]] `shutdown()` function. It allows you
-to cut off communication in a certain direction, or both ways (just like
-`close()` does). Synopsis:
+you can use the [i[`shutdown()` function]] `shutdown()` function. It
+allows you to cut off communication in a certain direction, or both ways
+(just like `close()` does). Synopsis:
 
 ```{.c}
 int shutdown(int sockfd, int how); 
@@ -803,14 +804,14 @@ you need to use `close()`.
 
 Nothing to it.
 
-(Except to remember that if you're using [ix[Windows]] Windows and
-[ix[Winsock]] Winsock that you should call [ixtt[closesocket()]]
+(Except to remember that if you're using [i[Windows]] Windows and
+[i[Winsock]] Winsock that you should call [i[`closesocket()` function]]
 `closesocket()` instead of `close()`.)
 
 
 ## `getpeername()`---Who are you?
 
-[ixtt[getpeername()]] This function is so easy.
+[i[`getpeername()` function]] This function is so easy.
 
 It's so easy, I almost didn't give it its own section. But here it is
 anyway.
@@ -832,9 +833,9 @@ hold the information about the other side of the connection, and
 
 The function returns `-1` on error and sets `errno` accordingly.
 
-Once you have their address, you can use [ixtt[inet\_ntop()]]
-`inet_ntop()`, [ixtt[getnameinfo()]] `getnameinfo()`, or
-[ixtt[gethostbyaddr()]] `gethostbyaddr()` to print or get more
+Once you have their address, you can use [i[`inet_ntop()` function]]
+`inet_ntop()`, [i[`getnameinfo()` function]] `getnameinfo()`, or
+[i[`gethostbyaddr()` function]] `gethostbyaddr()` to print or get more
 information. No, you can't get their login name. (Ok, ok. If the other
 computer is running an ident daemon, this is possible. This, however, is
 beyond the scope of this document. Check out [flrfc[RFC 1413|1413]] for
@@ -843,11 +844,11 @@ more info.)
 
 ## `gethostname()`---Who am I?
 
-[ixtt[gethostname()]] Even easier than `getpeername()` is the function
-`gethostname()`. It returns the name of the computer that your program
-is running on. The name can then be used by [ixtt[gethostbyname()]]
-`gethostbyname()`, below, to determine the [ix[IP]] IP address of your
-local machine.
+[i[`gethostname()` function]] Even easier than `getpeername()` is the
+function `gethostname()`. It returns the name of the computer that your
+program is running on. The name can then be used by [i[`gethostbyname()`
+function]] `gethostbyname()`, below, to determine the [i[IP address]] IP
+address of your local machine.
 
 What could be more fun? I could think of a few things, but they don't
 pertain to socket programming. Anyway, here's the breakdown:
