@@ -58,6 +58,9 @@ outfile = sys.argv[-1]
 
 filedata = []
 
+def collapse_spaces(s):
+    return " ".join(s.split())
+
 def nobr_replace(mo):
     return re.sub(r'\s', r'\ ', mo.group(1))
 
@@ -132,7 +135,7 @@ def get_entry_repl(entry, flags=''):
 def is_replace(m):
     """Index [is[]] tag replacer."""
 
-    entryfull = m.group('entry')
+    entryfull = collapse_spaces(m.group('entry'))
 
     key, value = entryfull.split('==>')
 
@@ -155,7 +158,7 @@ def i_replace(m):
 
 
     """Index [i[]] tag replacer."""
-    entryfull = m.group('entry')
+    entryfull = collapse_spaces(m.group('entry'))
     flags = m.group('flags')
 
     flags = flags if flags is not None else ''
