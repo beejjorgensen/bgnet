@@ -47,12 +47,12 @@ should absolutely do error checking pretty much any time you make any of
 the system calls unless you're totally 100% sure it's not going to fail,
 and you should probably do it even then!
 
-[[pagebreak]]
+[[manbreak]]
 ## `accept()` {#acceptman}
 
 Accept an incoming connection on a listening socket
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -61,7 +61,7 @@ Accept an incoming connection on a listening socket
 int accept(int s, struct sockaddr *addr, socklen_t *addrlen);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[accept()]] Once you've gone through the trouble of getting a
 [ixtt[SOCK\_STREAM]] `SOCK_STREAM` socket and setting it up for incoming
@@ -90,12 +90,12 @@ The socket descriptor returned by `accept()` is a bona fide socket
 descriptor, open and connected to the remote host. You have to `close()`
 it when you're done with it.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 `accept()` returns the newly connected socket descriptor, or `-1` on
 error, with `errno` set appropriately.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 struct sockaddr_storage their_addr;
@@ -126,18 +126,18 @@ new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
 // ready to communicate on socket descriptor new_fd!
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`socket()`](#socketman), [`getaddrinfo()`](#getaddrinfoman),
 [`listen()`](#listenman), [`struct sockaddr_in`](#structsockaddrman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `bind()` {#bindman}
 
 Associate a socket with an IP address and port number
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -146,7 +146,7 @@ Associate a socket with an IP address and port number
 int bind(int sockfd, struct sockaddr *my_addr, socklen_t addrlen);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[bind()]] When a remote machine wants to connect to your server
 program, it needs two pieces of information: the [ix[IP address]] IP
@@ -178,12 +178,12 @@ in6_addr`, you can initialize it to `IN6ADDR_ANY_INIT`.
 
 Lastly, the `addrlen` parameter should be set to `sizeof my_addr`.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // modern way of doing things with getaddrinfo()
@@ -229,18 +229,18 @@ s = socket(PF_INET, SOCK_STREAM, 0);
 bind(s, (struct sockaddr*)&myaddr, sizeof myaddr);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`getaddrinfo()`](#getaddrinfoman), [`socket()`](#socketman), [`struct
 sockaddr_in`](#structsockaddrman), [`struct in_addr`](#structsockaddrman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `connect()` {#connectman}
 
 Connect a socket to a server
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -250,7 +250,7 @@ int connect(int sockfd, const struct sockaddr *serv_addr,
             socklen_t addrlen);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[connect()]] Once you've built a socket descriptor with the
 `socket()` call, you can `connect()` that socket to a remote server
@@ -279,12 +279,12 @@ you `connect()` a `SOCK_DGRAM` UDP socket to a remote host, you can use
 `send()` and `recv()` as well as `sendto()` and `recvfrom()`. If you
 want.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // connect to www.example.com port 80 (http)
@@ -310,17 +310,17 @@ sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 connect(sockfd, res->ai_addr, res->ai_addrlen);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`socket()`](#socketman), [`bind()`](#bindman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `close()` {#closeman}
 
 Close a socket descriptor
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <unistd.h>
@@ -328,7 +328,7 @@ Close a socket descriptor
 int close(int s);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[close()]] After you've finished using the socket for whatever
 demented scheme you have concocted and you don't want to `send()` or
@@ -346,12 +346,12 @@ send() will return `-1` and `errno` will be set to [ixtt[EPIPE]]
 `close()` on a socket descriptor, it's possible Windows will get
 angry... And you wouldn't like it when it's angry.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 s = socket(PF_INET, SOCK_DGRAM, 0);
@@ -365,18 +365,18 @@ s = socket(PF_INET, SOCK_DGRAM, 0);
 close(s);  // not much to it, really.
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`socket()`](#socketman), [`shutdown()`](#shutdownman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `getaddrinfo()`, `freeaddrinfo()`, `gai_strerror()` {#getaddrinfoman}
 
 Get information about a host name and/or service and load up a `struct
 sockaddr` with the result.
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -403,7 +403,7 @@ struct addrinfo {
 };
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 `getaddrinfo()` is an excellent function that will return information on
 a particular host name (such as its IP address) and load up a `struct
@@ -474,13 +474,13 @@ Finally, when you're done with the linked list, you need to call
 `freeaddrinfo()` to free up the memory (or it will be leaked, and Some
 People will get upset).
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or nonzero on error. If it returns nonzero, you
 can use the function `gai_strerror()` to get a printable version of the
 error code in the return value.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // code for a client connecting to a server
@@ -571,17 +571,17 @@ if (p == NULL) {
 freeaddrinfo(servinfo); // all done with this structure
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`gethostbyname()`](#gethostbynameman), [`getnameinfo()`](#getnameinfoman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `gethostname()` {#gethostnameman}
 
 Returns the name of the system
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/unistd.h>
@@ -589,7 +589,7 @@ Returns the name of the system
 int gethostname(char *name, size_t len);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[gethostname()]] Your system has a name. They all do. This is a
 slightly more Unixy thing than the rest of the networky stuff we've been
@@ -605,12 +605,12 @@ won't overwrite the end of the buffer (it might return an error, or it
 might just stop writing), and it will `NUL`-terminate the string if
 there's room for it in the buffer.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 char hostname[128];
@@ -619,17 +619,17 @@ gethostname(hostname, sizeof hostname);
 printf("My hostname: %s\n", hostname);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`gethostbyname()`](#gethostbynameman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `gethostbyname()`, `gethostbyaddr()` {#gethostbynameman}
 
 Get an IP address for a hostname, or vice-versa
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/socket.h>
@@ -639,7 +639,7 @@ struct hostent *gethostbyname(const char *name); // DEPRECATED!
 struct hostent *gethostbyaddr(const char *addr, int len, int type);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[gethostbyname()]] [ixtt[gethostbyaddr()]] _PLEASE NOTE: these two
 functions are superseded by `getaddrinfo()` and `getnameinfo()`!_  In
@@ -686,7 +686,7 @@ host in question.
 | `char **h_addr_list` | A list of IP addresses for this host. Although this is a `char**`, it's really an array of `struct in_addr*`s in disguise. The last array element is `NULL`. |
 | `h_addr`             | A commonly defined alias for `h_addr_list[0]`. If you just want any old IP address for this host (yeah, they can have more than one) just use this field. |
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns a pointer to a resultant `struct hostent` on success, or `NULL`
 on error.
@@ -698,7 +698,7 @@ variable `h_errno`, which can be printed using the functions
 work just like the classic `errno`, `perror()`, and `strerror()`
 functions you're used to.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // THIS IS A DEPRECATED METHOD OF GETTING HOST NAMES
@@ -758,7 +758,7 @@ he = gethostbyaddr(&ipv6addr, sizeof ipv6addr, AF_INET6);
 printf("Host name: %s\n", he->h_name);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`getaddrinfo()`](#getaddrinfoman), [`getnameinfo()`](#getnameinfoman),
 [`gethostname()`](#gethostnameman), [`errno`](#errnoman),
@@ -766,13 +766,13 @@ printf("Host name: %s\n", he->h_name);
 in_addr`](#structsockaddrman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `getnameinfo()` {#getnameinfoman}
 
 Look up the host name and service name information for a given `struct
 sockaddr`.
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/socket.h>
@@ -783,7 +783,7 @@ int getnameinfo(const struct sockaddr *sa, socklen_t salen,
                 char *serv, size_t servlen, int flags);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 This function is the opposite of `getaddrinfo()`, that is, this function
 takes an already loaded `struct sockaddr` and does a name and service
@@ -808,13 +808,13 @@ version of the IP address in `host` instead).
 
 As always, check your local man pages for the full scoop.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or non-zero on error. If the return value is
 non-zero, it can be passed to `gai_strerror()` to get a human-readable
 string. See `getaddrinfo` for more information.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 struct sockaddr_in6 sa; // could be IPv4 if you want
@@ -829,17 +829,17 @@ printf("   host: %s\n", host);    // e.g. "www.example.com"
 printf("service: %s\n", service); // e.g. "http"
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`getaddrinfo()`](#getaddrinfoman), [`gethostbyaddr()`](#gethostbynameman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `getpeername()` {#getpeernameman}
 
 Return address info about the remote side of the connection
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/socket.h>
@@ -847,7 +847,7 @@ Return address info about the remote side of the connection
 int getpeername(int s, struct sockaddr *addr, socklen_t *len);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[getpeername()]] Once you have either `accept()`ed a remote
 connection, or `connect()`ed to a server, you now have what is known as
@@ -866,12 +866,12 @@ though, the peer's "name" is it's IP address and port.
 Although the function returns the size of the resultant address in
 `len`, you must preload `len` with the size of `addr`.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // assume s is a connected socket
@@ -899,18 +899,18 @@ printf("Peer IP address: %s\n", ipstr);
 printf("Peer port      : %d\n", port);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`gethostname()`](#gethostnameman), [`gethostbyname()`](#gethostbynameman),
 [`gethostbyaddr()`](#gethostbynameman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `errno` {#errnoman}
 
 Holds the error code for the last system call
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <errno.h>
@@ -918,7 +918,7 @@ Holds the error code for the last system call
 int errno;
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[errno]] This is the variable that holds error information for a
 lot of system calls. If you'll recall, things like `socket()` and
@@ -939,12 +939,12 @@ systems `errno` is defined in a threadsafe manner. (That is, it's not
 actually a global variable, but it behaves just like a global variable
 would in a single-threaded environment.)
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 The value of the variable is the latest error to have transpired, which
 might be the code for "success" if the last action succeeded.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 s = socket(PF_INET, SOCK_STREAM, 0);
@@ -965,17 +965,17 @@ if (select(n, &readfds, NULL, NULL) == -1) {
 }
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`perror()`](#perrorman), [`strerror()`](#perrorman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `fcntl()` {#fcntlman}
 
 Control socket descriptors
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/unistd.h>
@@ -984,7 +984,7 @@ Control socket descriptors
 int fcntl(int s, int cmd, long arg);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[fcntl()]] This function is typically used to do file locking and
 other file-oriented stuff, but it also has a couple socket-related
@@ -1002,7 +1002,7 @@ letting on here, but I'm trying to stay socket-oriented.)
 | `O_NONBLOCK` | Set the socket to be non-blocking. See the section on [blocking](#blocking) for more details.|
 | `O_ASYNC`    | Set the socket to do asynchronous I/O. When data is ready to be `recv()`'d on the socket, the signal `SIGIO` will be raised. This is rare to see, and beyond the scope of the guide. And I think it's only available on certain systems.|
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
@@ -1011,7 +1011,7 @@ Different uses of the `fcntl()` system call actually have different
 return values, but I haven't covered them here because they're not
 socket-related. See your local `fcntl()` man page for more information.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int s = socket(PF_INET, SOCK_STREAM, 0);
@@ -1020,17 +1020,17 @@ fcntl(s, F_SETFL, O_NONBLOCK);  // set to non-blocking
 fcntl(s, F_SETFL, O_ASYNC);     // set to asynchronous I/O
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [Blocking](#blocking), [`send()`](#sendman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `htons()`, `htonl()`, `ntohs()`, `ntohl()` {#htonsman}
 
 Convert multi-byte integer types from host byte order to network byte order
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <netinet/in.h>
@@ -1041,7 +1041,7 @@ uint32_t ntohl(uint32_t netlong);
 uint16_t ntohs(uint16_t netshort);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[htons()]] [ixtt[htonl()]] [ixtt[ntohs()]] [ixtt[ntohl()]] Just to
 make you really unhappy, different computers use different byte
@@ -1086,11 +1086,11 @@ Thus:
 | `ntohs()` | `n`etwork `to` `h`ost `s`hort |
 | `ntohl()` | `n`etwork `to` `h`ost `l`ong  |
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Each function returns the converted value.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 uint32_t some_long = 10;
@@ -1106,13 +1106,13 @@ some_short == ntohs(htons(some_short)); // this expression is true
 ```
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `inet_ntoa()`, `inet_aton()`, `inet_addr` {#inet_ntoaman}
 
 Convert IP addresses from a dots-and-number string to a `struct in_addr` and
 back
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/socket.h>
@@ -1126,7 +1126,7 @@ int inet_aton(const char *cp, struct in_addr *inp);
 in_addr_t inet_addr(const char *cp);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 _These functions are deprecated because they don't handle IPv6! Use
 `inet_ntop()` or `inet_pton()` instead! They are included here because
@@ -1157,7 +1157,7 @@ basically the same thing as `inet_aton()`. It's theoretically
 deprecated, but you'll see it a lot and the police won't come get you if
 you use it.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 `inet_aton()` returns non-zero if the address is a valid one, and it
 returns zero if the address is invalid.
@@ -1170,7 +1170,7 @@ an error. (That is the same result as if you tried to convert the string
 [ix[255.255.255.255]] "`255.255.255.255`", which is a valid IP address.
 This is why `inet_aton()` is better.)
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 struct sockaddr_in antelope;
@@ -1185,18 +1185,18 @@ printf("%s\n", some_addr); // prints "10.0.0.1"
 antelope.sin_addr.s_addr = inet_addr("10.0.0.1");
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`inet_ntop()`](#inet_ntopman), [`inet_pton()`](#inet_ntopman),
 [`gethostbyname()`](#gethostbynameman), [`gethostbyaddr()`](#gethostbynameman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `inet_ntop()`, `inet_pton()` {#inet_ntopman}
 
 Convert IP addresses to human-readable form and back.
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <arpa/inet.h>
@@ -1207,7 +1207,7 @@ const char *inet_ntop(int af, const void *src,
 int inet_pton(int af, const char *src, void *dst);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 These functions are for dealing with human-readable IP addresses and
 converting them to their binary representation for use with various
@@ -1245,7 +1245,7 @@ a `struct in_addr` or `struct in6_addr`.
 These functions don't do DNS lookups---you'll need `getaddrinfo()` for
 that.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 `inet_ntop()` returns the `dst` parameter on success, or `NULL` on
 failure (and `errno` is set).
@@ -1253,7 +1253,7 @@ failure (and `errno` is set).
 `inet_pton()` returns `1` on success. It returns `-1` if there was an
 error (`errno` is set), or `0` if the input isn't a valid IP address.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // IPv4 demo of inet_ntop() and inet_pton()
@@ -1313,18 +1313,18 @@ char *get_ip_str(const struct sockaddr *sa, char *s, size_t maxlen)
 }
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`getaddrinfo()`](#getaddrinfoman)
 
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `listen()` {#listenman}
 
 Tell a socket to listen for incoming connections
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/socket.h>
@@ -1332,7 +1332,7 @@ Tell a socket to listen for incoming connections
 int listen(int s, int backlog);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[listen()]] You can take your socket descriptor (made with the
 `socket()` system call) and tell it to listen for incoming connections.
@@ -1349,12 +1349,12 @@ Before calling `listen()`, your server should call `bind()` to attach
 itself to a specific port number. That port number (on the server's IP
 address) will be the one that clients connect to.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 struct addrinfo hints, *res;
@@ -1382,17 +1382,17 @@ listen(sockfd, 10); // set s up to be a server (listening) socket
 // then have an accept() loop down here somewhere
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`accept()`](#acceptman), [`bind()`](#bindman), [`socket()`](#socketman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `perror()`, `strerror()` {#perrorman}
 
 Print an error as a human-readable string
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <stdio.h>
@@ -1402,7 +1402,7 @@ void perror(const char *s);
 char *strerror(int errnum);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[perror()]] [ixtt[strerror()]] Since so many functions return `-1`
 on error and set the value of the variable [ixtt[errno]] `errno` to be
@@ -1420,11 +1420,11 @@ The function `strerror()` is very similar to `perror()`, except it
 returns a pointer to the error message string for a given value (you
 usually pass in the variable `errno`).
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 `strerror()` returns a pointer to the error message string.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int s;
@@ -1443,17 +1443,17 @@ if (listen(s, 10) == -1) {
 }
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`errno`](#errnoman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `poll()` {#pollman}
 
 Test for events on multiple sockets simultaneously
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/poll.h>
@@ -1461,7 +1461,7 @@ Test for events on multiple sockets simultaneously
 int poll(struct pollfd *ufds, unsigned int nfds, int timeout);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[poll()]] This function is very similar to `select()` in that they
 both watch sets of file descriptors for events, such as incoming data
@@ -1509,13 +1509,13 @@ might be present:
 | `POLLHUP`  | The remote side of the connection hung up.                  |
 | `POLLNVAL` | Something was wrong with the socket descriptor `fd`---maybe it's uninitialized?|
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns the number of elements in the `ufds` array that have had event
 occur on them; this can be zero if the timeout occurred. Also returns
 `-1` on error (and `errno` will be set accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int s1, s2;
@@ -1564,17 +1564,17 @@ if (rv == -1) {
 }
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`select()`](#selectman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `recv()`, `recvfrom()` {#recvman}
 
 Receive data on a socket
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -1585,7 +1585,7 @@ ssize_t recvfrom(int s, void *buf, size_t len, int flags,
                  struct sockaddr *from, socklen_t *fromlen);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[recv()]] [ixtt[recvfrom()]] Once you have a socket up and
 connected, you can read incoming data from the remote side using the
@@ -1621,7 +1621,7 @@ If you want to not block, set the socket to non-blocking or check with
 `select()` or `poll()` to see if there is incoming data before calling
 `recv()` or `recvfrom()`.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns the number of bytes actually received (which might be less than
 you requested in the `len` parameter), or `-1` on error (and `errno`
@@ -1631,7 +1631,7 @@ If the remote side has closed the connection, `recv()` will return `0`.
 This is the normal method for determining if the remote side has closed
 the connection. Normality is good, rebel!
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // stream sockets and recv()
@@ -1688,18 +1688,18 @@ printf("from IP address %s\n",
         ipstr, sizeof ipstr);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`send()`](#sendman), [`sendto()`](#sendman), [`select()`](#selectman),
 [`poll()`](#pollman), [Blocking](#blocking)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `select()` {#selectman}
 
 Check if sockets descriptors are ready to read/write
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/select.h>
@@ -1713,7 +1713,7 @@ FD_ISSET(int fd, fd_set *set);
 FD_ZERO(fd_set *set);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[select()]] The `select()` function gives you a way to
 simultaneously check multiple sockets to see if they have data waiting
@@ -1758,14 +1758,14 @@ errors with `EWOULDBLOCK`, then ignoring this error if it occurs. See
 the [`fcntl()` reference page](#fcntlman) for more info on setting a
 socket to non-blocking.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns the number of descriptors in the set on success, `0` if the
 timeout was reached, or `-1` on error (and `errno` will be set
 accordingly). Also, the sets are modified to show which sockets are
 ready.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int s1, s2, n;
@@ -1810,17 +1810,17 @@ if (rv == -1) {
 }
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`poll()`](#pollman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `setsockopt()`, `getsockopt()` {#setsockoptman}
 
 Set various options for a socket
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -1832,7 +1832,7 @@ int setsockopt(int s, int level, int optname, const void *optval,
                socklen_t optlen);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[getsockopt()]] [ixtt[setsockopt()]] Sockets are fairly
 configurable beasts. In fact, they are so configurable, I'm not even
@@ -1873,12 +1873,12 @@ and is set to, for example, a character value of `'1'` instead of an
 `int` value of `1`. Again, check your own man pages for more info with
 "`man setsockopt`" and "`man 7 socket`"!
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int optval;
@@ -1900,17 +1900,17 @@ if (optval != 0) {
 }
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`fcntl()`](#fcntlman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `send()`, `sendto()` {#sendman}
 
 Send data out over a socket
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -1922,7 +1922,7 @@ ssize_t sendto(int s, const void *buf, size_t len,
                socklen_t tolen);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[send()]] [ixtt[sendto()]] These functions send data to a socket.
 Generally speaking, `send()` is used for TCP [ixtt[SOCK\_STREAM]]
@@ -1946,7 +1946,7 @@ but check your local `send()` man pages for more details:
 | [ixtt[MSG\_DONTWAIT]] `MSG_DONTWAIT` | If `send()` would block because outbound traffic is clogged, have it return [ixtt[EAGAIN]] `EAGAIN`.  This is like a "enable [ix[non-blocking sockets]] non-blocking just for this send."  See the section on [blocking](#blocking)  for more details.|
 | [ixtt[MSG\_NOSIGNAL]] `MSG_NOSIGNAL` | If you `send()` to a remote host which is no longer `recv()`ing, you'll typically get the signal [ixtt[SIGPIPE]] `SIGPIPE`. Adding this flag prevents that signal from being raised.|
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns the number of bytes actually sent, or `-1` on error (and `errno`
 will be set accordingly). Note that the number of bytes actually sent
@@ -1958,7 +1958,7 @@ Also, if the socket has been closed by either side, the process calling
 `send()` will get the signal `SIGPIPE`. (Unless `send()` was called with
 the `MSG_NOSIGNAL` flag.)
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int spatula_count = 3490;
@@ -1992,17 +1992,17 @@ sendto(dgram_socket, secret_message, strlen(secret_message)+1, 0,
        (struct sockaddr*)&dest, sizeof dest);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`recv()`](#recvman), [`recvfrom()`](#recvman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `shutdown()` {#shutdownman}
 
 Stop further sends and receives on a socket
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/socket.h>
@@ -2010,7 +2010,7 @@ Stop further sends and receives on a socket
 int shutdown(int s, int how);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[shutdown()]] That's it! I've had it! No more `send()`s are allowed
 on this socket, but I still want to `recv()` data on it! Or vice-versa!
@@ -2032,12 +2032,12 @@ shut down.
 
 This is a rarely used system call.
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 Returns zero on success, or `-1` on error (and `errno` will be set
 accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 int s = socket(PF_INET, SOCK_STREAM, 0);
@@ -2048,17 +2048,17 @@ int s = socket(PF_INET, SOCK_STREAM, 0);
 shutdown(s, SHUT_WR);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`close()`](#closeman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `socket()` {#socketman}
 
 Allocate a socket descriptor
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <sys/types.h>
@@ -2067,7 +2067,7 @@ Allocate a socket descriptor
 int socket(int domain, int type, int protocol);
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[socket()]] Returns a new socket descriptor that you can use to do
 sockety things with. This is generally the first call in the whopping
@@ -2085,12 +2085,12 @@ by hand if you really want to.
 | `type` | Also, the `type` parameter can be a number of things, but you'll probably be setting it to either [ixtt[SOCK\_STREAM]] `SOCK_STREAM` for reliable [ix[TCP]] TCP sockets (`send()`, `recv()`) or [ixtt[SOCK\_DGRAM]] `SOCK_DGRAM` for unreliable fast [ix[UDP]] UDP sockets (`sendto()`, `recvfrom()`). (Another interesting socket type is [ixtt[SOCK\_RAW]] `SOCK_RAW` which can be used to construct packets by hand. It's pretty cool.)| 
 | `protocol` | Finally, the `protocol` parameter tells which protocol to use with a certain socket type. Like I've already said, for instance, `SOCK_STREAM` uses TCP. Fortunately for you, when using `SOCK_STREAM` or `SOCK_DGRAM`, you can just set the protocol to 0, and it'll use the proper protocol automatically. Otherwise, you can use [ixtt[getprotobyname()]] `getprotobyname()` to look up the proper protocol number.|
 
-#### Return Value
+### Return Value {.unnumbered .unlisted}
 
 The new socket descriptor to be used in subsequent calls, or `-1` on
 error (and `errno` will be set accordingly).
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 struct addrinfo hints, *res;
@@ -2108,18 +2108,18 @@ getaddrinfo("www.example.com", "3490", &hints, &res);
 sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`accept()`](#acceptman), [`bind()`](#bindman),
 [`getaddrinfo()`](#getaddrinfoman), [`listen()`](#listenman)
 
 
-[[pagebreak]]
+[[manbreak]]
 ## `struct sockaddr` and pals {#structsockaddrman}
 
 Structures for handling internet addresses
 
-#### Synopsis
+### Synopsis {.unnumbered .unlisted}
 
 ```{.c}
 #include <netinet/in.h>
@@ -2175,7 +2175,7 @@ struct sockaddr_storage {
 };
 ```
 
-#### Description 
+### Description {.unnumbered .unlisted}
 
 [ixtt[struct sockaddr\_in]] [ixtt[struct in\_addr]] These are the basic
 structures for all syscalls and functions that deal with internet
@@ -2220,7 +2220,7 @@ you don't know if the new address is going to be IPv4 or IPv6. The
 `struct sockaddr_storage` structure is large enough to hold both types,
 unlike the original small `struct sockaddr`.
 
-#### Example
+### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
 // IPv4:
@@ -2250,7 +2250,7 @@ s = socket(PF_INET6, SOCK_STREAM, 0);
 bind(s, (struct sockaddr*)&ip6addr, sizeof ip6addr);
 ```
 
-#### See Also
+### See Also {.unnumbered .unlisted}
 
 [`accept()`](#acceptman), [`bind()`](#bindman), [`connect()`](#connectman),
 [`inet_aton()`](#inet_ntoaman), [`inet_ntoa()`](#inet_ntoaman)
