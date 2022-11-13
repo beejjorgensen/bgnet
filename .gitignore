@@ -9,5 +9,18 @@ src/bgnet.html
 src/bgnet-wide.html
 src/bg-css-wide.html
 src/bgnet_*.pdf
+src/split
+src/split-wide
+src/bgnet_temp*
 
 __pycache__
+
+# Misc
+
+foo
+foo.[ch]
+bar
+bar.[ch]
+baz
+baz.[ch]
+.vscode/*
