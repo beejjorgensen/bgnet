@@ -97,7 +97,7 @@ They say absence makes the heart grow fonder, and in this case, I
 believe it to be true. (Or maybe it's age.) But what I can say is that
 after a decade-plus of not using Microsoft OSes for my personal work,
 I'm much happier! As such, I can sit back and safely say, "Sure, feel
-free to use Windows!"  ...Ok yes, it does make me grit my teeth to say
+free to use Windows!"  ...OK yes, it does make me grit my teeth to say
 that.
 
 So I still encourage you to try [i[Linux]]
@@ -108,63 +108,88 @@ But people like what they like, and you Windows folk will be pleased to
 know that this information is generally applicable to you guys, with a
 few minor changes, if any.
 
+Another thing that you should strongly consider is [i[WSL]] [i[Windows
+Subsystem For Linux]] the [fl[Windows Subsystem for
+Linux|https://learn.microsoft.com/en-us/windows/wsl/]]. This basically
+allows you to install a Linux VM-ish thing on Windows 10. That will also
+definitely get you situated, and you'll be able to build and run these
+programs as is.
+
 One cool thing you can do is install [i[Cygwin]]
 [fl[Cygwin|https://cygwin.com/]], which is a collection of Unix tools
 for Windows. I've heard on the grapevine that doing so allows all these
-programs to compile unmodified.
-
-Another thing that you should consider is [i[WSL]] [i[Windows Subsystem
-For Linux]] the [fl[Windows Subsystem for
-Linux|https://docs.microsoft.com/en-us/windows/wsl/about]]. This
-basically allows you to install a Linux VM-ish thing on Windows 10. That
-will also definitely get you situated.
+programs to compile unmodified, but I've never tried it.
 
 But some of you might want to do things the Pure Windows Way. That's
 very gutsy of you, and this is what you have to do: run out and get Unix
 immediately! No, no---I'm kidding. I'm supposed to be
 Windows-friendly(er) these days...
 
-This is what you'll have to do (unless you install
-[Cygwin](https://cygwin.com/)!): first, ignore pretty much all of the
-system header files I mention in here. All you need to include is:
-
 [i[Winsock]]
 
+This is what you'll have to do: first, ignore pretty much all of the
+system header files I mention in here. Instead, include:
+
 ```{.c}
-#include <winsock.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+```
+
+`winsock2` is the "new" (circa 1994) version of the Windows socket
+library.
+
+Unfortunately, if you include `windows.h`, it automatically pulls in
+the older `winsock.h` (version 1) header file which conflicts with
+`winsock2.h`! Fun times.
+
+So if you have to include `windows.h`, you need to define a macro to get
+it to _not_ include the older header:
+
+```{.c}
+#define WIN32_LEAN_AND_MEAN  // Say this...
+
+#include <windows.h>         // And now we can include that.
+#include <winsock2.h>        // And this.
 ```
 
 Wait! You also have to make a call to [i[`WSAStartup()` function]]
-`WSAStartup()` before doing anything else with the sockets library. The
-code to do that looks something like this:
+`WSAStartup()` before doing anything else with the sockets library. You
+pass in the Winsock version you desire to this function (e.g. version
+2.2). And then you can check the result to make sure that version is
+available.
+
+The code to do that looks something like this:
 
 ```{.c .numberLines}
-#include <winsock.h>
+#include <winsock2.h>
 
 {
     WSADATA wsaData;   // if this doesn't work
-    //WSAData wsaData; // then try this instead
 
-    // MAKEWORD(1,1) for Winsock 1.1, MAKEWORD(2,0) for Winsock 2.0:
-
-    if (WSAStartup(MAKEWORD(1,1), &wsaData) != 0) {
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         fprintf(stderr, "WSAStartup failed.\n");
         exit(1);
     }
+
+    if (LOBYTE(wsaData.wVersion) != 2 ||
+        HIBYTE(wsaData.wVersion) != 2)
+    {
+        fprintf(stderr,"Versiion 2.2 of Winsock is not available.\n");
+        WSACleanup();
+        exit(2);
+    }
 ```
 
+Note that call to [i[`WSACleanup()` function]] `WSACleanup()` in there.
+That's what you want to call when you're done with the Winsock library.
+
 You also have to tell your compiler to link in the Winsock library,
-usually called `wsock32.lib` or `winsock32.lib`, or `ws2_32.lib` for
-Winsock 2.0. Under VC++, this can be done through the `Project` menu,
-under `Settings...`. Click the `Link` tab, and look for the box titled
-"Object/library modules". Add "wsock32.lib" (or whichever lib is your
-preference) to that list.
+called `ws2_32.lib` for Winsock 2. Under VC++, this can be done through
+the `Project` menu, under `Settings...`. Click the `Link` tab, and look
+for the box titled "Object/library modules". Add "ws2_32.lib" (or
+whichever lib is your preference) to that list.
 
 Or so I hear.
-
-Finally, you need to call [i[`WSACleanup()` function]] `WSACleanup()`
-when you're all through with the sockets library. See your online help
-for details.
 
 Once you do that, the rest of the examples in this tutorial should
 generally apply, with a few exceptions. For one thing, you can't use
@@ -174,10 +199,11 @@ function]] `closesocket()`, instead. Also, [i[`select()` function]]
 (like `0` for `stdin`).
 
 There is also a socket class that you can use, [i[`CSocket` class]]
-`CSocket`. Check your compilers help pages for more information.
+[`CSocket`](https://learn.microsoft.com/en-us/cpp/mfc/reference/csocket-class?view=msvc-170)
+Check your compiler's help pages for more information.
 
-To get more information about Winsock, read the [i[Winsock-->FAQ]]
-[fl[Winsock FAQ|https://tangentsoft.net/wskfaq/]] and go from there.
+To get more information about Winsock, [check out the official page at
+Microsoft](https://learn.microsoft.com/en-us/windows/win32/winsock/windows-sockets-start-page-2).
 
 Finally, I hear that Windows has no [i[`fork()` function]] `fork()`
 system call which is, unfortunately, used in some of my examples. Maybe
@@ -188,6 +214,12 @@ billion arguments. If you're not up to that, the [i[`CreateThread()`
 function]] `CreateThread()` is a little easier to digest...unfortunately
 a discussion about multithreading is beyond the scope of this document.
 I can only talk about so much, you know!
+
+<!--
+Extra finally, Steven Mitchell has [ported a number of the
+examples](https://www.tallyhawk.net/Beej/) to Winsock. Check that stuff
+out.
+-->
 
 
 ## Email Policy
