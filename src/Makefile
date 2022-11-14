@@ -197,7 +197,7 @@ $(GUIDE_ID)_lulu.pdf: $(GUIDE_ID)_lulu.md
 	rm -f $(GUIDE_ID)_temp*
 
 $(GUIDE_ID)_amazon.md: $(GUIDE_MD)
-	$(PREPROC) $^ $@
+	$(PREPROC) --book $^ $@
 
 $(GUIDE_ID)_amazon.pdf: $(GUIDE_ID)_amazon.md
 	pandoc $(PDF_OPTS) $(TWOSIDE) $(SIZE_75x925_AMAZON) $(BLANKLAST) $(COLOR) $(GUIDE_ID)_amazon.md

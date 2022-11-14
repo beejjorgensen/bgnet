@@ -160,11 +160,13 @@ available.
 
 The code to do that looks something like this:
 
+[[book-pagebreak]]
+
 ```{.c .numberLines}
 #include <winsock2.h>
 
 {
-    WSADATA wsaData;   // if this doesn't work
+    WSADATA wsaData;
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         fprintf(stderr, "WSAStartup failed.\n");
