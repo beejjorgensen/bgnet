@@ -5,6 +5,8 @@ Concatenates a number of input files into a single output file, while
 performing the following regex substitutions:
 
 [[pagebreak]]
+[[manbreak]]
+[[book-pagebreak]]
 
 [nobr[s]]   # Substitute spaces with `\ ` to mark as nonbreaking
             # Doesn't work inside code markdown, alas
@@ -50,14 +52,15 @@ def get_config(k, default=None):
     return getattr(preproc_config, k, default)
 
 def usage_exit():
-    print("usage: preproc [--book] infile [infile ... ] outputfile", file=sys.stdout)
+    print("usage: preproc [--book] [--manbreak rule|page]", file=sys.stdout)
+    print("               infile [infile ... ] outputfile", file=sys.stdout)
     sys.exit(1)
 
 def parse_cl():
     args = sys.argv[:]
     args.pop(0)
 
-    options = { "book": False }
+    options = { "book": False, "manbreak": None }
     infiles = []
     outfile = None
 
@@ -65,6 +68,16 @@ def parse_cl():
         if args[0][0] == '-':
             if args[0] == '--book' or args[0] == '-b':
                 options["book"] = True
+
+            elif args[0] == '--manbreak':
+                args.pop(0)
+                if len(args) == 0:
+                    usage_exit()
+
+                if args[0] != "rule" and args[0] != "page":
+                    usage_exit()
+
+                options["manbreak"] = args[0]
             else:
                 usage_exit()
 
@@ -79,6 +92,29 @@ def parse_cl():
     outfile = infiles.pop()
             
     return options, infiles, outfile
+
+def add_config_options(options):
+
+    wp_path = get_config("WIKIPEDIA_URL", "https://en.wikipedia.org/wiki/")
+    man_path = get_config("MAN_URL", "https://man.archlinux.org/man/core/man-pages/")
+    example_url = get_config("EXAMPLE_URL", None)
+    exercise_url = get_config("EXERCISE_URL", None)
+
+    manbreak = get_config("MANBREAK", "page")
+
+    if options["manbreak"] is not None:
+        manbreak = options["manbreak"]
+
+    if manbreak == 'page':
+        manbreak = r'\\newpage'
+    elif manbreak == 'rule':
+        manbreak = '***'
+
+    options["manbreak"] = manbreak
+    options["wp_path"] = wp_path
+    options["man_path"] = man_path
+    options["example_url"] = example_url
+    options["exercise_url"] = exercise_url
 
 def collapse_spaces(s):
     return " ".join(s.split())
@@ -212,30 +248,22 @@ def main():
 
     filedata = cat_files(infiles)
 
-    wp_path = get_config("WIKIPEDIA_URL", "https://en.wikipedia.org/wiki/")
-    man_path = get_config("MAN_URL", "https://man.archlinux.org/man/core/man-pages/")
-
-    """
-    try:
-        wp_path = preproc_config.WIKIPEDIA_URL
-    except AttributeError:
-        wp_path = "https://en.wikipedia.org/wiki/"
-    """
+    add_config_options(options)
 
     filedata = re.sub(r'\t', "    ", filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[nobr\[(.+?)\]\]', nobr_replace, filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[\[pagebreak\]\]', r'\\newpage', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[\[book-pagebreak\]\]', r'\\newpage' if options["book"] else '', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[\[manbreak\]\]', r'***', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[\[manbreak\]\]', options["manbreak"], filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[nh\[(.+?)\]\]', r'\\hyphenation{\1}', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[ix\[(.+?)\]\]', r'\\index{\1}', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[ixtt\[(.+?)\]\]', r'\\index{\1@\\texttt{\1}}', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[fl\[(.+?)\|(.+?)\]\]', r'[\1](\2)^[\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flw\[(.+?)\|(.+?)\]\]', r'[\1](' + wp_path + r'\2)^[' + wp_path + r'\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flm\[(.+?)\|(.+?)\]\]', r'[\1](' + man_path + r'\2)^[' + man_path + r'\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flx\[(.+?)\|(.+?)\]\]', r'[\1](' + preproc_config.EXAMPLE_URL + r'\2)^[' + preproc_config.EXAMPLE_URL + r'\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[fls\[(.+?)\|(.+?)\]\]', r'[\1](' + preproc_config.EXERCISE_URL + r'\2)^[' + preproc_config.EXERCISE_URL + r'\2]', filedata, flags=re.DOTALL)
-    filedata = re.sub(r'\[flsol\[(.+?)\]\]', r'([Solution.](' + preproc_config.EXERCISE_URL + r'\1)^[' + preproc_config.EXERCISE_URL + r'\1])', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[flw\[(.+?)\|(.+?)\]\]', r'[\1](' + options["wp_path"] + r'\2)^[' + options["wp_path"] + r'\2]', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[flm\[(.+?)\|(.+?)\]\]', r'[\1](' + options["man_path"] + r'\2)^[' + options["man_path"] + r'\2]', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[flx\[(.+?)\|(.+?)\]\]', r'[\1](' + options["example_url"] + r'\2)^[' + options["example_url"] + r'\2]', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[fls\[(.+?)\|(.+?)\]\]', r'[\1](' + options["exercise_url"] + r'\2)^[' + options["exercise_url"] + r'\2]', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[flsol\[(.+?)\]\]', r'([Solution.](' + options["exercise_url"] + r'\1)^[' + options["exercise_url"] + r'\1])', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[flr\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/url/\2)^[https://beej.us/guide/url/\2]', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[flrfc\[(.+?)\|(.+?)\]\]', r'[\1](https://tools.ietf.org/html/rfc\2)^[https://tools.ietf.org/html/rfc\2]', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[i\[(?P<entry>.+?)\](?P<flags>.*?)\]', i_replace, filedata, flags=re.DOTALL)
