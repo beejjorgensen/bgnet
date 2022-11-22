@@ -217,11 +217,9 @@ function]] `CreateThread()` is a little easier to digest...unfortunately
 a discussion about multithreading is beyond the scope of this document.
 I can only talk about so much, you know!
 
-<!--
-Extra finally, Steven Mitchell has [ported a number of the
-examples](https://www.tallyhawk.net/Beej/) to Winsock. Check that stuff
-out.
--->
+Extra finally, Steven Mitchell has [fl[ported a number of the
+examples|https://www.tallyhawk.net/WinsockExamples/]] to Winsock. Check
+that stuff out.
 
 
 ## Email Policy
