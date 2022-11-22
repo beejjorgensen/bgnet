@@ -323,6 +323,8 @@ replace it with the Win32 equivalent: [i[`CreateProcess()` function]]
 a bazillion arguments, but it should be covered in the docs that came
 with VC++.
 
+[[book-pagebreak]]
+
 **[i[Firewall]] I'm behind a firewall---how do I let people outside the
 firewall know my IP address so they can connect to my machine?**
 
@@ -378,6 +380,8 @@ system supports such functionality.
 
 The Linux man page suggests using `alarm()` or `setitimer()` as a
 substitute.
+
+[[book-pagebreak]]
 
 **How can I tell which ports are available to use? Is there a list of
 "official" port numbers?**

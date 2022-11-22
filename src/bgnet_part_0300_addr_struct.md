@@ -255,6 +255,8 @@ counting the really stupid ones. For example, there is NOT a `stolh()`
 ("Short to Long Host") function---not at this party, anyway. But there
 are:
 
+[[book-pagebreak]]
+
 | Function  | Description                   |
 |-----------|-------------------------------|
 | [i[`htons()` function]]`htons()` | `h`ost `to` `n`etwork `s`hort |

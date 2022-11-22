@@ -833,6 +833,8 @@ Returns zero on success, or non-zero on error. If the return value is
 non-zero, it can be passed to `gai_strerror()` to get a human-readable
 string. See `getaddrinfo` for more information.
 
+[[book-pagebreak]]
+
 ### Example {.unnumbered .unlisted}
 
 ```{.c .numberLines}
