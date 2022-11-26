@@ -846,8 +846,8 @@ more info.)
 
 [i[`gethostname()` function]] Even easier than `getpeername()` is the
 function `gethostname()`. It returns the name of the computer that your
-program is running on. The name can then be used by [i[`gethostbyname()`
-function]] `gethostbyname()`, below, to determine the [i[IP address]] IP
+program is running on. The name can then be used by [i[`getaddrinfo()`
+function]] `getaddrinfo()`, above, to determine the [i[IP address]] IP
 address of your local machine.
 
 What could be more fun? I could think of a few things, but they don't
