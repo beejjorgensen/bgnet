@@ -114,7 +114,7 @@ struct pollfd {
 };
 ```
 
-So we're going to have an array of those, and we'll see the `fd` field
+So we're going to have an array of those, and we'll set the `fd` field
 for each element to a socket descriptor we're interested in monitoring.
 And then we'll set the `events` field to indicate the type of events
 we're interested in.
