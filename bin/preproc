@@ -265,6 +265,7 @@ def main():
     filedata = re.sub(r'\[fls\[(.+?)\|(.+?)\]\]', r'[\1](' + options["exercise_url"] + r'\2)^[' + options["exercise_url"] + r'\2]', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[flsol\[(.+?)\]\]', r'([Solution.](' + options["exercise_url"] + r'\1)^[' + options["exercise_url"] + r'\1])', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[flr\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/url/\2)^[https://beej.us/guide/url/\2]', filedata, flags=re.DOTALL)
+    filedata = re.sub(r'\[flbg\[(.+?)\|(.+?)\]\]', r'[\1](https://beej.us/guide/\2)^[https://beej.us/guide/\2]', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[flrfc\[(.+?)\|(.+?)\]\]', r'[\1](https://tools.ietf.org/html/rfc\2)^[https://tools.ietf.org/html/rfc\2]', filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[i\[(?P<entry>.+?)\](?P<flags>.*?)\]', i_replace, filedata, flags=re.DOTALL)
     filedata = re.sub(r'\[is\[(?P<entry>.+?)\]\]', is_replace, filedata, flags=re.DOTALL)
