@@ -21,7 +21,9 @@ stage:
 	mkdir -p $(BUILDDIR)/html/$(PACKAGE)
 	cp -v src/split-wide/* $(BUILDDIR)/html/$(PACKAGE)
 	( cd $(BUILDDIR)/html; zip -r $(PACKAGE)-wide.zip $(PACKAGE); mv $(PACKAGE) split-wide )
-	#cp -v src/{cs,dataencap}.svg $(BUILDDIR)/html/
+	cp -v src/{cs,dataencap}.svg $(BUILDDIR)/html/
+	cp -v src/{cs,dataencap}.svg $(BUILDDIR)/html/split
+	cp -v src/{cs,dataencap}.svg $(BUILDDIR)/html/split-wide
 	cp -v translations/*.{pdf,html} $(BUILDDIR)/translations 2>/dev/null || : 
 	cp -rv source/* $(BUILDDIR)/source
 	mkdir -p $(BUILDTMP)/$(PACKAGE)_source
