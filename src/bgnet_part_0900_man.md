@@ -1024,7 +1024,7 @@ letting on here, but I'm trying to stay socket-oriented.)
 | `cmd`        | Description                                                |
 |--------------|------------------------------------------------------------|
 | [i[`O_NONBLOCK` macro]i]`O_NONBLOCK` | Set the socket to be non-blocking. See the section on [blocking](#blocking) for more details.|
-| i[`O_ASYNC` macro]i]`O_ASYNC`    | Set the socket to do asynchronous I/O. When data is ready to be `recv()`'d on the socket, the signal [i[`SIGIO` signal]] `SIGIO` will be raised. This is rare to see, and beyond the scope of the guide. And I think it's only available on certain systems.|
+| [i[`O_ASYNC` macro]i]`O_ASYNC`    | Set the socket to do asynchronous I/O. When data is ready to be `recv()`'d on the socket, the signal [i[`SIGIO` signal]] `SIGIO` will be raised. This is rare to see, and beyond the scope of the guide. And I think it's only available on certain systems.|
 
 ### Return Value {.unnumbered .unlisted}
 
