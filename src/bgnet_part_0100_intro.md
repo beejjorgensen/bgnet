@@ -304,7 +304,7 @@ guide to their students.
 Unless otherwise mutually agreed by the parties in writing, the author
 offers the work as-is and makes no representations or warranties of any
 kind concerning the work, express, implied, statutory or otherwise,
-including, without limitation, warranties of title, merchantibility,
+including, without limitation, warranties of title, merchantability,
 fitness for a particular purpose, noninfringement, or the absence of
 latent or other defects, accuracy, or the presence of absence of errors,
 whether or not discoverable.

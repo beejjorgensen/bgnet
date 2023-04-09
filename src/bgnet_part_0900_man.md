@@ -459,7 +459,7 @@ the address.
 If you do use the `AI_PASSIVE`, flag, then you can pass `NULL` in the
 `nodename` (since `bind()` will fill it in for you later).
 
-Continuing on with the input paramters, you'll likely want to set
+Continuing on with the input parameters, you'll likely want to set
 `ai_family` to `AF_UNSPEC` which tells `getaddrinfo()` to look for both
 IPv4 and IPv6 addresses. You can also restrict yourself to one or the
 other with `AF_INET` or `AF_INET6`.
@@ -759,7 +759,7 @@ int main(int argc, char *argv[])
 ```
 
 ```{.c .numberLines}
-// THIS HAS BEEN SUPERCEDED
+// THIS HAS BEEN SUPERSEDED
 // use getnameinfo() instead!
 
 struct hostent *he;
@@ -1268,8 +1268,8 @@ couple of macros to help you out. The maximum lengths are:
 
 Other times, you might have a string containing an IP address in
 readable form, and you want to pack it into a `struct sockaddr_in` or a
-`struct sockaddr_in6`.  In that case, the opposite funcion `inet_pton()`
-is what you're after.
+`struct sockaddr_in6`.  In that case, the opposite function
+`inet_pton()` is what you're after.
 
 `inet_pton()` also takes an address family (either `AF_INET` or
 `AF_INET6`) in the `af` parameter. The `src` parameter is a pointer to a

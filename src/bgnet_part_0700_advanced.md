@@ -63,10 +63,10 @@ following section on [i[`poll()` function]] `poll()`.
 
 [i[poll()]<]
 
-What you really want to be able to do is somehow monitor
-a _bunch_ of sockets at once and then handle the ones that have data
-ready. This way you don't have to continously poll all those sockets to
-see which are ready to read.
+What you really want to be able to do is somehow monitor a _bunch_ of
+sockets at once and then handle the ones that have data ready. This way
+you don't have to continuously poll all those sockets to see which are
+ready to read.
 
 > _A word of warning: `poll()` is horribly slow when it comes to giant
 > numbers of connections. In those circumstances, you'll get better
