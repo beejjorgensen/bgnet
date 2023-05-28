@@ -218,7 +218,7 @@ class SplitHTMLParser(HTMLParser):
         old_href = attr_get(attrs, "href")
 
         # If this isn't an internal link, bail out
-        if old_href[0] != "#":
+        if old_href is None or old_href[0] != "#":
             return
         
         old_id = old_href[1:]   # Strip hash
