@@ -211,6 +211,7 @@ class SplitHTMLParser(HTMLParser):
         self.out_file = None
         self.current_section_id = None
         self.page_nav = ""
+        self.switch_output_file('index.html')
 
         super().__init__(convert_charrefs=False)
 
@@ -292,7 +293,8 @@ class SplitHTMLParser(HTMLParser):
         file_path = os.path.sep.join((self.out_directory, file_name))
         self.out_file = open(file_path, "w")
 
-        self.write_header()
+        if file_name is not 'index.html':
+          self.write_header()
 
     def output(self, s):
         if self.out_file is not None:
