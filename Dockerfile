@@ -1,6 +1,6 @@
 FROM python:3.8.2
 
-RUN apt-get update && apt-get install -y pandoc texlive-xetex fonts-liberation && apt-get clean
+RUN apt-get update && apt-get install -y pandoc texlive-xetex fonts-liberation fontconfig && apt-get clean
 
 WORKDIR /guide
 

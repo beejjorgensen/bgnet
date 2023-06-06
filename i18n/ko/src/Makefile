@@ -5,9 +5,9 @@ VERSION_DATE="v3.1.11, Copyright © April 8, 2023"
 
 GUIDE_ID=bgnet
 
-PDF_MAINFONT="Liberation Serif"
-PDF_SANSFONT="Liberation Sans"
-PDF_MONOFONT="Liberation Mono"
+PDF_MAINFONT="Pretendard"
+PDF_SANSFONT="Pretendard"
+PDF_MONOFONT="Pretendard"
 #PDF_MAINFONT="DejaVu Serif"
 #PDF_SANSFONT="DejaVu Sans"
 #PDF_MONOFONT="DejaVu Sans Mono"
@@ -65,7 +65,10 @@ BLANKLAST=-A latex/after_blank.latex # add a blank last page
 BW=--no-highlight  # black and white options
 COLOR=--highlight-style=tango   # color options
 
-all: $(HTML) split/index.html split-wide/index.html $(BOOKS)
+all: install-fonts $(HTML) split/index.html split-wide/index.html $(BOOKS)
+
+install-fonts:
+	bash ./install_fonts.sh
 
 bg-css.html: common-css-src.html
 	cat $^ > $@
@@ -215,4 +218,4 @@ pristine: clean
 	rm -f $(HTML) $(BOOKS)
 	rm -rf $(SPLIT_DIRS)
 
-.PHONY: all, html, clean, pristine
+.PHONY: all, html, clean, pristine, install-fonts
