@@ -1,5 +1,5 @@
-TITLE="Beej's Guide to Network Programming"
-SUBTITLE="Using Internet Sockets"
+TITLE="Beej의 네트워크 프로그래밍 안내서"
+SUBTITLE="인터넷 소켓 사용법"
 AUTHOR='Brian “Beej Jorgensen” Hall'
 VERSION_DATE="v3.1.11, Copyright © April 8, 2023"
 
@@ -22,10 +22,10 @@ HTML=$(GUIDE_ID).html $(GUIDE_ID)-wide.html
 SPLIT_DIRS=split split-wide
 GUIDE_MD=$(sort $(wildcard $(GUIDE_ID)_part_*.md))
 
-PREPROC=../bin/preproc
+PREPROC=../../../bin/preproc
 PREPROC_MD=$(GUIDE_ID)_temp_preproc.md
 
-SPLIT=../bin/bgsplit.py
+SPLIT=../../../bin/bgsplit.py
 
 COMMON_OPTS= \
 	--variable title:$(TITLE) \
