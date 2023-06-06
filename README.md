@@ -64,6 +64,8 @@ If you don't want to mess with a local setup, you can build via Docker.
    This will mount the project where the image expects it, and run `make
    pristine all stage`, leaving your `./stage` directory ready to be published.
 
+3. Run `docker run --rm -v "$PWD":/guide -ti beej-bgnet-builder make -e SHELL=/bin/bash pristine all stage SRCDIR={PATH_OF_SRC_FOLDER}` to build i18n versions.
+
 ## Pull Requests
 
 Please keep these on the scale of typo and bug fixes. That way I don't
