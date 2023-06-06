@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Beej's Guide to Network Programming</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono&display=swap" rel="stylesheet"> 
+  
+  <!-- BG custom styling -->
+  <style type="text/css">
+  /* Fix for line numbers not visible */
+  pre.numberSource code > span {
+      left: -1em;
+  }
+  pre.numberSource {
+      margin-left: initial;
+  }
+  
+  /* Put some space after the section numbers */
+  span.toc-section-number::after {
+      content: "\a0\a0\a0";  /* non-breaking whitespace */
+  }
+  
+  /* Hide underlines on code number links */
+  pre > code.sourceCode > span > a:first-child::before {
+      text-decoration: none;
+  }
+  
+  /* Color the source blocks */
+  div.sourceCode {
+      background-color: #f0f0f0;
+  }
+  
+  /* Fix iOS big text rendering issue */
+  pre > code.sourceCode > span {
+      display: initial;
+  }
+  
+  
+  /* Color the inline code */
+  code:not(.sourceCode) {
+      background: #f0f0f0;
+      padding-left: 0.2em;
+      padding-right: 0.2em;
+      border-radius: 0.2em;
+  }
+  
+  /* Keep code tags from wrapping in tables */
+  tbody code {
+      white-space: nowrap;
+  }
+  
+  td {
+      vertical-align: top;
+  }
+  
+  body {
+      font-size: 12pt;
+      max-width: 43em;
+  }
+  
+  figure {
+      text-align: center;
+  }
+  </style>
+</head>
+<body>
+<div style="text-align:center"><span><a href="common-questions.html">Prev</a> | </span><a href="index.html">Contents</a><span> | <a href="more-references.html">Next</a></span></div><hr>
+<h1 id="man-pages"><span class="header-section-number">9</span> Man Pages</h1><p></p><p>In the Unix world, there are a lot of manuals. They have little sections that describe individual functions that you have at your disposal.</p><p>Of course, <code>manual</code> would be too much of a thing to type. I mean, no one in the Unix world, including myself, likes to type that much. Indeed I could go on and on at great length about how much I prefer to be terse but instead I shall be brief and not bore you with long-winded diatribes about how utterly amazingly brief I prefer to be in virtually all circumstances in their entirety.</p><p><em>[Applause]</em></p><p>Thank you. What I am getting at is that these pages are called “man pages” in the Unix world, and I have included my own personal truncated variant here for your reading enjoyment. The thing is, many of these functions are way more general purpose than I’m letting on, but I’m only going to present the parts that are relevant for Internet Sockets Programming.</p><p>But wait! That’s not all that’s wrong with my man pages:</p><ul><li>They are incomplete and only show the basics from the guide.</li><li>There are many more man pages than this in the real world.</li><li>They are different than the ones on your system.</li><li>The header files might be different for certain functions on your system.</li><li>The function parameters might be different for certain functions on your system.</li></ul><p>If you want the real information, check your local Unix man pages by typing <code>man whatever</code>, where “whatever” is something that you’re incredibly interested in, such as “<code>accept</code>”. (I’m sure Microsoft Visual Studio has something similar in their help section. But “man” is better because it is one byte more concise than “help”. Unix wins again!)</p><p>So, if these are so flawed, why even include them at all in the Guide? Well, there are a few reasons, but the best are that (a) these versions are geared specifically toward network programming and are easier to digest than the real ones, and (b) these versions contain examples!</p><p>Oh! And speaking of the examples, I don’t tend to put in all the error checking because it really increases the length of the code. But you should absolutely do error checking pretty much any time you make any of the system calls unless you’re totally 100% sure it’s not going to fail, and you should probably do it even then!</p><p></p><h2 id="acceptman"><span class="header-section-number">9.1</span> <code>accept()</code></h2><p></p><p>Accept an incoming connection on a listening socket</p><h3 id="synopsis" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb81"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb81-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb81-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb81-3" title="3"></a>
+<a class="sourceLine" id="cb81-4" title="4"><span class="dt">int</span> accept(<span class="dt">int</span> s, <span class="kw">struct</span> sockaddr *addr, socklen_t *addrlen);</a></code></pre></div><h3 id="description" class="unnumbered unlisted">Description</h3><p>Once you’ve gone through the trouble of getting a <code>SOCK_STREAM</code> socket and setting it up for incoming connections with <code>listen()</code>, then you call <code>accept()</code> to actually get yourself a new socket descriptor to use for subsequent communication with the newly connected client.</p><p>The old socket that you are using for listening is still there, and will be used for further <code>accept()</code> calls as they come in.</p><table><colgroup><col style="width: 14%" /><col style="width: 85%" /></colgroup><thead><tr class="header"><th>Parameter</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>s</code></td><td>The <code>listen()</code>ing socket descriptor.</td></tr><tr class="even"><td><code>addr</code></td><td>This is filled in with the address of the site that’s connecting to you.</td></tr><tr class="odd"><td><code>addrlen</code></td><td>This is filled in with the <code>sizeof()</code> the structure returned in the <code>addr</code> parameter. You can safely ignore it if you assume you’re getting a <code>struct sockaddr_in</code> back, which you know you are, because that’s the type you passed in for <code>addr</code>.</td></tr></tbody></table><p><code>accept()</code> will normally block, and you can use <code>select()</code> to peek on the listening socket descriptor ahead of time to see if it’s “ready to read”. If so, then there’s a new connection waiting to be <code>accept()</code>ed! Yay! Alternatively, you could set the  <code>O_NONBLOCK</code> flag on the listening socket using  <code>fcntl()</code>, and then it will never block, choosing instead to return <code>-1</code> with <code>errno</code> set to <code>EWOULDBLOCK</code>.</p><p>The socket descriptor returned by <code>accept()</code> is a bona fide socket descriptor, open and connected to the remote host. You have to <code>close()</code> it when you’re done with it.</p><h3 id="return-value" class="unnumbered unlisted">Return Value</h3><p><code>accept()</code> returns the newly connected socket descriptor, or <code>-1</code> on error, with <code>errno</code> set appropriately.</p><h3 id="example" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb82"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb82-1" title="1"><span class="kw">struct</span> sockaddr_storage their_addr;</a>
+<a class="sourceLine" id="cb82-2" title="2">socklen_t addr_size;</a>
+<a class="sourceLine" id="cb82-3" title="3"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb82-4" title="4"><span class="dt">int</span> sockfd, new_fd;</a>
+<a class="sourceLine" id="cb82-5" title="5"></a>
+<a class="sourceLine" id="cb82-6" title="6"><span class="co">// first, load up address structs with getaddrinfo():</span></a>
+<a class="sourceLine" id="cb82-7" title="7"></a>
+<a class="sourceLine" id="cb82-8" title="8">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb82-9" title="9">hints.ai_family = AF_UNSPEC;  <span class="co">// use IPv4 or IPv6, whichever</span></a>
+<a class="sourceLine" id="cb82-10" title="10">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb82-11" title="11">hints.ai_flags = AI_PASSIVE;     <span class="co">// fill in my IP for me</span></a>
+<a class="sourceLine" id="cb82-12" title="12"></a>
+<a class="sourceLine" id="cb82-13" title="13">getaddrinfo(NULL, MYPORT, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb82-14" title="14"></a>
+<a class="sourceLine" id="cb82-15" title="15"><span class="co">// make a socket, bind it, and listen on it:</span></a>
+<a class="sourceLine" id="cb82-16" title="16"></a>
+<a class="sourceLine" id="cb82-17" title="17">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a>
+<a class="sourceLine" id="cb82-18" title="18">bind(sockfd, res-&gt;ai_addr, res-&gt;ai_addrlen);</a>
+<a class="sourceLine" id="cb82-19" title="19">listen(sockfd, BACKLOG);</a>
+<a class="sourceLine" id="cb82-20" title="20"></a>
+<a class="sourceLine" id="cb82-21" title="21"><span class="co">// now accept an incoming connection:</span></a>
+<a class="sourceLine" id="cb82-22" title="22"></a>
+<a class="sourceLine" id="cb82-23" title="23">addr_size = <span class="kw">sizeof</span> their_addr;</a>
+<a class="sourceLine" id="cb82-24" title="24">new_fd = accept(sockfd, (<span class="kw">struct</span> sockaddr *)&amp;their_addr, &amp;addr_size);</a>
+<a class="sourceLine" id="cb82-25" title="25"></a>
+<a class="sourceLine" id="cb82-26" title="26"><span class="co">// ready to communicate on socket descriptor new_fd!</span></a></code></pre></div><h3 id="see-also" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#socketman"><code>socket()</code></a>, <a href="man-pages.html#getaddrinfoman"><code>getaddrinfo()</code></a>, <a href="man-pages.html#listenman"><code>listen()</code></a>, <a href="man-pages.html#structsockaddrman"><code>struct sockaddr_in</code></a></p><h2 id="bindman"><span class="header-section-number">9.2</span> <code>bind()</code></h2><p></p><p>Associate a socket with an IP address and port number</p><h3 id="synopsis-1" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb83"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb83-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb83-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb83-3" title="3"></a>
+<a class="sourceLine" id="cb83-4" title="4"><span class="dt">int</span> bind(<span class="dt">int</span> sockfd, <span class="kw">struct</span> sockaddr *my_addr, socklen_t addrlen);</a></code></pre></div><h3 id="description-1" class="unnumbered unlisted">Description</h3><p>When a remote machine wants to connect to your server program, it needs two pieces of information: the IP address and the port number. The <code>bind()</code> call allows you to do just that.</p><p>First, you call <code>getaddrinfo()</code> to load up a <code>struct sockaddr</code> with the destination address and port information. Then you call <code>socket()</code> to get a socket descriptor, and then you pass the socket and address into <code>bind()</code>, and the IP address and port are magically (using actual magic) bound to the socket!</p><p>If you don’t know your IP address, or you know you only have one IP address on the machine, or you don’t care which of the machine’s IP addresses is used, you can simply pass the <code>AI_PASSIVE</code> flag in the <code>hints</code> parameter to <code>getaddrinfo()</code>. What this does is fill in the IP address part of the <code>struct sockaddr</code> with a special value that tells <code>bind()</code> that it should automatically fill in this host’s IP address.</p><p>What what? What special value is loaded into the <code>struct sockaddr</code>’s IP address to cause it to auto-fill the address with the current host? I’ll tell you, but keep in mind this is only if you’re filling out the <code>struct sockaddr</code> by hand; if not, use the results from <code>getaddrinfo()</code>, as per above. In IPv4, the <code>sin_addr.s_addr</code> field of the <code>struct sockaddr_in</code> structure is set to <code>INADDR_ANY</code>. In IPv6, the <code>sin6_addr</code> field of the <code>struct sockaddr_in6</code> structure is assigned into from the global variable <code>in6addr_any</code>. Or, if you’re declaring a new <code>struct in6_addr</code>, you can initialize it to <code>IN6ADDR_ANY_INIT</code>.</p><p>Lastly, the <code>addrlen</code> parameter should be set to <code>sizeof my_addr</code>.</p><h3 id="return-value-1" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-1" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb84"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb84-1" title="1"><span class="co">// modern way of doing things with getaddrinfo()</span></a>
+<a class="sourceLine" id="cb84-2" title="2"></a>
+<a class="sourceLine" id="cb84-3" title="3"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb84-4" title="4"><span class="dt">int</span> sockfd;</a>
+<a class="sourceLine" id="cb84-5" title="5"></a>
+<a class="sourceLine" id="cb84-6" title="6"><span class="co">// first, load up address structs with getaddrinfo():</span></a>
+<a class="sourceLine" id="cb84-7" title="7"></a>
+<a class="sourceLine" id="cb84-8" title="8">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb84-9" title="9">hints.ai_family = AF_UNSPEC;  <span class="co">// use IPv4 or IPv6, whichever</span></a>
+<a class="sourceLine" id="cb84-10" title="10">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb84-11" title="11">hints.ai_flags = AI_PASSIVE;     <span class="co">// fill in my IP for me</span></a>
+<a class="sourceLine" id="cb84-12" title="12"></a>
+<a class="sourceLine" id="cb84-13" title="13">getaddrinfo(NULL, <span class="st">&quot;3490&quot;</span>, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb84-14" title="14"></a>
+<a class="sourceLine" id="cb84-15" title="15"><span class="co">// make a socket:</span></a>
+<a class="sourceLine" id="cb84-16" title="16"><span class="co">// (you should actually walk the &quot;res&quot; linked list and error-check!)</span></a>
+<a class="sourceLine" id="cb84-17" title="17"></a>
+<a class="sourceLine" id="cb84-18" title="18">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a>
+<a class="sourceLine" id="cb84-19" title="19"></a>
+<a class="sourceLine" id="cb84-20" title="20"><span class="co">// bind it to the port we passed in to getaddrinfo():</span></a>
+<a class="sourceLine" id="cb84-21" title="21"></a>
+<a class="sourceLine" id="cb84-22" title="22">bind(sockfd, res-&gt;ai_addr, res-&gt;ai_addrlen);</a></code></pre></div><div class="sourceCode" id="cb85"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb85-1" title="1"><span class="co">// example of packing a struct by hand, IPv4</span></a>
+<a class="sourceLine" id="cb85-2" title="2"></a>
+<a class="sourceLine" id="cb85-3" title="3"><span class="kw">struct</span> sockaddr_in myaddr;</a>
+<a class="sourceLine" id="cb85-4" title="4"><span class="dt">int</span> s;</a>
+<a class="sourceLine" id="cb85-5" title="5"></a>
+<a class="sourceLine" id="cb85-6" title="6">myaddr.sin_family = AF_INET;</a>
+<a class="sourceLine" id="cb85-7" title="7">myaddr.sin_port = htons(<span class="dv">3490</span>);</a>
+<a class="sourceLine" id="cb85-8" title="8"></a>
+<a class="sourceLine" id="cb85-9" title="9"><span class="co">// you can specify an IP address:</span></a>
+<a class="sourceLine" id="cb85-10" title="10">inet_pton(AF_INET, <span class="st">&quot;63.161.169.137&quot;</span>, &amp;(myaddr.sin_addr));</a>
+<a class="sourceLine" id="cb85-11" title="11"></a>
+<a class="sourceLine" id="cb85-12" title="12"><span class="co">// or you can let it automatically select one:</span></a>
+<a class="sourceLine" id="cb85-13" title="13">myaddr.sin_addr.s_addr = INADDR_ANY;</a>
+<a class="sourceLine" id="cb85-14" title="14"></a>
+<a class="sourceLine" id="cb85-15" title="15">s = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb85-16" title="16">bind(s, (<span class="kw">struct</span> sockaddr*)&amp;myaddr, <span class="kw">sizeof</span> myaddr);</a></code></pre></div><h3 id="see-also-1" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#getaddrinfoman"><code>getaddrinfo()</code></a>, <a href="man-pages.html#socketman"><code>socket()</code></a>, <a href="man-pages.html#structsockaddrman"><code>struct sockaddr_in</code></a>, <a href="man-pages.html#structsockaddrman"><code>struct in_addr</code></a></p><h2 id="connectman"><span class="header-section-number">9.3</span> <code>connect()</code></h2><p></p><p>Connect a socket to a server</p><h3 id="synopsis-2" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb86"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb86-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb86-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb86-3" title="3"></a>
+<a class="sourceLine" id="cb86-4" title="4"><span class="dt">int</span> connect(<span class="dt">int</span> sockfd, <span class="dt">const</span> <span class="kw">struct</span> sockaddr *serv_addr,</a>
+<a class="sourceLine" id="cb86-5" title="5">            socklen_t addrlen);</a></code></pre></div><h3 id="description-2" class="unnumbered unlisted">Description</h3><p>Once you’ve built a socket descriptor with the <code>socket()</code> call, you can <code>connect()</code> that socket to a remote server using the well-named <code>connect()</code> system call. All you need to do is pass it the socket descriptor and the address of the server you’re interested in getting to know better. (Oh, and the length of the address, which is commonly passed to functions like this.)</p><p>Usually this information comes along as the result of a call to <code>getaddrinfo()</code>, but you can fill out your own <code>struct sockaddr</code> if you want to.</p><p>If you haven’t yet called <code>bind()</code> on the socket descriptor, it is automatically bound to your IP address and a random local port. This is usually just fine with you if you’re not a server, since you really don’t care what your local port is; you only care what the remote port is so you can put it in the <code>serv_addr</code> parameter. You <em>can</em> call <code>bind()</code> if you really want your client socket to be on a specific IP address and port, but this is pretty rare.</p><p>Once the socket is <code>connect()</code>ed, you’re free to <code>send()</code> and <code>recv()</code> data on it to your heart’s content.</p><p> Special note: if you <code>connect()</code> a <code>SOCK_DGRAM</code> UDP socket to a remote host, you can use <code>send()</code> and <code>recv()</code> as well as <code>sendto()</code> and <code>recvfrom()</code>. If you want.</p><h3 id="return-value-2" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-2" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb87"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb87-1" title="1"><span class="co">// connect to www.example.com port 80 (http)</span></a>
+<a class="sourceLine" id="cb87-2" title="2"></a>
+<a class="sourceLine" id="cb87-3" title="3"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb87-4" title="4"><span class="dt">int</span> sockfd;</a>
+<a class="sourceLine" id="cb87-5" title="5"></a>
+<a class="sourceLine" id="cb87-6" title="6"><span class="co">// first, load up address structs with getaddrinfo():</span></a>
+<a class="sourceLine" id="cb87-7" title="7"></a>
+<a class="sourceLine" id="cb87-8" title="8">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb87-9" title="9">hints.ai_family = AF_UNSPEC;  <span class="co">// use IPv4 or IPv6, whichever</span></a>
+<a class="sourceLine" id="cb87-10" title="10">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb87-11" title="11"></a>
+<a class="sourceLine" id="cb87-12" title="12"><span class="co">// we could put &quot;80&quot; instead on &quot;http&quot; on the next line:</span></a>
+<a class="sourceLine" id="cb87-13" title="13">getaddrinfo(<span class="st">&quot;www.example.com&quot;</span>, <span class="st">&quot;http&quot;</span>, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb87-14" title="14"></a>
+<a class="sourceLine" id="cb87-15" title="15"><span class="co">// make a socket:</span></a>
+<a class="sourceLine" id="cb87-16" title="16"></a>
+<a class="sourceLine" id="cb87-17" title="17">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a>
+<a class="sourceLine" id="cb87-18" title="18"></a>
+<a class="sourceLine" id="cb87-19" title="19"><span class="co">// connect it to the address and port we passed in to getaddrinfo():</span></a>
+<a class="sourceLine" id="cb87-20" title="20"></a>
+<a class="sourceLine" id="cb87-21" title="21">connect(sockfd, res-&gt;ai_addr, res-&gt;ai_addrlen);</a></code></pre></div><h3 id="see-also-2" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#socketman"><code>socket()</code></a>, <a href="man-pages.html#bindman"><code>bind()</code></a></p><h2 id="closeman"><span class="header-section-number">9.4</span> <code>close()</code></h2><p></p><p>Close a socket descriptor</p><h3 id="synopsis-3" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb88"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb88-1" title="1"><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></a>
+<a class="sourceLine" id="cb88-2" title="2"></a>
+<a class="sourceLine" id="cb88-3" title="3"><span class="dt">int</span> close(<span class="dt">int</span> s);</a></code></pre></div><h3 id="description-3" class="unnumbered unlisted">Description</h3><p>After you’ve finished using the socket for whatever demented scheme you have concocted and you don’t want to <code>send()</code> or <code>recv()</code> or, indeed, do <em>anything else</em> at all with the socket, you can <code>close()</code> it, and it’ll be freed up, never to be used again.</p><p>The remote side can tell if this happens one of two ways. One: if the remote side calls <code>recv()</code>, it will return <code>0</code>. Two: if the remote side calls <code>send()</code>, it’ll receive a signal  <code>SIGPIPE</code> and send() will return <code>-1</code> and <code>errno</code> will be set to  <code>EPIPE</code>.</p><p> <strong>Windows users</strong>: the function you need to use is called  <code>closesocket()</code>, not <code>close()</code>. If you try to use <code>close()</code> on a socket descriptor, it’s possible Windows will get angry… And you wouldn’t like it when it’s angry.</p><h3 id="return-value-3" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-3" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb89"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb89-1" title="1">s = socket(PF_INET, SOCK_DGRAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb89-2" title="2">.</a>
+<a class="sourceLine" id="cb89-3" title="3">.</a>
+<a class="sourceLine" id="cb89-4" title="4">.</a>
+<a class="sourceLine" id="cb89-5" title="5"><span class="co">// a whole lotta stuff...*BRRRONNNN!*</span></a>
+<a class="sourceLine" id="cb89-6" title="6">.</a>
+<a class="sourceLine" id="cb89-7" title="7">.</a>
+<a class="sourceLine" id="cb89-8" title="8">.</a>
+<a class="sourceLine" id="cb89-9" title="9">close(s);  <span class="co">// not much to it, really.</span></a></code></pre></div><h3 id="see-also-3" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#socketman"><code>socket()</code></a>, <a href="man-pages.html#shutdownman"><code>shutdown()</code></a></p><h2 id="getaddrinfoman"><span class="header-section-number">9.5</span> <code>getaddrinfo()</code>, <code>freeaddrinfo()</code>, <code>gai_strerror()</code></h2><p>  </p><p>Get information about a host name and/or service and load up a <code>struct sockaddr</code> with the result.</p><h3 id="synopsis-4" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb90"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb90-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb90-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb90-3" title="3"><span class="pp">#include </span><span class="im">&lt;netdb.h&gt;</span></a>
+<a class="sourceLine" id="cb90-4" title="4"></a>
+<a class="sourceLine" id="cb90-5" title="5"><span class="dt">int</span> getaddrinfo(<span class="dt">const</span> <span class="dt">char</span> *nodename, <span class="dt">const</span> <span class="dt">char</span> *servname,</a>
+<a class="sourceLine" id="cb90-6" title="6">                <span class="dt">const</span> <span class="kw">struct</span> addrinfo *hints, <span class="kw">struct</span> addrinfo **res);</a>
+<a class="sourceLine" id="cb90-7" title="7"></a>
+<a class="sourceLine" id="cb90-8" title="8"><span class="dt">void</span> freeaddrinfo(<span class="kw">struct</span> addrinfo *ai);</a>
+<a class="sourceLine" id="cb90-9" title="9"></a>
+<a class="sourceLine" id="cb90-10" title="10"><span class="dt">const</span> <span class="dt">char</span> *gai_strerror(<span class="dt">int</span> ecode);</a>
+<a class="sourceLine" id="cb90-11" title="11"></a>
+<a class="sourceLine" id="cb90-12" title="12"><span class="kw">struct</span> addrinfo {</a>
+<a class="sourceLine" id="cb90-13" title="13">  <span class="dt">int</span>     ai_flags;          <span class="co">// AI_PASSIVE, AI_CANONNAME, ...</span></a>
+<a class="sourceLine" id="cb90-14" title="14">  <span class="dt">int</span>     ai_family;         <span class="co">// AF_xxx</span></a>
+<a class="sourceLine" id="cb90-15" title="15">  <span class="dt">int</span>     ai_socktype;       <span class="co">// SOCK_xxx</span></a>
+<a class="sourceLine" id="cb90-16" title="16">  <span class="dt">int</span>     ai_protocol;       <span class="co">// 0 (auto) or IPPROTO_TCP, IPPROTO_UDP </span></a>
+<a class="sourceLine" id="cb90-17" title="17"></a>
+<a class="sourceLine" id="cb90-18" title="18">  socklen_t  ai_addrlen;     <span class="co">// length of ai_addr</span></a>
+<a class="sourceLine" id="cb90-19" title="19">  <span class="dt">char</span>   *ai_canonname;      <span class="co">// canonical name for nodename</span></a>
+<a class="sourceLine" id="cb90-20" title="20">  <span class="kw">struct</span> sockaddr  *ai_addr; <span class="co">// binary address</span></a>
+<a class="sourceLine" id="cb90-21" title="21">  <span class="kw">struct</span> addrinfo  *ai_next; <span class="co">// next structure in linked list</span></a>
+<a class="sourceLine" id="cb90-22" title="22">};</a></code></pre></div><h3 id="description-4" class="unnumbered unlisted">Description</h3><p><code>getaddrinfo()</code> is an excellent function that will return information on a particular host name (such as its IP address) and load up a <code>struct sockaddr</code> for you, taking care of the gritty details (like if it’s IPv4 or IPv6). It replaces the old functions <code>gethostbyname()</code> and <code>getservbyname()</code>.The description, below, contains a lot of information that might be a little daunting, but actual usage is pretty simple. It might be worth it to check out the examples first.</p><p>The host name that you’re interested in goes in the <code>nodename</code> parameter. The address can be either a host name, like “www.example.com”, or an IPv4 or IPv6 address (passed as a string). This parameter can also be <code>NULL</code> if you’re using the <code>AI_PASSIVE</code> flag (see below).</p><p>The <code>servname</code> parameter is basically the port number. It can be a port number (passed as a string, like “80”), or it can be a service name, like “http” or “tftp” or “smtp” or “pop”, etc. Well-known service names can be found in the <a href="https://www.iana.org/assignments/port-numbers">IANA Port List</a><a href="more-references.html#fn48" class="footnote-ref" id="fnref48"><sup>48</sup></a> or in your <code>/etc/services</code> file.</p><p>Lastly, for input parameters, we have <code>hints</code>. This is really where you get to define what the <code>getaddrinfo()</code> function is going to do. Zero the whole structure before use with <code>memset()</code>. Let’s take a look at the fields you need to set up before use.</p><p>The <code>ai_flags</code> can be set to a variety of things, but here are a couple important ones. (Multiple flags can be specified by bitwise-ORing them together with the <code>|</code> operator). Check your man page for the complete list of flags.</p><p><code>AI_CANONNAME</code> causes the <code>ai_canonname</code> of the result to the filled out with the host’s canonical (real) name. <code>AI_PASSIVE</code> causes the result’s IP address to be filled out with <code>INADDR_ANY</code> (IPv4) or <code>in6addr_any</code> (IPv6); this causes a subsequent call to <code>bind()</code> to auto-fill the IP address of the <code>struct sockaddr</code> with the address of the current host. That’s excellent for setting up a server when you don’t want to hardcode the address.</p><p>If you do use the <code>AI_PASSIVE</code>, flag, then you can pass <code>NULL</code> in the <code>nodename</code> (since <code>bind()</code> will fill it in for you later).</p><p>Continuing on with the input parameters, you’ll likely want to set <code>ai_family</code> to <code>AF_UNSPEC</code> which tells <code>getaddrinfo()</code> to look for both IPv4 and IPv6 addresses. You can also restrict yourself to one or the other with <code>AF_INET</code> or <code>AF_INET6</code>.</p><p>Next, the <code>socktype</code> field should be set to <code>SOCK_STREAM</code> or <code>SOCK_DGRAM</code>, depending on which type of socket you want.</p><p>Finally, just leave <code>ai_protocol</code> at <code>0</code> to automatically choose your protocol type.</p><p>Now, after you get all that stuff in there, you can <em>finally</em> make the call to <code>getaddrinfo()</code>!</p><p>Of course, this is where the fun begins. The <code>res</code> will now point to a linked list of <code>struct addrinfo</code>s, and you can go through this list to get all the addresses that match what you passed in with the hints.</p><p>Now, it’s possible to get some addresses that don’t work for one reason or another, so what the Linux man page does is loops through the list doing a call to <code>socket()</code> and <code>connect()</code> (or <code>bind()</code> if you’re setting up a server with the <code>AI_PASSIVE</code> flag) until it succeeds.</p><p>Finally, when you’re done with the linked list, you need to call <code>freeaddrinfo()</code> to free up the memory (or it will be leaked, and Some People will get upset).</p><h3 id="return-value-4" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or nonzero on error. If it returns nonzero, you can use the function <code>gai_strerror()</code> to get a printable version of the error code in the return value.</p><h3 id="example-4" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb91"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb91-1" title="1"><span class="co">// code for a client connecting to a server</span></a>
+<a class="sourceLine" id="cb91-2" title="2"><span class="co">// namely a stream socket to www.example.com on port 80 (http)</span></a>
+<a class="sourceLine" id="cb91-3" title="3"><span class="co">// either IPv4 or IPv6</span></a>
+<a class="sourceLine" id="cb91-4" title="4"></a>
+<a class="sourceLine" id="cb91-5" title="5"><span class="dt">int</span> sockfd;  </a>
+<a class="sourceLine" id="cb91-6" title="6"><span class="kw">struct</span> addrinfo hints, *servinfo, *p;</a>
+<a class="sourceLine" id="cb91-7" title="7"><span class="dt">int</span> rv;</a>
+<a class="sourceLine" id="cb91-8" title="8"></a>
+<a class="sourceLine" id="cb91-9" title="9">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb91-10" title="10">hints.ai_family = AF_UNSPEC; <span class="co">// use AF_INET6 to force IPv6</span></a>
+<a class="sourceLine" id="cb91-11" title="11">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb91-12" title="12"></a>
+<a class="sourceLine" id="cb91-13" title="13"><span class="cf">if</span> ((rv = getaddrinfo(<span class="st">&quot;www.example.com&quot;</span>, <span class="st">&quot;http&quot;</span>, &amp;hints, &amp;servinfo)) != <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb91-14" title="14">    fprintf(stderr, <span class="st">&quot;getaddrinfo: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, gai_strerror(rv));</a>
+<a class="sourceLine" id="cb91-15" title="15">    exit(<span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb91-16" title="16">}</a>
+<a class="sourceLine" id="cb91-17" title="17"></a>
+<a class="sourceLine" id="cb91-18" title="18"><span class="co">// loop through all the results and connect to the first we can</span></a>
+<a class="sourceLine" id="cb91-19" title="19"><span class="cf">for</span>(p = servinfo; p != NULL; p = p-&gt;ai_next) {</a>
+<a class="sourceLine" id="cb91-20" title="20">    <span class="cf">if</span> ((sockfd = socket(p-&gt;ai_family, p-&gt;ai_socktype,</a>
+<a class="sourceLine" id="cb91-21" title="21">            p-&gt;ai_protocol)) == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb91-22" title="22">        perror(<span class="st">&quot;socket&quot;</span>);</a>
+<a class="sourceLine" id="cb91-23" title="23">        <span class="cf">continue</span>;</a>
+<a class="sourceLine" id="cb91-24" title="24">    }</a>
+<a class="sourceLine" id="cb91-25" title="25"></a>
+<a class="sourceLine" id="cb91-26" title="26">    <span class="cf">if</span> (connect(sockfd, p-&gt;ai_addr, p-&gt;ai_addrlen) == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb91-27" title="27">        perror(<span class="st">&quot;connect&quot;</span>);</a>
+<a class="sourceLine" id="cb91-28" title="28">        close(sockfd);</a>
+<a class="sourceLine" id="cb91-29" title="29">        <span class="cf">continue</span>;</a>
+<a class="sourceLine" id="cb91-30" title="30">    }</a>
+<a class="sourceLine" id="cb91-31" title="31"></a>
+<a class="sourceLine" id="cb91-32" title="32">    <span class="cf">break</span>; <span class="co">// if we get here, we must have connected successfully</span></a>
+<a class="sourceLine" id="cb91-33" title="33">}</a>
+<a class="sourceLine" id="cb91-34" title="34"></a>
+<a class="sourceLine" id="cb91-35" title="35"><span class="cf">if</span> (p == NULL) {</a>
+<a class="sourceLine" id="cb91-36" title="36">    <span class="co">// looped off the end of the list with no connection</span></a>
+<a class="sourceLine" id="cb91-37" title="37">    fprintf(stderr, <span class="st">&quot;failed to connect</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb91-38" title="38">    exit(<span class="dv">2</span>);</a>
+<a class="sourceLine" id="cb91-39" title="39">}</a>
+<a class="sourceLine" id="cb91-40" title="40"></a>
+<a class="sourceLine" id="cb91-41" title="41">freeaddrinfo(servinfo); <span class="co">// all done with this structure</span></a></code></pre></div><div class="sourceCode" id="cb92"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb92-1" title="1"><span class="co">// code for a server waiting for connections</span></a>
+<a class="sourceLine" id="cb92-2" title="2"><span class="co">// namely a stream socket on port 3490, on this host&#39;s IP</span></a>
+<a class="sourceLine" id="cb92-3" title="3"><span class="co">// either IPv4 or IPv6.</span></a>
+<a class="sourceLine" id="cb92-4" title="4"></a>
+<a class="sourceLine" id="cb92-5" title="5"><span class="dt">int</span> sockfd;  </a>
+<a class="sourceLine" id="cb92-6" title="6"><span class="kw">struct</span> addrinfo hints, *servinfo, *p;</a>
+<a class="sourceLine" id="cb92-7" title="7"><span class="dt">int</span> rv;</a>
+<a class="sourceLine" id="cb92-8" title="8"></a>
+<a class="sourceLine" id="cb92-9" title="9">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb92-10" title="10">hints.ai_family = AF_UNSPEC; <span class="co">// use AF_INET6 to force IPv6</span></a>
+<a class="sourceLine" id="cb92-11" title="11">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb92-12" title="12">hints.ai_flags = AI_PASSIVE; <span class="co">// use my IP address</span></a>
+<a class="sourceLine" id="cb92-13" title="13"></a>
+<a class="sourceLine" id="cb92-14" title="14"><span class="cf">if</span> ((rv = getaddrinfo(NULL, <span class="st">&quot;3490&quot;</span>, &amp;hints, &amp;servinfo)) != <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb92-15" title="15">    fprintf(stderr, <span class="st">&quot;getaddrinfo: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, gai_strerror(rv));</a>
+<a class="sourceLine" id="cb92-16" title="16">    exit(<span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb92-17" title="17">}</a>
+<a class="sourceLine" id="cb92-18" title="18"></a>
+<a class="sourceLine" id="cb92-19" title="19"><span class="co">// loop through all the results and bind to the first we can</span></a>
+<a class="sourceLine" id="cb92-20" title="20"><span class="cf">for</span>(p = servinfo; p != NULL; p = p-&gt;ai_next) {</a>
+<a class="sourceLine" id="cb92-21" title="21">    <span class="cf">if</span> ((sockfd = socket(p-&gt;ai_family, p-&gt;ai_socktype,</a>
+<a class="sourceLine" id="cb92-22" title="22">            p-&gt;ai_protocol)) == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb92-23" title="23">        perror(<span class="st">&quot;socket&quot;</span>);</a>
+<a class="sourceLine" id="cb92-24" title="24">        <span class="cf">continue</span>;</a>
+<a class="sourceLine" id="cb92-25" title="25">    }</a>
+<a class="sourceLine" id="cb92-26" title="26"></a>
+<a class="sourceLine" id="cb92-27" title="27">    <span class="cf">if</span> (bind(sockfd, p-&gt;ai_addr, p-&gt;ai_addrlen) == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb92-28" title="28">        close(sockfd);</a>
+<a class="sourceLine" id="cb92-29" title="29">        perror(<span class="st">&quot;bind&quot;</span>);</a>
+<a class="sourceLine" id="cb92-30" title="30">        <span class="cf">continue</span>;</a>
+<a class="sourceLine" id="cb92-31" title="31">    }</a>
+<a class="sourceLine" id="cb92-32" title="32"></a>
+<a class="sourceLine" id="cb92-33" title="33">    <span class="cf">break</span>; <span class="co">// if we get here, we must have connected successfully</span></a>
+<a class="sourceLine" id="cb92-34" title="34">}</a>
+<a class="sourceLine" id="cb92-35" title="35"></a>
+<a class="sourceLine" id="cb92-36" title="36"><span class="cf">if</span> (p == NULL) {</a>
+<a class="sourceLine" id="cb92-37" title="37">    <span class="co">// looped off the end of the list with no successful bind</span></a>
+<a class="sourceLine" id="cb92-38" title="38">    fprintf(stderr, <span class="st">&quot;failed to bind socket</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb92-39" title="39">    exit(<span class="dv">2</span>);</a>
+<a class="sourceLine" id="cb92-40" title="40">}</a>
+<a class="sourceLine" id="cb92-41" title="41"></a>
+<a class="sourceLine" id="cb92-42" title="42">freeaddrinfo(servinfo); <span class="co">// all done with this structure</span></a></code></pre></div><h3 id="see-also-4" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#gethostbynameman"><code>gethostbyname()</code></a>, <a href="man-pages.html#getnameinfoman"><code>getnameinfo()</code></a></p><h2 id="gethostnameman"><span class="header-section-number">9.6</span> <code>gethostname()</code></h2><p></p><p>Returns the name of the system</p><h3 id="synopsis-5" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb93"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb93-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/unistd.h&gt;</span></a>
+<a class="sourceLine" id="cb93-2" title="2"></a>
+<a class="sourceLine" id="cb93-3" title="3"><span class="dt">int</span> gethostname(<span class="dt">char</span> *name, <span class="dt">size_t</span> len);</a></code></pre></div><h3 id="description-5" class="unnumbered unlisted">Description</h3><p>Your system has a name. They all do. This is a slightly more Unixy thing than the rest of the networky stuff we’ve been talking about, but it still has its uses.</p><p>For instance, you can get your host name, and then call  <code>gethostbyname()</code> to find out your IP address.</p><p>The parameter <code>name</code> should point to a buffer that will hold the host name, and <code>len</code> is the size of that buffer in bytes. <code>gethostname()</code> won’t overwrite the end of the buffer (it might return an error, or it might just stop writing), and it will <code>NUL</code>-terminate the string if there’s room for it in the buffer.</p><h3 id="return-value-5" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-5" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb94"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb94-1" title="1"><span class="dt">char</span> hostname[<span class="dv">128</span>];</a>
+<a class="sourceLine" id="cb94-2" title="2"></a>
+<a class="sourceLine" id="cb94-3" title="3">gethostname(hostname, <span class="kw">sizeof</span> hostname);</a>
+<a class="sourceLine" id="cb94-4" title="4">printf(<span class="st">&quot;My hostname: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, hostname);</a></code></pre></div><h3 id="see-also-5" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#gethostbynameman"><code>gethostbyname()</code></a></p><h2 id="gethostbynameman"><span class="header-section-number">9.7</span> <code>gethostbyname()</code>, <code>gethostbyaddr()</code></h2><p> </p><p>Get an IP address for a hostname, or vice-versa</p><h3 id="synopsis-6" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb95"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb95-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb95-2" title="2"><span class="pp">#include </span><span class="im">&lt;netdb.h&gt;</span></a>
+<a class="sourceLine" id="cb95-3" title="3"></a>
+<a class="sourceLine" id="cb95-4" title="4"><span class="kw">struct</span> hostent *gethostbyname(<span class="dt">const</span> <span class="dt">char</span> *name); <span class="co">// </span><span class="al">DEPRECATED</span><span class="co">!</span></a>
+<a class="sourceLine" id="cb95-5" title="5"><span class="kw">struct</span> hostent *gethostbyaddr(<span class="dt">const</span> <span class="dt">char</span> *addr, <span class="dt">int</span> len, <span class="dt">int</span> type);</a></code></pre></div><h3 id="description-6" class="unnumbered unlisted">Description</h3><p><em>PLEASE NOTE: these two functions are superseded by <code>getaddrinfo()</code> and <code>getnameinfo()</code>!</em> In particular, <code>gethostbyname()</code> doesn’t work well with IPv6.</p><p>These functions map back and forth between host names and IP addresses. For instance, if you have “www.example.com”, you can use <code>gethostbyname()</code> to get its IP address and store it in a <code>struct in_addr</code>.</p><p>Conversely, if you have a <code>struct in_addr</code> or a <code>struct in6_addr</code>, you can use <code>gethostbyaddr()</code> to get the hostname back. <code>gethostbyaddr()</code> <em>is</em> IPv6 compatible, but you should use the newer shinier <code>getnameinfo()</code> instead.</p><p>(If you have a string containing an IP address in dots-and-numbers format that you want to look up the hostname of, you’d be better off using <code>getaddrinfo()</code> with the <code>AI_CANONNAME</code> flag.)</p><p><code>gethostbyname()</code> takes a string like “www.yahoo.com”, and returns a <code>struct hostent</code> which contains tons of information, including the IP address. (Other information is the official host name, a list of aliases, the address type, the length of the addresses, and the list of addresses—it’s a general-purpose structure that’s pretty easy to use for our specific purposes once you see how.)</p><p><code>gethostbyaddr()</code> takes a <code>struct in_addr</code> or <code>struct in6_addr</code> and brings you up a corresponding host name (if there is one), so it’s sort of the reverse of <code>gethostbyname()</code>. As for parameters, even though <code>addr</code> is a <code>char*</code>, you actually want to pass in a pointer to a <code>struct in_addr</code>. <code>len</code> should be <code>sizeof(struct in_addr)</code>, and <code>type</code> should be <code>AF_INET</code>.</p><p>So what is this  <code>struct hostent</code> that gets returned? It has a number of fields that contain information about the host in question.</p><table><colgroup><col style="width: 30%" /><col style="width: 69%" /></colgroup><thead><tr class="header"><th>Field</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>char *h_name</code></td><td>The real canonical host name.</td></tr><tr class="even"><td><code>char **h_aliases</code></td><td>A list of aliases that can be accessed with arrays—the last element is <code>NULL</code></td></tr><tr class="odd"><td><code>int h_addrtype</code></td><td>The result’s address type, which really should be <code>AF_INET</code> for our purposes.</td></tr><tr class="even"><td><code>int length</code></td><td>The length of the addresses in bytes, which is 4 for IP (version 4) addresses.</td></tr><tr class="odd"><td><code>char **h_addr_list</code></td><td>A list of IP addresses for this host. Although this is a <code>char**</code>, it’s really an array of <code>struct in_addr*</code>s in disguise. The last array element is <code>NULL</code>.</td></tr><tr class="even"><td><code>h_addr</code></td><td>A commonly defined alias for <code>h_addr_list[0]</code>. If you just want any old IP address for this host (yeah, they can have more than one) just use this field.</td></tr></tbody></table><h3 id="return-value-6" class="unnumbered unlisted">Return Value</h3><p>Returns a pointer to a resultant <code>struct hostent</code> on success, or <code>NULL</code> on error.</p><p>Instead of the normal <code>perror()</code> and all that stuff you’d normally use for error reporting, these functions have parallel results in the variable <code>h_errno</code>, which can be printed using the functions  <code>herror()</code> or  <code>hstrerror()</code>. These work just like the classic <code>errno</code>, <code>perror()</code>, and <code>strerror()</code> functions you’re used to.</p><h3 id="example-6" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb96"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb96-1" title="1"><span class="co">// THIS IS A </span><span class="al">DEPRECATED</span><span class="co"> METHOD OF GETTING HOST NAMES</span></a>
+<a class="sourceLine" id="cb96-2" title="2"><span class="co">// use getaddrinfo() instead!</span></a>
+<a class="sourceLine" id="cb96-3" title="3"></a>
+<a class="sourceLine" id="cb96-4" title="4"><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></a>
+<a class="sourceLine" id="cb96-5" title="5"><span class="pp">#include </span><span class="im">&lt;errno.h&gt;</span></a>
+<a class="sourceLine" id="cb96-6" title="6"><span class="pp">#include </span><span class="im">&lt;netdb.h&gt;</span></a>
+<a class="sourceLine" id="cb96-7" title="7"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb96-8" title="8"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb96-9" title="9"><span class="pp">#include </span><span class="im">&lt;netinet/in.h&gt;</span></a>
+<a class="sourceLine" id="cb96-10" title="10"><span class="pp">#include </span><span class="im">&lt;arpa/inet.h&gt;</span></a>
+<a class="sourceLine" id="cb96-11" title="11"></a>
+<a class="sourceLine" id="cb96-12" title="12"><span class="dt">int</span> main(<span class="dt">int</span> argc, <span class="dt">char</span> *argv[])</a>
+<a class="sourceLine" id="cb96-13" title="13">{</a>
+<a class="sourceLine" id="cb96-14" title="14">    <span class="dt">int</span> i;</a>
+<a class="sourceLine" id="cb96-15" title="15">    <span class="kw">struct</span> hostent *he;</a>
+<a class="sourceLine" id="cb96-16" title="16">    <span class="kw">struct</span> in_addr **addr_list;</a>
+<a class="sourceLine" id="cb96-17" title="17"></a>
+<a class="sourceLine" id="cb96-18" title="18">    <span class="cf">if</span> (argc != <span class="dv">2</span>) {</a>
+<a class="sourceLine" id="cb96-19" title="19">        fprintf(stderr,<span class="st">&quot;usage: ghbn hostname</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb96-20" title="20">        <span class="cf">return</span> <span class="dv">1</span>;</a>
+<a class="sourceLine" id="cb96-21" title="21">    }</a>
+<a class="sourceLine" id="cb96-22" title="22"></a>
+<a class="sourceLine" id="cb96-23" title="23">    <span class="cf">if</span> ((he = gethostbyname(argv[<span class="dv">1</span>])) == NULL) {  <span class="co">// get the host info</span></a>
+<a class="sourceLine" id="cb96-24" title="24">        herror(<span class="st">&quot;gethostbyname&quot;</span>);</a>
+<a class="sourceLine" id="cb96-25" title="25">        <span class="cf">return</span> <span class="dv">2</span>;</a>
+<a class="sourceLine" id="cb96-26" title="26">    }</a>
+<a class="sourceLine" id="cb96-27" title="27"></a>
+<a class="sourceLine" id="cb96-28" title="28">    <span class="co">// print information about this host:</span></a>
+<a class="sourceLine" id="cb96-29" title="29">    printf(<span class="st">&quot;Official name is: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, he-&gt;h_name);</a>
+<a class="sourceLine" id="cb96-30" title="30">    printf(<span class="st">&quot;    IP addresses: &quot;</span>);</a>
+<a class="sourceLine" id="cb96-31" title="31">    addr_list = (<span class="kw">struct</span> in_addr **)he-&gt;h_addr_list;</a>
+<a class="sourceLine" id="cb96-32" title="32">    <span class="cf">for</span>(i = <span class="dv">0</span>; addr_list[i] != NULL; i++) {</a>
+<a class="sourceLine" id="cb96-33" title="33">        printf(<span class="st">&quot;%s &quot;</span>, inet_ntoa(*addr_list[i]));</a>
+<a class="sourceLine" id="cb96-34" title="34">    }</a>
+<a class="sourceLine" id="cb96-35" title="35">    printf(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb96-36" title="36"></a>
+<a class="sourceLine" id="cb96-37" title="37">    <span class="cf">return</span> <span class="dv">0</span>;</a>
+<a class="sourceLine" id="cb96-38" title="38">}</a></code></pre></div><div class="sourceCode" id="cb97"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb97-1" title="1"><span class="co">// THIS HAS BEEN SUPERSEDED</span></a>
+<a class="sourceLine" id="cb97-2" title="2"><span class="co">// use getnameinfo() instead!</span></a>
+<a class="sourceLine" id="cb97-3" title="3"></a>
+<a class="sourceLine" id="cb97-4" title="4"><span class="kw">struct</span> hostent *he;</a>
+<a class="sourceLine" id="cb97-5" title="5"><span class="kw">struct</span> in_addr ipv4addr;</a>
+<a class="sourceLine" id="cb97-6" title="6"><span class="kw">struct</span> in6_addr ipv6addr;</a>
+<a class="sourceLine" id="cb97-7" title="7"></a>
+<a class="sourceLine" id="cb97-8" title="8">inet_pton(AF_INET, <span class="st">&quot;192.0.2.34&quot;</span>, &amp;ipv4addr);</a>
+<a class="sourceLine" id="cb97-9" title="9">he = gethostbyaddr(&amp;ipv4addr, <span class="kw">sizeof</span> ipv4addr, AF_INET);</a>
+<a class="sourceLine" id="cb97-10" title="10">printf(<span class="st">&quot;Host name: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, he-&gt;h_name);</a>
+<a class="sourceLine" id="cb97-11" title="11"></a>
+<a class="sourceLine" id="cb97-12" title="12">inet_pton(AF_INET6, <span class="st">&quot;2001:db8:63b3:1::beef&quot;</span>, &amp;ipv6addr);</a>
+<a class="sourceLine" id="cb97-13" title="13">he = gethostbyaddr(&amp;ipv6addr, <span class="kw">sizeof</span> ipv6addr, AF_INET6);</a>
+<a class="sourceLine" id="cb97-14" title="14">printf(<span class="st">&quot;Host name: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, he-&gt;h_name);</a></code></pre></div><h3 id="see-also-6" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#getaddrinfoman"><code>getaddrinfo()</code></a>, <a href="man-pages.html#getnameinfoman"><code>getnameinfo()</code></a>, <a href="man-pages.html#gethostnameman"><code>gethostname()</code></a>, <a href="man-pages.html#errnoman"><code>errno</code></a>, <a href="man-pages.html#perrorman"><code>perror()</code></a>, <a href="man-pages.html#perrorman"><code>strerror()</code></a>, <a href="man-pages.html#structsockaddrman"><code>struct in_addr</code></a></p><h2 id="getnameinfoman"><span class="header-section-number">9.8</span> <code>getnameinfo()</code></h2><p></p><p>Look up the host name and service name information for a given <code>struct sockaddr</code>.</p><h3 id="synopsis-7" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb98"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb98-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb98-2" title="2"><span class="pp">#include </span><span class="im">&lt;netdb.h&gt;</span></a>
+<a class="sourceLine" id="cb98-3" title="3"></a>
+<a class="sourceLine" id="cb98-4" title="4"><span class="dt">int</span> getnameinfo(<span class="dt">const</span> <span class="kw">struct</span> sockaddr *sa, socklen_t salen,</a>
+<a class="sourceLine" id="cb98-5" title="5">                <span class="dt">char</span> *host, <span class="dt">size_t</span> hostlen,</a>
+<a class="sourceLine" id="cb98-6" title="6">                <span class="dt">char</span> *serv, <span class="dt">size_t</span> servlen, <span class="dt">int</span> flags);</a></code></pre></div><h3 id="description-7" class="unnumbered unlisted">Description</h3><p>This function is the opposite of <code>getaddrinfo()</code>, that is, this function takes an already loaded <code>struct sockaddr</code> and does a name and service name lookup on it. It replaces the old <code>gethostbyaddr()</code> and <code>getservbyport()</code> functions.</p><p>You have to pass in a pointer to a <code>struct sockaddr</code> (which in actuality is probably a <code>struct sockaddr_in</code> or <code>struct sockaddr_in6</code> that you’ve cast) in the <code>sa</code> parameter, and the length of that <code>struct</code> in the <code>salen</code>.</p><p>The resultant host name and service name will be written to the area pointed to by the <code>host</code> and <code>serv</code> parameters. Of course, you have to specify the max lengths of these buffers in <code>hostlen</code> and <code>servlen</code>.</p><p>Finally, there are several flags you can pass, but here a a couple good ones. <code>NI_NOFQDN</code> will cause the <code>host</code> to only contain the host name, not the whole domain name. <code>NI_NAMEREQD</code> will cause the function to fail if the name cannot be found with a DNS lookup (if you don’t specify this flag and the name can’t be found, <code>getnameinfo()</code> will put a string version of the IP address in <code>host</code> instead).</p><p>As always, check your local man pages for the full scoop.</p><h3 id="return-value-7" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or non-zero on error. If the return value is non-zero, it can be passed to <code>gai_strerror()</code> to get a human-readable string. See <code>getaddrinfo</code> for more information.</p><h3 id="example-7" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb99"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb99-1" title="1"><span class="kw">struct</span> sockaddr_in6 sa; <span class="co">// could be IPv4 if you want</span></a>
+<a class="sourceLine" id="cb99-2" title="2"><span class="dt">char</span> host[<span class="dv">1024</span>];</a>
+<a class="sourceLine" id="cb99-3" title="3"><span class="dt">char</span> service[<span class="dv">20</span>];</a>
+<a class="sourceLine" id="cb99-4" title="4"></a>
+<a class="sourceLine" id="cb99-5" title="5"><span class="co">// pretend sa is full of good information about the host and port...</span></a>
+<a class="sourceLine" id="cb99-6" title="6"></a>
+<a class="sourceLine" id="cb99-7" title="7">getnameinfo(&amp;sa, <span class="kw">sizeof</span> sa, host, <span class="kw">sizeof</span> host, service, <span class="kw">sizeof</span> service, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb99-8" title="8"></a>
+<a class="sourceLine" id="cb99-9" title="9">printf(<span class="st">&quot;   host: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, host);    <span class="co">// e.g. &quot;www.example.com&quot;</span></a>
+<a class="sourceLine" id="cb99-10" title="10">printf(<span class="st">&quot;service: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, service); <span class="co">// e.g. &quot;http&quot;</span></a></code></pre></div><h3 id="see-also-7" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#getaddrinfoman"><code>getaddrinfo()</code></a>, <a href="man-pages.html#gethostbynameman"><code>gethostbyaddr()</code></a></p><h2 id="getpeernameman"><span class="header-section-number">9.9</span> <code>getpeername()</code></h2><p></p><p>Return address info about the remote side of the connection</p><h3 id="synopsis-8" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb100"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb100-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb100-2" title="2"></a>
+<a class="sourceLine" id="cb100-3" title="3"><span class="dt">int</span> getpeername(<span class="dt">int</span> s, <span class="kw">struct</span> sockaddr *addr, socklen_t *len);</a></code></pre></div><h3 id="description-8" class="unnumbered unlisted">Description</h3><p>Once you have either <code>accept()</code>ed a remote connection, or <code>connect()</code>ed to a server, you now have what is known as a <em>peer</em>. Your peer is simply the computer you’re connected to, identified by an IP address and a port. So…</p><p><code>getpeername()</code> simply returns a <code>struct sockaddr_in</code> filled with information about the machine you’re connected to.</p><p>Why is it called a “name”? Well, there are a lot of different kinds of sockets, not just Internet Sockets like we’re using in this guide, and so “name” was a nice generic term that covered all cases. In our case, though, the peer’s “name” is it’s IP address and port.</p><p>Although the function returns the size of the resultant address in <code>len</code>, you must preload <code>len</code> with the size of <code>addr</code>.</p><h3 id="return-value-8" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-8" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb101"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb101-1" title="1"><span class="co">// assume s is a connected socket</span></a>
+<a class="sourceLine" id="cb101-2" title="2"></a>
+<a class="sourceLine" id="cb101-3" title="3">socklen_t len;</a>
+<a class="sourceLine" id="cb101-4" title="4"><span class="kw">struct</span> sockaddr_storage addr;</a>
+<a class="sourceLine" id="cb101-5" title="5"><span class="dt">char</span> ipstr[INET6_ADDRSTRLEN];</a>
+<a class="sourceLine" id="cb101-6" title="6"><span class="dt">int</span> port;</a>
+<a class="sourceLine" id="cb101-7" title="7"></a>
+<a class="sourceLine" id="cb101-8" title="8">len = <span class="kw">sizeof</span> addr;</a>
+<a class="sourceLine" id="cb101-9" title="9">getpeername(s, (<span class="kw">struct</span> sockaddr*)&amp;addr, &amp;len);</a>
+<a class="sourceLine" id="cb101-10" title="10"></a>
+<a class="sourceLine" id="cb101-11" title="11"><span class="co">// deal with both IPv4 and IPv6:</span></a>
+<a class="sourceLine" id="cb101-12" title="12"><span class="cf">if</span> (addr.ss_family == AF_INET) {</a>
+<a class="sourceLine" id="cb101-13" title="13">    <span class="kw">struct</span> sockaddr_in *s = (<span class="kw">struct</span> sockaddr_in *)&amp;addr;</a>
+<a class="sourceLine" id="cb101-14" title="14">    port = ntohs(s-&gt;sin_port);</a>
+<a class="sourceLine" id="cb101-15" title="15">    inet_ntop(AF_INET, &amp;s-&gt;sin_addr, ipstr, <span class="kw">sizeof</span> ipstr);</a>
+<a class="sourceLine" id="cb101-16" title="16">} <span class="cf">else</span> { <span class="co">// AF_INET6</span></a>
+<a class="sourceLine" id="cb101-17" title="17">    <span class="kw">struct</span> sockaddr_in6 *s = (<span class="kw">struct</span> sockaddr_in6 *)&amp;addr;</a>
+<a class="sourceLine" id="cb101-18" title="18">    port = ntohs(s-&gt;sin6_port);</a>
+<a class="sourceLine" id="cb101-19" title="19">    inet_ntop(AF_INET6, &amp;s-&gt;sin6_addr, ipstr, <span class="kw">sizeof</span> ipstr);</a>
+<a class="sourceLine" id="cb101-20" title="20">}</a>
+<a class="sourceLine" id="cb101-21" title="21"></a>
+<a class="sourceLine" id="cb101-22" title="22">printf(<span class="st">&quot;Peer IP address: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, ipstr);</a>
+<a class="sourceLine" id="cb101-23" title="23">printf(<span class="st">&quot;Peer port      : %d</span><span class="sc">\n</span><span class="st">&quot;</span>, port);</a></code></pre></div><h3 id="see-also-8" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#gethostnameman"><code>gethostname()</code></a>, <a href="man-pages.html#gethostbynameman"><code>gethostbyname()</code></a>, <a href="man-pages.html#gethostbynameman"><code>gethostbyaddr()</code></a></p><h2 id="errnoman"><span class="header-section-number">9.10</span> <code>errno</code></h2><p></p><p>Holds the error code for the last system call</p><h3 id="synopsis-9" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb102"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb102-1" title="1"><span class="pp">#include </span><span class="im">&lt;errno.h&gt;</span></a>
+<a class="sourceLine" id="cb102-2" title="2"></a>
+<a class="sourceLine" id="cb102-3" title="3"><span class="dt">int</span> errno;</a></code></pre></div><h3 id="description-9" class="unnumbered unlisted">Description</h3><p>This is the variable that holds error information for a lot of system calls. If you’ll recall, things like <code>socket()</code> and <code>listen()</code> return <code>-1</code> on error, and they set the exact value of <code>errno</code> to let you know specifically which error occurred.</p><p>The header file <code>errno.h</code> lists a bunch of constant symbolic names for errors, such as <code>EADDRINUSE</code>, <code>EPIPE</code>, <code>ECONNREFUSED</code>, etc. Your local man pages will tell you what codes can be returned as an error, and you can use these at run time to handle different errors in different ways.</p><p>Or, more commonly, you can call  <code>perror()</code> or  <code>strerror()</code> to get a human-readable version of the error.</p><p>One thing to note, for you multithreading enthusiasts, is that on most systems <code>errno</code> is defined in a threadsafe manner. (That is, it’s not actually a global variable, but it behaves just like a global variable would in a single-threaded environment.)</p><h3 id="return-value-9" class="unnumbered unlisted">Return Value</h3><p>The value of the variable is the latest error to have transpired, which might be the code for “success” if the last action succeeded.</p><h3 id="example-9" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb103"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb103-1" title="1">s = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb103-2" title="2"><span class="cf">if</span> (s == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb103-3" title="3">    perror(<span class="st">&quot;socket&quot;</span>); <span class="co">// or use strerror()</span></a>
+<a class="sourceLine" id="cb103-4" title="4">}</a>
+<a class="sourceLine" id="cb103-5" title="5"></a>
+<a class="sourceLine" id="cb103-6" title="6">tryagain:</a>
+<a class="sourceLine" id="cb103-7" title="7"><span class="cf">if</span> (select(n, &amp;readfds, NULL, NULL) == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb103-8" title="8">    <span class="co">// an error has occurred!!</span></a>
+<a class="sourceLine" id="cb103-9" title="9"></a>
+<a class="sourceLine" id="cb103-10" title="10">    <span class="co">// if we were only interrupted, just restart the select() call:</span></a>
+<a class="sourceLine" id="cb103-11" title="11">    <span class="cf">if</span> (errno == EINTR) <span class="cf">goto</span> tryagain;  <span class="co">// AAAA! goto!!!</span></a>
+<a class="sourceLine" id="cb103-12" title="12"></a>
+<a class="sourceLine" id="cb103-13" title="13">    <span class="co">// otherwise it&#39;s a more serious error:</span></a>
+<a class="sourceLine" id="cb103-14" title="14">    perror(<span class="st">&quot;select&quot;</span>);</a>
+<a class="sourceLine" id="cb103-15" title="15">    exit(<span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb103-16" title="16">}</a></code></pre></div><h3 id="see-also-9" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#perrorman"><code>perror()</code></a>, <a href="man-pages.html#perrorman"><code>strerror()</code></a></p><h2 id="fcntlman"><span class="header-section-number">9.11</span> <code>fcntl()</code></h2><p></p><p>Control socket descriptors</p><h3 id="synopsis-10" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb104"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb104-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/unistd.h&gt;</span></a>
+<a class="sourceLine" id="cb104-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/fcntl.h&gt;</span></a>
+<a class="sourceLine" id="cb104-3" title="3"></a>
+<a class="sourceLine" id="cb104-4" title="4"><span class="dt">int</span> fcntl(<span class="dt">int</span> s, <span class="dt">int</span> cmd, <span class="dt">long</span> arg);</a></code></pre></div><h3 id="description-10" class="unnumbered unlisted">Description</h3><p>This function is typically used to do file locking and other file-oriented stuff, but it also has a couple socket-related functions that you might see or use from time to time.</p><p>Parameter <code>s</code> is the socket descriptor you wish to operate on, <code>cmd</code> should be set to  <code>F_SETFL</code>, and <code>arg</code> can be one of the following commands. (Like I said, there’s more to <code>fcntl()</code> than I’m letting on here, but I’m trying to stay socket-oriented.)</p><table><colgroup><col style="width: 18%" /><col style="width: 81%" /></colgroup><thead><tr class="header"><th><code>cmd</code></th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>O_NONBLOCK</code></td><td>Set the socket to be non-blocking. See the section on <a href="slightly-advanced-techniques.html#blocking">blocking</a> for more details.</td></tr><tr class="even"><td><code>O_ASYNC</code></td><td>Set the socket to do asynchronous I/O. When data is ready to be <code>recv()</code>’d on the socket, the signal  <code>SIGIO</code> will be raised. This is rare to see, and beyond the scope of the guide. And I think it’s only available on certain systems.</td></tr></tbody></table><h3 id="return-value-10" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><p>Different uses of the <code>fcntl()</code> system call actually have different return values, but I haven’t covered them here because they’re not socket-related. See your local <code>fcntl()</code> man page for more information.</p><h3 id="example-10" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb105"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb105-1" title="1"><span class="dt">int</span> s = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb105-2" title="2"></a>
+<a class="sourceLine" id="cb105-3" title="3">fcntl(s, F_SETFL, O_NONBLOCK);  <span class="co">// set to non-blocking</span></a>
+<a class="sourceLine" id="cb105-4" title="4">fcntl(s, F_SETFL, O_ASYNC);     <span class="co">// set to asynchronous I/O</span></a></code></pre></div><h3 id="see-also-10" class="unnumbered unlisted">See Also</h3><p><a href="slightly-advanced-techniques.html#blocking">Blocking</a>, <a href="man-pages.html#sendman"><code>send()</code></a></p><h2 id="htonsman"><span class="header-section-number">9.12</span> <code>htons()</code>, <code>htonl()</code>, <code>ntohs()</code>, <code>ntohl()</code></h2><p>   </p><p>Convert multi-byte integer types from host byte order to network byte order</p><h3 id="synopsis-11" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb106"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb106-1" title="1"><span class="pp">#include </span><span class="im">&lt;netinet/in.h&gt;</span></a>
+<a class="sourceLine" id="cb106-2" title="2"></a>
+<a class="sourceLine" id="cb106-3" title="3"><span class="dt">uint32_t</span> htonl(<span class="dt">uint32_t</span> hostlong);</a>
+<a class="sourceLine" id="cb106-4" title="4"><span class="dt">uint16_t</span> htons(<span class="dt">uint16_t</span> hostshort);</a>
+<a class="sourceLine" id="cb106-5" title="5"><span class="dt">uint32_t</span> ntohl(<span class="dt">uint32_t</span> netlong);</a>
+<a class="sourceLine" id="cb106-6" title="6"><span class="dt">uint16_t</span> ntohs(<span class="dt">uint16_t</span> netshort);</a></code></pre></div><h3 id="description-11" class="unnumbered unlisted">Description</h3><p>Just to make you really unhappy, different computers use different byte orderings internally for their multibyte integers (i.e. any integer that’s larger than a <code>char</code>). The upshot of this is that if you <code>send()</code> a two-byte <code>short int</code> from an Intel box to a Mac (before they became Intel boxes, too, I mean), what one computer thinks is the number <code>1</code>, the other will think is the number <code>256</code>, and vice-versa.</p><p> The way to get around this problem is for everyone to put aside their differences and agree that Motorola and IBM had it right, and Intel did it the weird way, and so we all convert our byte orderings to “big-endian” before sending them out. Since Intel is a “little-endian” machine, it’s far more politically correct to call our preferred byte ordering “Network Byte Order”. So these functions convert from your native byte order to network byte order and back again.</p><p>(This means on Intel these functions swap all the bytes around, and on PowerPC they do nothing because the bytes are already in Network Byte Order. But you should always use them in your code anyway, since someone might want to build it on an Intel machine and still have things work properly.)</p><p>Note that the types involved are 32-bit (4 byte, probably <code>int</code>) and 16-bit (2 byte, very likely <code>short</code>) numbers. 64-bit machines might have a <code>htonll()</code> for 64-bit <code>int</code>s, but I’ve not seen it. You’ll just have to write your own.</p><p>Anyway, the way these functions work is that you first decide if you’re converting <em>from</em> host (your machine’s) byte order or from network byte order. If “host”, the the first letter of the function you’re going to call is “h”. Otherwise it’s “n” for “network”. The middle of the function name is always “to” because you’re converting from one “to” another, and the penultimate letter shows what you’re converting <em>to</em>. The last letter is the size of the data, “s” for short, or “l” for long. Thus:</p><table><thead><tr class="header"><th>Function</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>htons()</code></td><td><code>h</code>ost <code>to</code> <code>n</code>etwork <code>s</code>hort</td></tr><tr class="even"><td><code>htonl()</code></td><td><code>h</code>ost <code>to</code> <code>n</code>etwork <code>l</code>ong</td></tr><tr class="odd"><td><code>ntohs()</code></td><td><code>n</code>etwork <code>to</code> <code>h</code>ost <code>s</code>hort</td></tr><tr class="even"><td><code>ntohl()</code></td><td><code>n</code>etwork <code>to</code> <code>h</code>ost <code>l</code>ong</td></tr></tbody></table><h3 id="return-value-11" class="unnumbered unlisted">Return Value</h3><p>Each function returns the converted value.</p><h3 id="example-11" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb107"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb107-1" title="1"><span class="dt">uint32_t</span> some_long = <span class="dv">10</span>;</a>
+<a class="sourceLine" id="cb107-2" title="2"><span class="dt">uint16_t</span> some_short = <span class="dv">20</span>;</a>
+<a class="sourceLine" id="cb107-3" title="3"></a>
+<a class="sourceLine" id="cb107-4" title="4"><span class="dt">uint32_t</span> network_byte_order;</a>
+<a class="sourceLine" id="cb107-5" title="5"></a>
+<a class="sourceLine" id="cb107-6" title="6"><span class="co">// convert and send</span></a>
+<a class="sourceLine" id="cb107-7" title="7">network_byte_order = htonl(some_long);</a>
+<a class="sourceLine" id="cb107-8" title="8">send(s, &amp;network_byte_order, <span class="kw">sizeof</span>(<span class="dt">uint32_t</span>), <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb107-9" title="9"></a>
+<a class="sourceLine" id="cb107-10" title="10">some_short == ntohs(htons(some_short)); <span class="co">// this expression is true</span></a></code></pre></div><h2 id="inet_ntoaman"><span class="header-section-number">9.13</span> <code>inet_ntoa()</code>, <code>inet_aton()</code>, <code>inet_addr</code></h2><p>  </p><p>Convert IP addresses from a dots-and-number string to a <code>struct in_addr</code> and back</p><h3 id="synopsis-12" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb108"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb108-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb108-2" title="2"><span class="pp">#include </span><span class="im">&lt;netinet/in.h&gt;</span></a>
+<a class="sourceLine" id="cb108-3" title="3"><span class="pp">#include </span><span class="im">&lt;arpa/inet.h&gt;</span></a>
+<a class="sourceLine" id="cb108-4" title="4"></a>
+<a class="sourceLine" id="cb108-5" title="5"><span class="co">// ALL THESE ARE </span><span class="al">DEPRECATED</span><span class="co">! Use inet_pton()  or inet_ntop() instead!!</span></a>
+<a class="sourceLine" id="cb108-6" title="6"></a>
+<a class="sourceLine" id="cb108-7" title="7"><span class="dt">char</span> *inet_ntoa(<span class="kw">struct</span> in_addr in);</a>
+<a class="sourceLine" id="cb108-8" title="8"><span class="dt">int</span> inet_aton(<span class="dt">const</span> <span class="dt">char</span> *cp, <span class="kw">struct</span> in_addr *inp);</a>
+<a class="sourceLine" id="cb108-9" title="9">in_addr_t inet_addr(<span class="dt">const</span> <span class="dt">char</span> *cp);</a></code></pre></div><h3 id="description-12" class="unnumbered unlisted">Description</h3><p><em>These functions are deprecated because they don’t handle IPv6! Use (<code>inet_ntop()</code>)[#inet_ntopman] or (<code>inet_pton()</code>)[#inet_ntopman] instead! They are included here because they can still be found in the wild.</em></p><p>All of these functions convert from a <code>struct in_addr</code> (part of your <code>struct sockaddr_in</code>, most likely) to a string in dots-and-numbers format (e.g. “192.168.5.10”) and vice-versa. If you have an IP address passed on the command line or something, this is the easiest way to get a <code>struct in_addr</code> to <code>connect()</code> to, or whatever. If you need more power, try some of the DNS functions like <code>gethostbyname()</code> or attempt a <em>coup d’État</em> in your local country.</p><p>The function <code>inet_ntoa()</code> converts a network address in a <code>struct in_addr</code> to a dots-and-numbers format string. The “n” in “ntoa” stands for network, and the “a” stands for ASCII for historical reasons (so it’s “Network To ASCII”—the “toa” suffix has an analogous friend in the C library called <code>atoi()</code> which converts an ASCII string to an integer).</p><p>The function <code>inet_aton()</code> is the opposite, converting from a dots-and-numbers string into a <code>in_addr_t</code> (which is the type of the field <code>s_addr</code> in your <code>struct in_addr</code>).</p><p>Finally, the function <code>inet_addr()</code> is an older function that does basically the same thing as <code>inet_aton()</code>. It’s theoretically deprecated, but you’ll see it a lot and the police won’t come get you if you use it.</p><h3 id="return-value-12" class="unnumbered unlisted">Return Value</h3><p><code>inet_aton()</code> returns non-zero if the address is a valid one, and it returns zero if the address is invalid.</p><p><code>inet_ntoa()</code> returns the dots-and-numbers string in a static buffer that is overwritten with each call to the function.</p><p><code>inet_addr()</code> returns the address as an <code>in_addr_t</code>, or <code>-1</code> if there’s an error. (That is the same result as if you tried to convert the string  “<code>255.255.255.255</code>”, which is a valid IP address. This is why <code>inet_aton()</code> is better.)</p><h3 id="example-12" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb109"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb109-1" title="1"><span class="kw">struct</span> sockaddr_in antelope;</a>
+<a class="sourceLine" id="cb109-2" title="2"><span class="dt">char</span> *some_addr;</a>
+<a class="sourceLine" id="cb109-3" title="3"></a>
+<a class="sourceLine" id="cb109-4" title="4">inet_aton(<span class="st">&quot;10.0.0.1&quot;</span>, &amp;antelope.sin_addr); <span class="co">// store IP in antelope</span></a>
+<a class="sourceLine" id="cb109-5" title="5"></a>
+<a class="sourceLine" id="cb109-6" title="6">some_addr = inet_ntoa(antelope.sin_addr); <span class="co">// return the IP</span></a>
+<a class="sourceLine" id="cb109-7" title="7">printf(<span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span>, some_addr); <span class="co">// prints &quot;10.0.0.1&quot;</span></a>
+<a class="sourceLine" id="cb109-8" title="8"></a>
+<a class="sourceLine" id="cb109-9" title="9"><span class="co">// and this call is the same as the inet_aton() call, above:</span></a>
+<a class="sourceLine" id="cb109-10" title="10">antelope.sin_addr.s_addr = inet_addr(<span class="st">&quot;10.0.0.1&quot;</span>);</a></code></pre></div><h3 id="see-also-11" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#inet_ntopman"><code>inet_ntop()</code></a>, <a href="man-pages.html#inet_ntopman"><code>inet_pton()</code></a>, <a href="man-pages.html#gethostbynameman"><code>gethostbyname()</code></a>, <a href="man-pages.html#gethostbynameman"><code>gethostbyaddr()</code></a></p><h2 id="inet_ntopman"><span class="header-section-number">9.14</span> <code>inet_ntop()</code>, <code>inet_pton()</code></h2><p> </p><p>Convert IP addresses to human-readable form and back.</p><h3 id="synopsis-13" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb110"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb110-1" title="1"><span class="pp">#include </span><span class="im">&lt;arpa/inet.h&gt;</span></a>
+<a class="sourceLine" id="cb110-2" title="2"></a>
+<a class="sourceLine" id="cb110-3" title="3"><span class="dt">const</span> <span class="dt">char</span> *inet_ntop(<span class="dt">int</span> af, <span class="dt">const</span> <span class="dt">void</span> *src,</a>
+<a class="sourceLine" id="cb110-4" title="4">                      <span class="dt">char</span> *dst, socklen_t size);</a>
+<a class="sourceLine" id="cb110-5" title="5"></a>
+<a class="sourceLine" id="cb110-6" title="6"><span class="dt">int</span> inet_pton(<span class="dt">int</span> af, <span class="dt">const</span> <span class="dt">char</span> *src, <span class="dt">void</span> *dst);</a></code></pre></div><h3 id="description-13" class="unnumbered unlisted">Description</h3><p>These functions are for dealing with human-readable IP addresses and converting them to their binary representation for use with various functions and system calls. The “n” stands for “network”, and “p” for “presentation”. Or “text presentation”. But you can think of it as “printable”. “ntop” is “network to printable”. See?</p><p>Sometimes you don’t want to look at a pile of binary numbers when looking at an IP address. You want it in a nice printable form, like <code>192.0.2.180</code>, or <code>2001:db8:8714:3a90::12</code>. In that case, <code>inet_ntop()</code> is for you.</p><p><code>inet_ntop()</code> takes the address family in the <code>af</code> parameter (either <code>AF_INET</code> or <code>AF_INET6</code>). The <code>src</code> parameter should be a pointer to either a <code>struct in_addr</code> or <code>struct in6_addr</code> containing the address you wish to convert to a string. Finally <code>dst</code> and <code>size</code> are the pointer to the destination string and the maximum length of that string.</p><p>What should the maximum length of the <code>dst</code> string be? What is the maximum length for IPv4 and IPv6 addresses? Fortunately there are a couple of macros to help you out. The maximum lengths are: <code>INET_ADDRSTRLEN</code> and <code>INET6_ADDRSTRLEN</code>.</p><p>Other times, you might have a string containing an IP address in readable form, and you want to pack it into a <code>struct sockaddr_in</code> or a <code>struct sockaddr_in6</code>. In that case, the opposite function <code>inet_pton()</code> is what you’re after.</p><p><code>inet_pton()</code> also takes an address family (either <code>AF_INET</code> or <code>AF_INET6</code>) in the <code>af</code> parameter. The <code>src</code> parameter is a pointer to a string containing the IP address in printable form. Lastly the <code>dst</code> parameter points to where the result should be stored, which is probably a <code>struct in_addr</code> or <code>struct in6_addr</code>.</p><p>These functions don’t do DNS lookups—you’ll need <code>getaddrinfo()</code> for that.</p><h3 id="return-value-13" class="unnumbered unlisted">Return Value</h3><p><code>inet_ntop()</code> returns the <code>dst</code> parameter on success, or <code>NULL</code> on failure (and <code>errno</code> is set).</p><p><code>inet_pton()</code> returns <code>1</code> on success. It returns <code>-1</code> if there was an error (<code>errno</code> is set), or <code>0</code> if the input isn’t a valid IP address.</p><h3 id="example-13" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb111"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb111-1" title="1"><span class="co">// IPv4 demo of inet_ntop() and inet_pton()</span></a>
+<a class="sourceLine" id="cb111-2" title="2"></a>
+<a class="sourceLine" id="cb111-3" title="3"><span class="kw">struct</span> sockaddr_in sa;</a>
+<a class="sourceLine" id="cb111-4" title="4"><span class="dt">char</span> str[INET_ADDRSTRLEN];</a>
+<a class="sourceLine" id="cb111-5" title="5"></a>
+<a class="sourceLine" id="cb111-6" title="6"><span class="co">// store this IP address in sa:</span></a>
+<a class="sourceLine" id="cb111-7" title="7">inet_pton(AF_INET, <span class="st">&quot;192.0.2.33&quot;</span>, &amp;(sa.sin_addr));</a>
+<a class="sourceLine" id="cb111-8" title="8"></a>
+<a class="sourceLine" id="cb111-9" title="9"><span class="co">// now get it back and print it</span></a>
+<a class="sourceLine" id="cb111-10" title="10">inet_ntop(AF_INET, &amp;(sa.sin_addr), str, INET_ADDRSTRLEN);</a>
+<a class="sourceLine" id="cb111-11" title="11"></a>
+<a class="sourceLine" id="cb111-12" title="12">printf(<span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span>, str); <span class="co">// prints &quot;192.0.2.33&quot;</span></a></code></pre></div><div class="sourceCode" id="cb112"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb112-1" title="1"><span class="co">// IPv6 demo of inet_ntop() and inet_pton()</span></a>
+<a class="sourceLine" id="cb112-2" title="2"><span class="co">// (basically the same except with a bunch of 6s thrown around)</span></a>
+<a class="sourceLine" id="cb112-3" title="3"></a>
+<a class="sourceLine" id="cb112-4" title="4"><span class="kw">struct</span> sockaddr_in6 sa;</a>
+<a class="sourceLine" id="cb112-5" title="5"><span class="dt">char</span> str[INET6_ADDRSTRLEN];</a>
+<a class="sourceLine" id="cb112-6" title="6"></a>
+<a class="sourceLine" id="cb112-7" title="7"><span class="co">// store this IP address in sa:</span></a>
+<a class="sourceLine" id="cb112-8" title="8">inet_pton(AF_INET6, <span class="st">&quot;2001:db8:8714:3a90::12&quot;</span>, &amp;(sa.sin6_addr));</a>
+<a class="sourceLine" id="cb112-9" title="9"></a>
+<a class="sourceLine" id="cb112-10" title="10"><span class="co">// now get it back and print it</span></a>
+<a class="sourceLine" id="cb112-11" title="11">inet_ntop(AF_INET6, &amp;(sa.sin6_addr), str, INET6_ADDRSTRLEN);</a>
+<a class="sourceLine" id="cb112-12" title="12"></a>
+<a class="sourceLine" id="cb112-13" title="13">printf(<span class="st">&quot;%s</span><span class="sc">\n</span><span class="st">&quot;</span>, str); <span class="co">// prints &quot;2001:db8:8714:3a90::12&quot;</span></a></code></pre></div><div class="sourceCode" id="cb113"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb113-1" title="1"><span class="co">// Helper function you can use:</span></a>
+<a class="sourceLine" id="cb113-2" title="2"></a>
+<a class="sourceLine" id="cb113-3" title="3"><span class="co">//Convert a struct sockaddr address to a string, IPv4 and IPv6:</span></a>
+<a class="sourceLine" id="cb113-4" title="4"></a>
+<a class="sourceLine" id="cb113-5" title="5"><span class="dt">char</span> *get_ip_str(<span class="dt">const</span> <span class="kw">struct</span> sockaddr *sa, <span class="dt">char</span> *s, <span class="dt">size_t</span> maxlen)</a>
+<a class="sourceLine" id="cb113-6" title="6">{</a>
+<a class="sourceLine" id="cb113-7" title="7">    <span class="cf">switch</span>(sa-&gt;sa_family) {</a>
+<a class="sourceLine" id="cb113-8" title="8">        <span class="cf">case</span> AF_INET:</a>
+<a class="sourceLine" id="cb113-9" title="9">            inet_ntop(AF_INET, &amp;(((<span class="kw">struct</span> sockaddr_in *)sa)-&gt;sin_addr),</a>
+<a class="sourceLine" id="cb113-10" title="10">                    s, maxlen);</a>
+<a class="sourceLine" id="cb113-11" title="11">            <span class="cf">break</span>;</a>
+<a class="sourceLine" id="cb113-12" title="12"></a>
+<a class="sourceLine" id="cb113-13" title="13">        <span class="cf">case</span> AF_INET6:</a>
+<a class="sourceLine" id="cb113-14" title="14">            inet_ntop(AF_INET6, &amp;(((<span class="kw">struct</span> sockaddr_in6 *)sa)-&gt;sin6_addr),</a>
+<a class="sourceLine" id="cb113-15" title="15">                    s, maxlen);</a>
+<a class="sourceLine" id="cb113-16" title="16">            <span class="cf">break</span>;</a>
+<a class="sourceLine" id="cb113-17" title="17"></a>
+<a class="sourceLine" id="cb113-18" title="18">        <span class="cf">default</span>:</a>
+<a class="sourceLine" id="cb113-19" title="19">            strncpy(s, <span class="st">&quot;Unknown AF&quot;</span>, maxlen);</a>
+<a class="sourceLine" id="cb113-20" title="20">            <span class="cf">return</span> NULL;</a>
+<a class="sourceLine" id="cb113-21" title="21">    }</a>
+<a class="sourceLine" id="cb113-22" title="22"></a>
+<a class="sourceLine" id="cb113-23" title="23">    <span class="cf">return</span> s;</a>
+<a class="sourceLine" id="cb113-24" title="24">}</a></code></pre></div><h3 id="see-also-12" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#getaddrinfoman"><code>getaddrinfo()</code></a></p><h2 id="listenman"><span class="header-section-number">9.15</span> <code>listen()</code></h2><p></p><p>Tell a socket to listen for incoming connections</p><h3 id="synopsis-14" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb114"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb114-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb114-2" title="2"></a>
+<a class="sourceLine" id="cb114-3" title="3"><span class="dt">int</span> listen(<span class="dt">int</span> s, <span class="dt">int</span> backlog);</a></code></pre></div><h3 id="description-14" class="unnumbered unlisted">Description</h3><p>You can take your socket descriptor (made with the <code>socket()</code> system call) and tell it to listen for incoming connections. This is what differentiates the servers from the clients, guys.</p><p>The <code>backlog</code> parameter can mean a couple different things depending on the system you on, but loosely it is how many pending connections you can have before the kernel starts rejecting new ones. So as the new connections come in, you should be quick to <code>accept()</code> them so that the backlog doesn’t fill. Try setting it to 10 or so, and if your clients start getting “Connection refused” under heavy load, set it higher.</p><p>Before calling <code>listen()</code>, your server should call <code>bind()</code> to attach itself to a specific port number. That port number (on the server’s IP address) will be the one that clients connect to.</p><h3 id="return-value-14" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-14" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb115"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb115-1" title="1"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb115-2" title="2"><span class="dt">int</span> sockfd;</a>
+<a class="sourceLine" id="cb115-3" title="3"></a>
+<a class="sourceLine" id="cb115-4" title="4"><span class="co">// first, load up address structs with getaddrinfo():</span></a>
+<a class="sourceLine" id="cb115-5" title="5"></a>
+<a class="sourceLine" id="cb115-6" title="6">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb115-7" title="7">hints.ai_family = AF_UNSPEC;  <span class="co">// use IPv4 or IPv6, whichever</span></a>
+<a class="sourceLine" id="cb115-8" title="8">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb115-9" title="9">hints.ai_flags = AI_PASSIVE;     <span class="co">// fill in my IP for me</span></a>
+<a class="sourceLine" id="cb115-10" title="10"></a>
+<a class="sourceLine" id="cb115-11" title="11">getaddrinfo(NULL, <span class="st">&quot;3490&quot;</span>, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb115-12" title="12"></a>
+<a class="sourceLine" id="cb115-13" title="13"><span class="co">// make a socket:</span></a>
+<a class="sourceLine" id="cb115-14" title="14"></a>
+<a class="sourceLine" id="cb115-15" title="15">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a>
+<a class="sourceLine" id="cb115-16" title="16"></a>
+<a class="sourceLine" id="cb115-17" title="17"><span class="co">// bind it to the port we passed in to getaddrinfo():</span></a>
+<a class="sourceLine" id="cb115-18" title="18"></a>
+<a class="sourceLine" id="cb115-19" title="19">bind(sockfd, res-&gt;ai_addr, res-&gt;ai_addrlen);</a>
+<a class="sourceLine" id="cb115-20" title="20"></a>
+<a class="sourceLine" id="cb115-21" title="21">listen(sockfd, <span class="dv">10</span>); <span class="co">// set s up to be a server (listening) socket</span></a>
+<a class="sourceLine" id="cb115-22" title="22"></a>
+<a class="sourceLine" id="cb115-23" title="23"><span class="co">// then have an accept() loop down here somewhere</span></a></code></pre></div><h3 id="see-also-13" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#acceptman"><code>accept()</code></a>, <a href="man-pages.html#bindman"><code>bind()</code></a>, <a href="man-pages.html#socketman"><code>socket()</code></a></p><h2 id="perrorman"><span class="header-section-number">9.16</span> <code>perror()</code>, <code>strerror()</code></h2><p> </p><p>Print an error as a human-readable string</p><h3 id="synopsis-15" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb116"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb116-1" title="1"><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></a>
+<a class="sourceLine" id="cb116-2" title="2"><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span><span class="pp">   </span><span class="co">// for strerror()</span></a>
+<a class="sourceLine" id="cb116-3" title="3"></a>
+<a class="sourceLine" id="cb116-4" title="4"><span class="dt">void</span> perror(<span class="dt">const</span> <span class="dt">char</span> *s);</a>
+<a class="sourceLine" id="cb116-5" title="5"><span class="dt">char</span> *strerror(<span class="dt">int</span> errnum);</a></code></pre></div><h3 id="description-15" class="unnumbered unlisted">Description</h3><p>Since so many functions return <code>-1</code> on error and set the value of the variable  <code>errno</code> to be some number, it would sure be nice if you could easily print that in a form that made sense to you.</p><p>Mercifully, <code>perror()</code> does that. If you want more description to be printed before the error, you can point the parameter <code>s</code> to it (or you can leave <code>s</code> as <code>NULL</code> and nothing additional will be printed).</p><p>In a nutshell, this function takes <code>errno</code> values, like <code>ECONNRESET</code>, and prints them nicely, like “Connection reset by peer.”</p><p>The function <code>strerror()</code> is very similar to <code>perror()</code>, except it returns a pointer to the error message string for a given value (you usually pass in the variable <code>errno</code>).</p><h3 id="return-value-15" class="unnumbered unlisted">Return Value</h3><p><code>strerror()</code> returns a pointer to the error message string.</p><h3 id="example-15" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb117"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb117-1" title="1"><span class="dt">int</span> s;</a>
+<a class="sourceLine" id="cb117-2" title="2"></a>
+<a class="sourceLine" id="cb117-3" title="3">s = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb117-4" title="4"></a>
+<a class="sourceLine" id="cb117-5" title="5"><span class="cf">if</span> (s == <span class="dv">-1</span>) { <span class="co">// some error has occurred</span></a>
+<a class="sourceLine" id="cb117-6" title="6">    <span class="co">// prints &quot;socket error: &quot; + the error message:</span></a>
+<a class="sourceLine" id="cb117-7" title="7">    perror(<span class="st">&quot;socket error&quot;</span>);</a>
+<a class="sourceLine" id="cb117-8" title="8">}</a>
+<a class="sourceLine" id="cb117-9" title="9"></a>
+<a class="sourceLine" id="cb117-10" title="10"><span class="co">// similarly:</span></a>
+<a class="sourceLine" id="cb117-11" title="11"><span class="cf">if</span> (listen(s, <span class="dv">10</span>) == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb117-12" title="12">    <span class="co">// this prints &quot;an error: &quot; + the error message from errno:</span></a>
+<a class="sourceLine" id="cb117-13" title="13">    printf(<span class="st">&quot;an error: %s</span><span class="sc">\n</span><span class="st">&quot;</span>, strerror(errno));</a>
+<a class="sourceLine" id="cb117-14" title="14">}</a></code></pre></div><h3 id="see-also-14" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#errnoman"><code>errno</code></a></p><h2 id="pollman"><span class="header-section-number">9.17</span> <code>poll()</code></h2><p></p><p>Test for events on multiple sockets simultaneously</p><h3 id="synopsis-16" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb118"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb118-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/poll.h&gt;</span></a>
+<a class="sourceLine" id="cb118-2" title="2"></a>
+<a class="sourceLine" id="cb118-3" title="3"><span class="dt">int</span> poll(<span class="kw">struct</span> pollfd *ufds, <span class="dt">unsigned</span> <span class="dt">int</span> nfds, <span class="dt">int</span> timeout);</a></code></pre></div><h3 id="description-16" class="unnumbered unlisted">Description</h3><p>This function is very similar to <code>select()</code> in that they both watch sets of file descriptors for events, such as incoming data ready to <code>recv()</code>, socket ready to <code>send()</code> data to, out-of-band data ready to <code>recv()</code>, errors, etc.</p><p>The basic idea is that you pass an array of <code>nfds</code> <code>struct pollfd</code>s in <code>ufds</code>, along with a timeout in milliseconds (1000 milliseconds in a second). The <code>timeout</code> can be negative if you want to wait forever. If no event happens on any of the socket descriptors by the timeout, <code>poll()</code> will return.</p><p>Each element in the array of <code>struct pollfd</code>s represents one socket descriptor, and contains the following fields:</p><p></p><div class="sourceCode" id="cb119"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb119-1" title="1"><span class="kw">struct</span> pollfd {</a>
+<a class="sourceLine" id="cb119-2" title="2">    <span class="dt">int</span> fd;         <span class="co">// the socket descriptor</span></a>
+<a class="sourceLine" id="cb119-3" title="3">    <span class="dt">short</span> events;   <span class="co">// bitmap of events we&#39;re interested in</span></a>
+<a class="sourceLine" id="cb119-4" title="4">    <span class="dt">short</span> revents;  <span class="co">// when poll() returns, bitmap of events that occurred</span></a>
+<a class="sourceLine" id="cb119-5" title="5">};</a></code></pre></div><p>Before calling <code>poll()</code>, load <code>fd</code> with the socket descriptor (if you set <code>fd</code> to a negative number, this <code>struct pollfd</code> is ignored and its <code>revents</code> field is set to zero) and then construct the <code>events</code> field by bitwise-ORing the following macros:</p><table><thead><tr class="header"><th>Macro</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>POLLIN</code></td><td>Alert me when data is ready to <code>recv()</code> on this socket.</td></tr><tr class="even"><td><code>POLLOUT</code></td><td>Alert me when I can <code>send()</code> data to this socket without blocking.</td></tr><tr class="odd"><td><code>POLLPRI</code></td><td>Alert me when out-of-band data is ready to <code>recv()</code> on this socket.</td></tr></tbody></table><p>Once the <code>poll()</code> call returns, the <code>revents</code> field will be constructed as a bitwise-OR of the above fields, telling you which descriptors actually have had that event occur. Additionally, these other fields might be present:</p><table><colgroup><col style="width: 16%" /><col style="width: 83%" /></colgroup><thead><tr class="header"><th>Macro</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>POLLERR</code></td><td>An error has occurred on this socket.</td></tr><tr class="even"><td><code>POLLHUP</code></td><td>The remote side of the connection hung up.</td></tr><tr class="odd"><td><code>POLLNVAL</code></td><td>Something was wrong with the socket descriptor <code>fd</code>—maybe it’s uninitialized?</td></tr></tbody></table><h3 id="return-value-16" class="unnumbered unlisted">Return Value</h3><p>Returns the number of elements in the <code>ufds</code> array that have had event occur on them; this can be zero if the timeout occurred. Also returns <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-16" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb120"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb120-1" title="1"><span class="dt">int</span> s1, s2;</a>
+<a class="sourceLine" id="cb120-2" title="2"><span class="dt">int</span> rv;</a>
+<a class="sourceLine" id="cb120-3" title="3"><span class="dt">char</span> buf1[<span class="dv">256</span>], buf2[<span class="dv">256</span>];</a>
+<a class="sourceLine" id="cb120-4" title="4"><span class="kw">struct</span> pollfd ufds[<span class="dv">2</span>];</a>
+<a class="sourceLine" id="cb120-5" title="5"></a>
+<a class="sourceLine" id="cb120-6" title="6">s1 = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb120-7" title="7">s2 = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb120-8" title="8"></a>
+<a class="sourceLine" id="cb120-9" title="9"><span class="co">// pretend we&#39;ve connected both to a server at this point</span></a>
+<a class="sourceLine" id="cb120-10" title="10"><span class="co">//connect(s1, ...)...</span></a>
+<a class="sourceLine" id="cb120-11" title="11"><span class="co">//connect(s2, ...)...</span></a>
+<a class="sourceLine" id="cb120-12" title="12"></a>
+<a class="sourceLine" id="cb120-13" title="13"><span class="co">// set up the array of file descriptors.</span></a>
+<a class="sourceLine" id="cb120-14" title="14"><span class="co">//</span></a>
+<a class="sourceLine" id="cb120-15" title="15"><span class="co">// in this example, we want to know when there&#39;s normal or out-of-band</span></a>
+<a class="sourceLine" id="cb120-16" title="16"><span class="co">// data ready to be recv()&#39;d...</span></a>
+<a class="sourceLine" id="cb120-17" title="17"></a>
+<a class="sourceLine" id="cb120-18" title="18">ufds[<span class="dv">0</span>].fd = s1;</a>
+<a class="sourceLine" id="cb120-19" title="19">ufds[<span class="dv">0</span>].events = POLLIN | POLLPRI; <span class="co">// check for normal or out-of-band</span></a>
+<a class="sourceLine" id="cb120-20" title="20"></a>
+<a class="sourceLine" id="cb120-21" title="21">ufds[<span class="dv">1</span>].fd = s2;</a>
+<a class="sourceLine" id="cb120-22" title="22">ufds[<span class="dv">1</span>].events = POLLIN; <span class="co">// check for just normal data</span></a>
+<a class="sourceLine" id="cb120-23" title="23"></a>
+<a class="sourceLine" id="cb120-24" title="24"><span class="co">// wait for events on the sockets, 3.5 second timeout</span></a>
+<a class="sourceLine" id="cb120-25" title="25">rv = poll(ufds, <span class="dv">2</span>, <span class="dv">3500</span>);</a>
+<a class="sourceLine" id="cb120-26" title="26"></a>
+<a class="sourceLine" id="cb120-27" title="27"><span class="cf">if</span> (rv == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb120-28" title="28">    perror(<span class="st">&quot;poll&quot;</span>); <span class="co">// error occurred in poll()</span></a>
+<a class="sourceLine" id="cb120-29" title="29">} <span class="cf">else</span> <span class="cf">if</span> (rv == <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb120-30" title="30">    printf(<span class="st">&quot;Timeout occurred! No data after 3.5 seconds.</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb120-31" title="31">} <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb120-32" title="32">    <span class="co">// check for events on s1:</span></a>
+<a class="sourceLine" id="cb120-33" title="33">    <span class="cf">if</span> (ufds[<span class="dv">0</span>].revents &amp; POLLIN) {</a>
+<a class="sourceLine" id="cb120-34" title="34">        recv(s1, buf1, <span class="kw">sizeof</span> buf1, <span class="dv">0</span>); <span class="co">// receive normal data</span></a>
+<a class="sourceLine" id="cb120-35" title="35">    }</a>
+<a class="sourceLine" id="cb120-36" title="36">    <span class="cf">if</span> (ufds[<span class="dv">0</span>].revents &amp; POLLPRI) {</a>
+<a class="sourceLine" id="cb120-37" title="37">        recv(s1, buf1, <span class="kw">sizeof</span> buf1, MSG_OOB); <span class="co">// out-of-band data</span></a>
+<a class="sourceLine" id="cb120-38" title="38">    }</a>
+<a class="sourceLine" id="cb120-39" title="39"></a>
+<a class="sourceLine" id="cb120-40" title="40">    <span class="co">// check for events on s2:</span></a>
+<a class="sourceLine" id="cb120-41" title="41">    <span class="cf">if</span> (ufds[<span class="dv">1</span>].revents &amp; POLLIN) {</a>
+<a class="sourceLine" id="cb120-42" title="42">        recv(s1, buf2, <span class="kw">sizeof</span> buf2, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb120-43" title="43">    }</a>
+<a class="sourceLine" id="cb120-44" title="44">}</a></code></pre></div><h3 id="see-also-15" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#selectman"><code>select()</code></a></p><h2 id="recvman"><span class="header-section-number">9.18</span> <code>recv()</code>, <code>recvfrom()</code></h2><p> </p><p>Receive data on a socket</p><h3 id="synopsis-17" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb121"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb121-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb121-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb121-3" title="3"></a>
+<a class="sourceLine" id="cb121-4" title="4"><span class="dt">ssize_t</span> recv(<span class="dt">int</span> s, <span class="dt">void</span> *buf, <span class="dt">size_t</span> len, <span class="dt">int</span> flags);</a>
+<a class="sourceLine" id="cb121-5" title="5"><span class="dt">ssize_t</span> recvfrom(<span class="dt">int</span> s, <span class="dt">void</span> *buf, <span class="dt">size_t</span> len, <span class="dt">int</span> flags,</a>
+<a class="sourceLine" id="cb121-6" title="6">                 <span class="kw">struct</span> sockaddr *from, socklen_t *fromlen);</a></code></pre></div><h3 id="description-17" class="unnumbered unlisted">Description</h3><p>Once you have a socket up and connected, you can read incoming data from the remote side using the <code>recv()</code> (for TCP  <code>SOCK_STREAM</code> sockets) and <code>recvfrom()</code> (for UDP  <code>SOCK_DGRAM</code> sockets).</p><p>Both functions take the socket descriptor <code>s</code>, a pointer to the buffer <code>buf</code>, the size (in bytes) of the buffer <code>len</code>, and a set of <code>flags</code> that control how the functions work.</p><p>Additionally, the <code>recvfrom()</code> takes a  <code>struct sockaddr*</code>, <code>from</code> that will tell you where the data came from, and will fill in <code>fromlen</code> with the size of <code>struct sockaddr</code>. (You must also initialize <code>fromlen</code> to be the size of <code>from</code> or <code>struct sockaddr</code>.)</p><p>So what wondrous flags can you pass into this function? Here are some of them, but you should check your local man pages for more information and what is actually supported on your system. You bitwise-or these together, or just set <code>flags</code> to <code>0</code> if you want it to be a regular vanilla <code>recv()</code>.</p><table><colgroup><col style="width: 20%" /><col style="width: 79%" /></colgroup><thead><tr class="header"><th>Macro</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>MSG_OOB</code></td><td>Receive Out of Band data. This is how to get data that has been sent to you with the <code>MSG_OOB</code> flag in <code>send()</code>. As the receiving side, you will have had signal  <code>SIGURG</code> raised telling you there is urgent data. In your handler for that signal, you could call <code>recv()</code> with this <code>MSG_OOB</code> flag.</td></tr><tr class="even"><td><code>MSG_PEEK</code></td><td>If you want to call <code>recv()</code> “just for pretend”, you can call it with this flag. This will tell you what’s waiting in the buffer for when you call <code>recv()</code> “for real” (i.e. <em>without</em> the <code>MSG_PEEK</code> flag. It’s like a sneak preview into the next <code>recv()</code> call.</td></tr><tr class="odd"><td><code>MSG_WAITALL</code></td><td>Tell <code>recv()</code> to not return until all the data you specified in the <code>len</code> parameter. It will ignore your wishes in extreme circumstances, however, like if a signal interrupts the call or if some error occurs or if the remote side closes the connection, etc. Don’t be mad with it.</td></tr></tbody></table><p>When you call <code>recv()</code>, it will block until there is some data to read. If you want to not block, set the socket to non-blocking or check with <code>select()</code> or <code>poll()</code> to see if there is incoming data before calling <code>recv()</code> or <code>recvfrom()</code>.</p><h3 id="return-value-17" class="unnumbered unlisted">Return Value</h3><p>Returns the number of bytes actually received (which might be less than you requested in the <code>len</code> parameter), or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><p>If the remote side has closed the connection, <code>recv()</code> will return <code>0</code>. This is the normal method for determining if the remote side has closed the connection. Normality is good, rebel!</p><h3 id="example-17" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb122"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb122-1" title="1"><span class="co">// stream sockets and recv()</span></a>
+<a class="sourceLine" id="cb122-2" title="2"></a>
+<a class="sourceLine" id="cb122-3" title="3"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb122-4" title="4"><span class="dt">int</span> sockfd;</a>
+<a class="sourceLine" id="cb122-5" title="5"><span class="dt">char</span> buf[<span class="dv">512</span>];</a>
+<a class="sourceLine" id="cb122-6" title="6"><span class="dt">int</span> byte_count;</a>
+<a class="sourceLine" id="cb122-7" title="7"></a>
+<a class="sourceLine" id="cb122-8" title="8"><span class="co">// get host info, make socket, and connect it</span></a>
+<a class="sourceLine" id="cb122-9" title="9">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb122-10" title="10">hints.ai_family = AF_UNSPEC;  <span class="co">// use IPv4 or IPv6, whichever</span></a>
+<a class="sourceLine" id="cb122-11" title="11">hints.ai_socktype = SOCK_STREAM;</a>
+<a class="sourceLine" id="cb122-12" title="12">getaddrinfo(<span class="st">&quot;www.example.com&quot;</span>, <span class="st">&quot;3490&quot;</span>, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb122-13" title="13">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a>
+<a class="sourceLine" id="cb122-14" title="14">connect(sockfd, res-&gt;ai_addr, res-&gt;ai_addrlen);</a>
+<a class="sourceLine" id="cb122-15" title="15"></a>
+<a class="sourceLine" id="cb122-16" title="16"><span class="co">// all right! now that we&#39;re connected, we can receive some data!</span></a>
+<a class="sourceLine" id="cb122-17" title="17">byte_count = recv(sockfd, buf, <span class="kw">sizeof</span> buf, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb122-18" title="18">printf(<span class="st">&quot;recv()&#39;d %d bytes of data in buf</span><span class="sc">\n</span><span class="st">&quot;</span>, byte_count);</a></code></pre></div><div class="sourceCode" id="cb123"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb123-1" title="1"><span class="co">// datagram sockets and recvfrom()</span></a>
+<a class="sourceLine" id="cb123-2" title="2"></a>
+<a class="sourceLine" id="cb123-3" title="3"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb123-4" title="4"><span class="dt">int</span> sockfd;</a>
+<a class="sourceLine" id="cb123-5" title="5"><span class="dt">int</span> byte_count;</a>
+<a class="sourceLine" id="cb123-6" title="6">socklen_t fromlen;</a>
+<a class="sourceLine" id="cb123-7" title="7"><span class="kw">struct</span> sockaddr_storage addr;</a>
+<a class="sourceLine" id="cb123-8" title="8"><span class="dt">char</span> buf[<span class="dv">512</span>];</a>
+<a class="sourceLine" id="cb123-9" title="9"><span class="dt">char</span> ipstr[INET6_ADDRSTRLEN];</a>
+<a class="sourceLine" id="cb123-10" title="10"></a>
+<a class="sourceLine" id="cb123-11" title="11"><span class="co">// get host info, make socket, bind it to port 4950</span></a>
+<a class="sourceLine" id="cb123-12" title="12">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb123-13" title="13">hints.ai_family = AF_UNSPEC;  <span class="co">// use IPv4 or IPv6, whichever</span></a>
+<a class="sourceLine" id="cb123-14" title="14">hints.ai_socktype = SOCK_DGRAM;</a>
+<a class="sourceLine" id="cb123-15" title="15">hints.ai_flags = AI_PASSIVE;</a>
+<a class="sourceLine" id="cb123-16" title="16">getaddrinfo(NULL, <span class="st">&quot;4950&quot;</span>, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb123-17" title="17">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a>
+<a class="sourceLine" id="cb123-18" title="18">bind(sockfd, res-&gt;ai_addr, res-&gt;ai_addrlen);</a>
+<a class="sourceLine" id="cb123-19" title="19"></a>
+<a class="sourceLine" id="cb123-20" title="20"><span class="co">// no need to accept(), just recvfrom():</span></a>
+<a class="sourceLine" id="cb123-21" title="21"></a>
+<a class="sourceLine" id="cb123-22" title="22">fromlen = <span class="kw">sizeof</span> addr;</a>
+<a class="sourceLine" id="cb123-23" title="23">byte_count = recvfrom(sockfd, buf, <span class="kw">sizeof</span> buf, <span class="dv">0</span>, &amp;addr, &amp;fromlen);</a>
+<a class="sourceLine" id="cb123-24" title="24"></a>
+<a class="sourceLine" id="cb123-25" title="25">printf(<span class="st">&quot;recv()&#39;d %d bytes of data in buf</span><span class="sc">\n</span><span class="st">&quot;</span>, byte_count);</a>
+<a class="sourceLine" id="cb123-26" title="26">printf(<span class="st">&quot;from IP address %s</span><span class="sc">\n</span><span class="st">&quot;</span>,</a>
+<a class="sourceLine" id="cb123-27" title="27">    inet_ntop(addr.ss_family,</a>
+<a class="sourceLine" id="cb123-28" title="28">        addr.ss_family == AF_INET?</a>
+<a class="sourceLine" id="cb123-29" title="29">            ((<span class="kw">struct</span> sockadd_in *)&amp;addr)-&gt;sin_addr:</a>
+<a class="sourceLine" id="cb123-30" title="30">            ((<span class="kw">struct</span> sockadd_in6 *)&amp;addr)-&gt;sin6_addr,</a>
+<a class="sourceLine" id="cb123-31" title="31">        ipstr, <span class="kw">sizeof</span> ipstr);</a></code></pre></div><h3 id="see-also-16" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#sendman"><code>send()</code></a>, <a href="man-pages.html#sendman"><code>sendto()</code></a>, <a href="man-pages.html#selectman"><code>select()</code></a>, <a href="man-pages.html#pollman"><code>poll()</code></a>, <a href="slightly-advanced-techniques.html#blocking">Blocking</a></p><h2 id="selectman"><span class="header-section-number">9.19</span> <code>select()</code></h2><p></p><p>Check if sockets descriptors are ready to read/write</p><h3 id="synopsis-18" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb124"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb124-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/select.h&gt;</span></a>
+<a class="sourceLine" id="cb124-2" title="2"></a>
+<a class="sourceLine" id="cb124-3" title="3"><span class="dt">int</span> select(<span class="dt">int</span> n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,</a>
+<a class="sourceLine" id="cb124-4" title="4">           <span class="kw">struct</span> timeval *timeout);</a>
+<a class="sourceLine" id="cb124-5" title="5"></a>
+<a class="sourceLine" id="cb124-6" title="6">FD_SET(<span class="dt">int</span> fd, fd_set *set);</a>
+<a class="sourceLine" id="cb124-7" title="7">FD_CLR(<span class="dt">int</span> fd, fd_set *set);</a>
+<a class="sourceLine" id="cb124-8" title="8">FD_ISSET(<span class="dt">int</span> fd, fd_set *set);</a>
+<a class="sourceLine" id="cb124-9" title="9">FD_ZERO(fd_set *set);</a></code></pre></div><h3 id="description-18" class="unnumbered unlisted">Description</h3><p>The <code>select()</code> function gives you a way to simultaneously check multiple sockets to see if they have data waiting to be <code>recv()</code>d, or if you can <code>send()</code> data to them without blocking, or if some exception has occurred.</p><p>You populate your sets of socket descriptors using the macros, like <code>FD_SET()</code>, above. Once you have the set, you pass it into the function as one of the following parameters: <code>readfds</code> if you want to know when any of the sockets in the set is ready to <code>recv()</code> data, <code>writefds</code> if any of the sockets is ready to <code>send()</code> data to, and/or <code>exceptfds</code> if you need to know when an exception (error) occurs on any of the sockets. Any or all of these parameters can be <code>NULL</code> if you’re not interested in those types of events. After <code>select()</code> returns, the values in the sets will be changed to show which are ready for reading or writing, and which have exceptions.</p><p>The first parameter, <code>n</code> is the highest-numbered socket descriptor (they’re just <code>int</code>s, remember?) plus one.</p><p>Lastly, the  <code>struct timeval</code>, <code>timeout</code>, at the end—this lets you tell <code>select()</code> how long to check these sets for. It’ll return after the timeout, or when an event occurs, whichever is first. The <code>struct timeval</code> has two fields: <code>tv_sec</code> is the number of seconds, to which is added <code>tv_usec</code>, the number of microseconds (1,000,000 microseconds in a second).</p><p>The helper macros do the following:</p><table><thead><tr class="header"><th>Macro</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>FD_SET(int fd, fd_set *set);</code></td><td>Add <code>fd</code> to the <code>set</code>.</td></tr><tr class="even"><td><code>FD_CLR(int fd, fd_set *set);</code></td><td>Remove <code>fd</code> from the <code>set</code>.</td></tr><tr class="odd"><td><code>FD_ISSET(int fd, fd_set *set);</code></td><td>Return true if <code>fd</code> is in the <code>set</code>.</td></tr><tr class="even"><td><code>FD_ZERO(fd_set *set);</code></td><td>Clear all entries from the <code>set</code>.</td></tr></tbody></table><p>Note for Linux users: Linux’s <code>select()</code> can return “ready-to-read” and then not actually be ready to read, thus causing the subsequent <code>read()</code> call to block. You can work around this bug by setting  <code>O_NONBLOCK</code> flag on the receiving socket so it errors with <code>EWOULDBLOCK</code>, then ignoring this error if it occurs. See the <a href="man-pages.html#fcntlman"><code>fcntl()</code> man page</a> for more info on setting a socket to non-blocking.</p><h3 id="return-value-18" class="unnumbered unlisted">Return Value</h3><p>Returns the number of descriptors in the set on success, <code>0</code> if the timeout was reached, or <code>-1</code> on error (and <code>errno</code> will be set accordingly). Also, the sets are modified to show which sockets are ready.</p><h3 id="example-18" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb125"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb125-1" title="1"><span class="dt">int</span> s1, s2, n;</a>
+<a class="sourceLine" id="cb125-2" title="2">fd_set readfds;</a>
+<a class="sourceLine" id="cb125-3" title="3"><span class="kw">struct</span> timeval tv;</a>
+<a class="sourceLine" id="cb125-4" title="4"><span class="dt">char</span> buf1[<span class="dv">256</span>], buf2[<span class="dv">256</span>];</a>
+<a class="sourceLine" id="cb125-5" title="5"></a>
+<a class="sourceLine" id="cb125-6" title="6"><span class="co">// pretend we&#39;ve connected both to a server at this point</span></a>
+<a class="sourceLine" id="cb125-7" title="7"><span class="co">//s1 = socket(...);</span></a>
+<a class="sourceLine" id="cb125-8" title="8"><span class="co">//s2 = socket(...);</span></a>
+<a class="sourceLine" id="cb125-9" title="9"><span class="co">//connect(s1, ...)...</span></a>
+<a class="sourceLine" id="cb125-10" title="10"><span class="co">//connect(s2, ...)...</span></a>
+<a class="sourceLine" id="cb125-11" title="11"></a>
+<a class="sourceLine" id="cb125-12" title="12"><span class="co">// clear the set ahead of time</span></a>
+<a class="sourceLine" id="cb125-13" title="13">FD_ZERO(&amp;readfds);</a>
+<a class="sourceLine" id="cb125-14" title="14"></a>
+<a class="sourceLine" id="cb125-15" title="15"><span class="co">// add our descriptors to the set</span></a>
+<a class="sourceLine" id="cb125-16" title="16">FD_SET(s1, &amp;readfds);</a>
+<a class="sourceLine" id="cb125-17" title="17">FD_SET(s2, &amp;readfds);</a>
+<a class="sourceLine" id="cb125-18" title="18"></a>
+<a class="sourceLine" id="cb125-19" title="19"><span class="co">// since we got s2 second, it&#39;s the &quot;greater&quot;, so we use that for</span></a>
+<a class="sourceLine" id="cb125-20" title="20"><span class="co">// the n param in select()</span></a>
+<a class="sourceLine" id="cb125-21" title="21">n = s2 + <span class="dv">1</span>;</a>
+<a class="sourceLine" id="cb125-22" title="22"></a>
+<a class="sourceLine" id="cb125-23" title="23"><span class="co">// wait until either socket has data ready to be recv()d (timeout 10.5 secs)</span></a>
+<a class="sourceLine" id="cb125-24" title="24">tv.tv_sec = <span class="dv">10</span>;</a>
+<a class="sourceLine" id="cb125-25" title="25">tv.tv_usec = <span class="dv">500000</span>;</a>
+<a class="sourceLine" id="cb125-26" title="26">rv = select(n, &amp;readfds, NULL, NULL, &amp;tv);</a>
+<a class="sourceLine" id="cb125-27" title="27"></a>
+<a class="sourceLine" id="cb125-28" title="28"><span class="cf">if</span> (rv == <span class="dv">-1</span>) {</a>
+<a class="sourceLine" id="cb125-29" title="29">    perror(<span class="st">&quot;select&quot;</span>); <span class="co">// error occurred in select()</span></a>
+<a class="sourceLine" id="cb125-30" title="30">} <span class="cf">else</span> <span class="cf">if</span> (rv == <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb125-31" title="31">    printf(<span class="st">&quot;Timeout occurred! No data after 10.5 seconds.</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb125-32" title="32">} <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb125-33" title="33">    <span class="co">// one or both of the descriptors have data</span></a>
+<a class="sourceLine" id="cb125-34" title="34">    <span class="cf">if</span> (FD_ISSET(s1, &amp;readfds)) {</a>
+<a class="sourceLine" id="cb125-35" title="35">        recv(s1, buf1, <span class="kw">sizeof</span> buf1, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb125-36" title="36">    }</a>
+<a class="sourceLine" id="cb125-37" title="37">    <span class="cf">if</span> (FD_ISSET(s2, &amp;readfds)) {</a>
+<a class="sourceLine" id="cb125-38" title="38">        recv(s2, buf2, <span class="kw">sizeof</span> buf2, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb125-39" title="39">    }</a>
+<a class="sourceLine" id="cb125-40" title="40">}</a></code></pre></div><h3 id="see-also-17" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#pollman"><code>poll()</code></a></p><h2 id="setsockoptman"><span class="header-section-number">9.20</span> <code>setsockopt()</code>, <code>getsockopt()</code></h2><p> </p><p>Set various options for a socket</p><h3 id="synopsis-19" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb126"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb126-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb126-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb126-3" title="3"></a>
+<a class="sourceLine" id="cb126-4" title="4"><span class="dt">int</span> getsockopt(<span class="dt">int</span> s, <span class="dt">int</span> level, <span class="dt">int</span> optname, <span class="dt">void</span> *optval,</a>
+<a class="sourceLine" id="cb126-5" title="5">               socklen_t *optlen);</a>
+<a class="sourceLine" id="cb126-6" title="6"><span class="dt">int</span> setsockopt(<span class="dt">int</span> s, <span class="dt">int</span> level, <span class="dt">int</span> optname, <span class="dt">const</span> <span class="dt">void</span> *optval,</a>
+<a class="sourceLine" id="cb126-7" title="7">               socklen_t optlen);</a></code></pre></div><h3 id="description-19" class="unnumbered unlisted">Description</h3><p>Sockets are fairly configurable beasts. In fact, they are so configurable, I’m not even going to cover it all here. It’s probably system-dependent anyway. But I will talk about the basics.</p><p>Obviously, these functions get and set certain options on a socket. On a Linux box, all the socket information is in the man page for socket in section 7. (Type: “<code>man 7 socket</code>” to get all these goodies.)</p><p>As for parameters, <code>s</code> is the socket you’re talking about, level should be set to  <code>SOL_SOCKET</code>. Then you set the <code>optname</code> to the name you’re interested in. Again, see your man page for all the options, but here are some of the most fun ones:</p><table><colgroup><col style="width: 26%" /><col style="width: 73%" /></colgroup><thead><tr class="header"><th><code>optname</code></th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>SO_BINDTODEVICE</code></td><td>Bind this socket to a symbolic device name like <code>eth0</code> instead of using <code>bind()</code> to bind it to an IP address. Type the command <code>ifconfig</code> under Unix to see the device names.</td></tr><tr class="even"><td><code>SO_REUSEADDR</code></td><td>Allows other sockets to <code>bind()</code> to this port, unless there is an active listening socket bound to the port already. This enables you to get around those “Address already in use” error messages when you try to restart your server after a crash.</td></tr><tr class="odd"><td><code>SOCK_DGRAM</code></td><td>Allows UDP datagram (<code>SOCK_DGRAM</code>) sockets to send and receive packets sent to and from the broadcast address. Does nothing—<em>NOTHING!!</em>—to TCP stream sockets! Hahaha!</td></tr></tbody></table><p>As for the parameter <code>optval</code>, it’s usually a pointer to an <code>int</code> indicating the value in question. For booleans, zero is false, and non-zero is true. And that’s an absolute fact, unless it’s different on your system. If there is no parameter to be passed, <code>optval</code> can be <code>NULL</code>.</p><p>The final parameter, <code>optlen</code>, should be set to the length of <code>optval</code>, probably <code>sizeof(int)</code>, but varies depending on the option. Note that in the case of <code>getsockopt()</code>, this is a pointer to a <code>socklen_t</code>, and it specifies the maximum size object that will be stored in <code>optval</code> (to prevent buffer overflows). And <code>getsockopt()</code> will modify the value of <code>optlen</code> to reflect the number of bytes actually set.</p><p><strong>Warning</strong>: on some systems (notably   Sun and  Windows), the option can be a <code>char</code> instead of an <code>int</code>, and is set to, for example, a character value of <code>'1'</code> instead of an <code>int</code> value of <code>1</code>. Again, check your own man pages for more info with “<code>man setsockopt</code>” and “<code>man 7 socket</code>”!</p><h3 id="return-value-19" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-19" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb127"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb127-1" title="1"><span class="dt">int</span> optval;</a>
+<a class="sourceLine" id="cb127-2" title="2"><span class="dt">int</span> optlen;</a>
+<a class="sourceLine" id="cb127-3" title="3"><span class="dt">char</span> *optval2;</a>
+<a class="sourceLine" id="cb127-4" title="4"></a>
+<a class="sourceLine" id="cb127-5" title="5"><span class="co">// set SO_REUSEADDR on a socket to true (1):</span></a>
+<a class="sourceLine" id="cb127-6" title="6">optval = <span class="dv">1</span>;</a>
+<a class="sourceLine" id="cb127-7" title="7">setsockopt(s1, SOL_SOCKET, SO_REUSEADDR, &amp;optval, <span class="kw">sizeof</span> optval);</a>
+<a class="sourceLine" id="cb127-8" title="8"></a>
+<a class="sourceLine" id="cb127-9" title="9"><span class="co">// bind a socket to a device name (might not work on all systems):</span></a>
+<a class="sourceLine" id="cb127-10" title="10">optval2 = <span class="st">&quot;eth1&quot;</span>; <span class="co">// 4 bytes long, so 4, below:</span></a>
+<a class="sourceLine" id="cb127-11" title="11">setsockopt(s2, SOL_SOCKET, SO_BINDTODEVICE, optval2, <span class="dv">4</span>);</a>
+<a class="sourceLine" id="cb127-12" title="12"></a>
+<a class="sourceLine" id="cb127-13" title="13"><span class="co">// see if the SO_BROADCAST flag is set:</span></a>
+<a class="sourceLine" id="cb127-14" title="14">getsockopt(s3, SOL_SOCKET, SO_BROADCAST, &amp;optval, &amp;optlen);</a>
+<a class="sourceLine" id="cb127-15" title="15"><span class="cf">if</span> (optval != <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb127-16" title="16">    print(<span class="st">&quot;SO_BROADCAST enabled on s3!</span><span class="sc">\n</span><span class="st">&quot;</span>);</a>
+<a class="sourceLine" id="cb127-17" title="17">}</a></code></pre></div><h3 id="see-also-18" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#fcntlman"><code>fcntl()</code></a></p><h2 id="sendman"><span class="header-section-number">9.21</span> <code>send()</code>, <code>sendto()</code></h2><p> </p><p>Send data out over a socket</p><h3 id="synopsis-20" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb128"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb128-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb128-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb128-3" title="3"></a>
+<a class="sourceLine" id="cb128-4" title="4"><span class="dt">ssize_t</span> send(<span class="dt">int</span> s, <span class="dt">const</span> <span class="dt">void</span> *buf, <span class="dt">size_t</span> len, <span class="dt">int</span> flags);</a>
+<a class="sourceLine" id="cb128-5" title="5"><span class="dt">ssize_t</span> sendto(<span class="dt">int</span> s, <span class="dt">const</span> <span class="dt">void</span> *buf, <span class="dt">size_t</span> len,</a>
+<a class="sourceLine" id="cb128-6" title="6">               <span class="dt">int</span> flags, <span class="dt">const</span> <span class="kw">struct</span> sockaddr *to,</a>
+<a class="sourceLine" id="cb128-7" title="7">               socklen_t tolen);</a></code></pre></div><h3 id="description-20" class="unnumbered unlisted">Description</h3><p>These functions send data to a socket. Generally speaking, <code>send()</code> is used for TCP <code>SOCK_STREAM</code> connected sockets, and <code>sendto()</code> is used for UDP <code>SOCK_DGRAM</code> unconnected datagram sockets. With the unconnected sockets, you must specify the destination of a packet each time you send one, and that’s why the last parameters of <code>sendto()</code> define where the packet is going.</p><p>With both <code>send()</code> and <code>sendto()</code>, the parameter <code>s</code> is the socket, <code>buf</code> is a pointer to the data you want to send, <code>len</code> is the number of bytes you want to send, and <code>flags</code> allows you to specify more information about how the data is to be sent. Set <code>flags</code> to zero if you want it to be “normal” data. Here are some of the commonly used flags, but check your local <code>send()</code> man pages for more details:</p><table><colgroup><col style="width: 23%" /><col style="width: 76%" /></colgroup><thead><tr class="header"><th>Macro</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>MSG_OOB</code></td><td>Send as  “out of band” data. TCP supports this, and it’s a way to tell the receiving system that this data has a higher priority than the normal data. The receiver will receive the signal  <code>SIGURG</code> and it can then receive this data without first receiving all the rest of the normal data in the queue.</td></tr><tr class="even"><td><code>MSG_DONTROUTE</code></td><td>Don’t send this data over a router, just keep it local.</td></tr><tr class="odd"><td><code>MSG_DONTWAIT</code></td><td>If <code>send()</code> would block because outbound traffic is clogged, have it return  <code>EAGAIN</code>. This is like a “enable  non-blocking just for this send.” See the section on <a href="slightly-advanced-techniques.html#blocking">blocking</a> for more details.</td></tr><tr class="even"><td><code>MSG_NOSIGNAL</code></td><td>If you <code>send()</code> to a remote host which is no longer <code>recv()</code>ing, you’ll typically get the signal  <code>SIGPIPE</code>. Adding this flag prevents that signal from being raised.</td></tr></tbody></table><h3 id="return-value-20" class="unnumbered unlisted">Return Value</h3><p>Returns the number of bytes actually sent, or <code>-1</code> on error (and <code>errno</code> will be set accordingly). Note that the number of bytes actually sent might be less than the number you asked it to send! See the section on <a href="slightly-advanced-techniques.html#sendall">handling partial <code>send()</code>s</a> for a helper function to get around this.</p><p>Also, if the socket has been closed by either side, the process calling <code>send()</code> will get the signal <code>SIGPIPE</code>. (Unless <code>send()</code> was called with the <code>MSG_NOSIGNAL</code> flag.)</p><h3 id="example-20" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb129"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb129-1" title="1"><span class="dt">int</span> spatula_count = <span class="dv">3490</span>;</a>
+<a class="sourceLine" id="cb129-2" title="2"><span class="dt">char</span> *secret_message = <span class="st">&quot;The Cheese is in The Toaster&quot;</span>;</a>
+<a class="sourceLine" id="cb129-3" title="3"></a>
+<a class="sourceLine" id="cb129-4" title="4"><span class="dt">int</span> stream_socket, dgram_socket;</a>
+<a class="sourceLine" id="cb129-5" title="5"><span class="kw">struct</span> sockaddr_in dest;</a>
+<a class="sourceLine" id="cb129-6" title="6"><span class="dt">int</span> temp;</a>
+<a class="sourceLine" id="cb129-7" title="7"></a>
+<a class="sourceLine" id="cb129-8" title="8"><span class="co">// first with TCP stream sockets:</span></a>
+<a class="sourceLine" id="cb129-9" title="9"></a>
+<a class="sourceLine" id="cb129-10" title="10"><span class="co">// assume sockets are made and connected</span></a>
+<a class="sourceLine" id="cb129-11" title="11"><span class="co">//stream_socket = socket(...</span></a>
+<a class="sourceLine" id="cb129-12" title="12"><span class="co">//connect(stream_socket, ...</span></a>
+<a class="sourceLine" id="cb129-13" title="13"></a>
+<a class="sourceLine" id="cb129-14" title="14"><span class="co">// convert to network byte order</span></a>
+<a class="sourceLine" id="cb129-15" title="15">temp = htonl(spatula_count);</a>
+<a class="sourceLine" id="cb129-16" title="16"><span class="co">// send data normally:</span></a>
+<a class="sourceLine" id="cb129-17" title="17">send(stream_socket, &amp;temp, <span class="kw">sizeof</span> temp, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb129-18" title="18"></a>
+<a class="sourceLine" id="cb129-19" title="19"><span class="co">// send secret message out of band:</span></a>
+<a class="sourceLine" id="cb129-20" title="20">send(stream_socket, secret_message, strlen(secret_message)+<span class="dv">1</span>, MSG_OOB);</a>
+<a class="sourceLine" id="cb129-21" title="21"></a>
+<a class="sourceLine" id="cb129-22" title="22"><span class="co">// now with UDP datagram sockets:</span></a>
+<a class="sourceLine" id="cb129-23" title="23"><span class="co">//getaddrinfo(...</span></a>
+<a class="sourceLine" id="cb129-24" title="24"><span class="co">//dest = ... // assume &quot;dest&quot; holds the address of the destination</span></a>
+<a class="sourceLine" id="cb129-25" title="25"><span class="co">//dgram_socket = socket(...</span></a>
+<a class="sourceLine" id="cb129-26" title="26"></a>
+<a class="sourceLine" id="cb129-27" title="27"><span class="co">// send secret message normally:</span></a>
+<a class="sourceLine" id="cb129-28" title="28">sendto(dgram_socket, secret_message, strlen(secret_message)+<span class="dv">1</span>, <span class="dv">0</span>, </a>
+<a class="sourceLine" id="cb129-29" title="29">       (<span class="kw">struct</span> sockaddr*)&amp;dest, <span class="kw">sizeof</span> dest);</a></code></pre></div><h3 id="see-also-19" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#recvman"><code>recv()</code></a>, <a href="man-pages.html#recvman"><code>recvfrom()</code></a></p><h2 id="shutdownman"><span class="header-section-number">9.22</span> <code>shutdown()</code></h2><p></p><p>Stop further sends and receives on a socket</p><h3 id="synopsis-21" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb130"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb130-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb130-2" title="2"></a>
+<a class="sourceLine" id="cb130-3" title="3"><span class="dt">int</span> shutdown(<span class="dt">int</span> s, <span class="dt">int</span> how);</a></code></pre></div><h3 id="description-21" class="unnumbered unlisted">Description</h3><p>That’s it! I’ve had it! No more <code>send()</code>s are allowed on this socket, but I still want to <code>recv()</code> data on it! Or vice-versa! How can I do this?</p><p>When you <code>close()</code> a socket descriptor, it closes both sides of the socket for reading and writing, and frees the socket descriptor. If you just want to close one side or the other, you can use this <code>shutdown()</code> call.</p><p>As for parameters, <code>s</code> is obviously the socket you want to perform this action on, and what action that is can be specified with the <code>how</code> parameter. <code>how</code> can be <code>SHUT_RD</code> to prevent further <code>recv()</code>s, <code>SHUT_WR</code> to prohibit further <code>send()</code>s, or <code>SHUT_RDWR</code> to do both.</p><p>Note that <code>shutdown()</code> doesn’t free up the socket descriptor, so you still have to eventually <code>close()</code> the socket even if it has been fully shut down.</p><p>This is a rarely used system call.</p><h3 id="return-value-21" class="unnumbered unlisted">Return Value</h3><p>Returns zero on success, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-21" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb131"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb131-1" title="1"><span class="dt">int</span> s = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb131-2" title="2"></a>
+<a class="sourceLine" id="cb131-3" title="3"><span class="co">// ...do some send()s and stuff in here...</span></a>
+<a class="sourceLine" id="cb131-4" title="4"></a>
+<a class="sourceLine" id="cb131-5" title="5"><span class="co">// and now that we&#39;re done, don&#39;t allow any more sends()s:</span></a>
+<a class="sourceLine" id="cb131-6" title="6">shutdown(s, SHUT_WR);</a></code></pre></div><h3 id="see-also-20" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#closeman"><code>close()</code></a></p><h2 id="socketman"><span class="header-section-number">9.23</span> <code>socket()</code></h2><p></p><p>Allocate a socket descriptor</p><h3 id="synopsis-22" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb132"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb132-1" title="1"><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></a>
+<a class="sourceLine" id="cb132-2" title="2"><span class="pp">#include </span><span class="im">&lt;sys/socket.h&gt;</span></a>
+<a class="sourceLine" id="cb132-3" title="3"></a>
+<a class="sourceLine" id="cb132-4" title="4"><span class="dt">int</span> socket(<span class="dt">int</span> domain, <span class="dt">int</span> type, <span class="dt">int</span> protocol);</a></code></pre></div><h3 id="description-22" class="unnumbered unlisted">Description</h3><p>Returns a new socket descriptor that you can use to do sockety things with. This is generally the first call in the whopping process of writing a socket program, and you can use the result for subsequent calls to <code>listen()</code>, <code>bind()</code>, <code>accept()</code>, or a variety of other functions.</p><p>In usual usage, you get the values for these parameters from a call to <code>getaddrinfo()</code>, as shown in the example below. But you can fill them in by hand if you really want to.</p><table><colgroup><col style="width: 16%" /><col style="width: 83%" /></colgroup><thead><tr class="header"><th>Parameter</th><th>Description</th></tr></thead><tbody><tr class="odd"><td><code>domain</code></td><td><code>domain</code> describes what kind of socket you’re interested in. This can, believe me, be a wide variety of things, but since this is a socket guide, it’s going to be  <code>PF_INET</code> for IPv4, and <code>PF_INET6</code> for IPv6.</td></tr><tr class="even"><td><code>type</code></td><td>Also, the <code>type</code> parameter can be a number of things, but you’ll probably be setting it to either  <code>SOCK_STREAM</code> for reliable TCP sockets (<code>send()</code>, <code>recv()</code>) or  <code>SOCK_DGRAM</code> for unreliable fast UDP sockets (<code>sendto()</code>, <code>recvfrom()</code>). (Another interesting socket type is  <code>SOCK_RAW</code> which can be used to construct packets by hand. It’s pretty cool.)</td></tr><tr class="odd"><td><code>protocol</code></td><td>Finally, the <code>protocol</code> parameter tells which protocol to use with a certain socket type. Like I’ve already said, for instance, <code>SOCK_STREAM</code> uses TCP. Fortunately for you, when using <code>SOCK_STREAM</code> or <code>SOCK_DGRAM</code>, you can just set the protocol to 0, and it’ll use the proper protocol automatically. Otherwise, you can use  <code>getprotobyname()</code> to look up the proper protocol number.</td></tr></tbody></table><h3 id="return-value-22" class="unnumbered unlisted">Return Value</h3><p>The new socket descriptor to be used in subsequent calls, or <code>-1</code> on error (and <code>errno</code> will be set accordingly).</p><h3 id="example-22" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb133"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb133-1" title="1"><span class="kw">struct</span> addrinfo hints, *res;</a>
+<a class="sourceLine" id="cb133-2" title="2"><span class="dt">int</span> sockfd;</a>
+<a class="sourceLine" id="cb133-3" title="3"></a>
+<a class="sourceLine" id="cb133-4" title="4"><span class="co">// first, load up address structs with getaddrinfo():</span></a>
+<a class="sourceLine" id="cb133-5" title="5"></a>
+<a class="sourceLine" id="cb133-6" title="6">memset(&amp;hints, <span class="dv">0</span>, <span class="kw">sizeof</span> hints);</a>
+<a class="sourceLine" id="cb133-7" title="7">hints.ai_family = AF_UNSPEC;     <span class="co">// AF_INET, AF_INET6, or AF_UNSPEC</span></a>
+<a class="sourceLine" id="cb133-8" title="8">hints.ai_socktype = SOCK_STREAM; <span class="co">// SOCK_STREAM or SOCK_DGRAM</span></a>
+<a class="sourceLine" id="cb133-9" title="9"></a>
+<a class="sourceLine" id="cb133-10" title="10">getaddrinfo(<span class="st">&quot;www.example.com&quot;</span>, <span class="st">&quot;3490&quot;</span>, &amp;hints, &amp;res);</a>
+<a class="sourceLine" id="cb133-11" title="11"></a>
+<a class="sourceLine" id="cb133-12" title="12"><span class="co">// make a socket using the information gleaned from getaddrinfo():</span></a>
+<a class="sourceLine" id="cb133-13" title="13">sockfd = socket(res-&gt;ai_family, res-&gt;ai_socktype, res-&gt;ai_protocol);</a></code></pre></div><h3 id="see-also-21" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#acceptman"><code>accept()</code></a>, <a href="man-pages.html#bindman"><code>bind()</code></a>, <a href="man-pages.html#getaddrinfoman"><code>getaddrinfo()</code></a>, <a href="man-pages.html#listenman"><code>listen()</code></a></p><h2 id="structsockaddrman"><span class="header-section-number">9.24</span> <code>struct sockaddr</code> and pals</h2><p>     </p><p>Structures for handling internet addresses</p><h3 id="synopsis-23" class="unnumbered unlisted">Synopsis</h3><div class="sourceCode" id="cb134"><pre class="sourceCode c"><code class="sourceCode c"><a class="sourceLine" id="cb134-1" title="1"><span class="pp">#include </span><span class="im">&lt;netinet/in.h&gt;</span></a>
+<a class="sourceLine" id="cb134-2" title="2"></a>
+<a class="sourceLine" id="cb134-3" title="3"><span class="co">// All pointers to socket address structures are often cast to pointers</span></a>
+<a class="sourceLine" id="cb134-4" title="4"><span class="co">// to this type before use in various functions and system calls:</span></a>
+<a class="sourceLine" id="cb134-5" title="5"></a>
+<a class="sourceLine" id="cb134-6" title="6"><span class="kw">struct</span> sockaddr {</a>
+<a class="sourceLine" id="cb134-7" title="7">    <span class="dt">unsigned</span> <span class="dt">short</span>    sa_family;    <span class="co">// address family, AF_xxx</span></a>
+<a class="sourceLine" id="cb134-8" title="8">    <span class="dt">char</span>              sa_data[<span class="dv">14</span>];  <span class="co">// 14 bytes of protocol address</span></a>
+<a class="sourceLine" id="cb134-9" title="9">};</a>
+<a class="sourceLine" id="cb134-10" title="10"></a>
+<a class="sourceLine" id="cb134-11" title="11"></a>
+<a class="sourceLine" id="cb134-12" title="12"><span class="co">// IPv4 AF_INET sockets:</span></a>
+<a class="sourceLine" id="cb134-13" title="13"></a>
+<a class="sourceLine" id="cb134-14" title="14"><span class="kw">struct</span> sockaddr_in {</a>
+<a class="sourceLine" id="cb134-15" title="15">    <span class="dt">short</span>            sin_family;   <span class="co">// e.g. AF_INET, AF_INET6</span></a>
+<a class="sourceLine" id="cb134-16" title="16">    <span class="dt">unsigned</span> <span class="dt">short</span>   sin_port;     <span class="co">// e.g. htons(3490)</span></a>
+<a class="sourceLine" id="cb134-17" title="17">    <span class="kw">struct</span> in_addr   sin_addr;     <span class="co">// see struct in_addr, below</span></a>
+<a class="sourceLine" id="cb134-18" title="18">    <span class="dt">char</span>             sin_zero[<span class="dv">8</span>];  <span class="co">// zero this if you want to</span></a>
+<a class="sourceLine" id="cb134-19" title="19">};</a>
+<a class="sourceLine" id="cb134-20" title="20"></a>
+<a class="sourceLine" id="cb134-21" title="21"><span class="kw">struct</span> in_addr {</a>
+<a class="sourceLine" id="cb134-22" title="22">    <span class="dt">unsigned</span> <span class="dt">long</span> s_addr;          <span class="co">// load with inet_pton()</span></a>
+<a class="sourceLine" id="cb134-23" title="23">};</a>
+<a class="sourceLine" id="cb134-24" title="24"></a>
+<a class="sourceLine" id="cb134-25" title="25"></a>
+<a class="sourceLine" id="cb134-26" title="26"><span class="co">// IPv6 AF_INET6 sockets:</span></a>
+<a class="sourceLine" id="cb134-27" title="27"></a>
+<a class="sourceLine" id="cb134-28" title="28"><span class="kw">struct</span> sockaddr_in6 {</a>
+<a class="sourceLine" id="cb134-29" title="29">    u_int16_t       sin6_family;   <span class="co">// address family, AF_INET6</span></a>
+<a class="sourceLine" id="cb134-30" title="30">    u_int16_t       sin6_port;     <span class="co">// port number, Network Byte Order</span></a>
+<a class="sourceLine" id="cb134-31" title="31">    u_int32_t       sin6_flowinfo; <span class="co">// IPv6 flow information</span></a>
+<a class="sourceLine" id="cb134-32" title="32">    <span class="kw">struct</span> in6_addr sin6_addr;     <span class="co">// IPv6 address</span></a>
+<a class="sourceLine" id="cb134-33" title="33">    u_int32_t       sin6_scope_id; <span class="co">// Scope ID</span></a>
+<a class="sourceLine" id="cb134-34" title="34">};</a>
+<a class="sourceLine" id="cb134-35" title="35"></a>
+<a class="sourceLine" id="cb134-36" title="36"><span class="kw">struct</span> in6_addr {</a>
+<a class="sourceLine" id="cb134-37" title="37">    <span class="dt">unsigned</span> <span class="dt">char</span>   s6_addr[<span class="dv">16</span>];   <span class="co">// load with inet_pton()</span></a>
+<a class="sourceLine" id="cb134-38" title="38">};</a>
+<a class="sourceLine" id="cb134-39" title="39"></a>
+<a class="sourceLine" id="cb134-40" title="40"></a>
+<a class="sourceLine" id="cb134-41" title="41"><span class="co">// General socket address holding structure, big enough to hold either</span></a>
+<a class="sourceLine" id="cb134-42" title="42"><span class="co">// struct sockaddr_in or struct sockaddr_in6 data:</span></a>
+<a class="sourceLine" id="cb134-43" title="43"></a>
+<a class="sourceLine" id="cb134-44" title="44"><span class="kw">struct</span> sockaddr_storage {</a>
+<a class="sourceLine" id="cb134-45" title="45">    sa_family_t  ss_family;     <span class="co">// address family</span></a>
+<a class="sourceLine" id="cb134-46" title="46"></a>
+<a class="sourceLine" id="cb134-47" title="47">    <span class="co">// all this is padding, implementation specific, ignore it:</span></a>
+<a class="sourceLine" id="cb134-48" title="48">    <span class="dt">char</span>      __ss_pad1[_SS_PAD1SIZE];</a>
+<a class="sourceLine" id="cb134-49" title="49">    <span class="dt">int64_t</span>   __ss_align;</a>
+<a class="sourceLine" id="cb134-50" title="50">    <span class="dt">char</span>      __ss_pad2[_SS_PAD2SIZE];</a>
+<a class="sourceLine" id="cb134-51" title="51">};</a></code></pre></div><h3 id="description-23" class="unnumbered unlisted">Description</h3><p>These are the basic structures for all syscalls and functions that deal with internet addresses. Often you’ll use <code>getaddrinfo()</code> to fill these structures out, and then will read them when you have to.</p><p>In memory, the <code>struct sockaddr_in</code> and <code>struct sockaddr_in6</code> share the same beginning structure as <code>struct sockaddr</code>, and you can freely cast the pointer of one type to the other without any harm, except the possible end of the universe.</p><p>Just kidding on that end-of-the-universe thing…if the universe does end when you cast a <code>struct sockaddr_in*</code> to a <code>struct sockaddr*</code>, I promise you it’s pure coincidence and you shouldn’t even worry about it.</p><p>So, with that in mind, remember that whenever a function says it takes a <code>struct sockaddr*</code> you can cast your <code>struct sockaddr_in*</code>, <code>struct sockaddr_in6*</code>, or <code>struct sockadd_storage*</code> to that type with ease and safety.</p><p><code>struct sockaddr_in</code> is the structure used with IPv4 addresses (e.g. “192.0.2.10”). It holds an address family (<code>AF_INET</code>), a port in <code>sin_port</code>, and an IPv4 address in <code>sin_addr</code>.</p><p>There’s also this <code>sin_zero</code> field in <code>struct sockaddr_in</code> which some people claim must be set to zero. Other people don’t claim anything about it (the Linux documentation doesn’t even mention it at all), and setting it to zero doesn’t seem to be actually necessary. So, if you feel like it, set it to zero using <code>memset()</code>.</p><p>Now, that <code>struct in_addr</code> is a weird beast on different systems. Sometimes it’s a crazy <code>union</code> with all kinds of <code>#define</code>s and other nonsense. But what you should do is only use the <code>s_addr</code> field in this structure, because many systems only implement that one.</p><p><code>struct sockadd_in6</code> and <code>struct in6_addr</code> are very similar, except they’re used for IPv6.</p><p><code>struct sockaddr_storage</code> is a struct you can pass to <code>accept()</code> or <code>recvfrom()</code> when you’re trying to write IP version-agnostic code and you don’t know if the new address is going to be IPv4 or IPv6. The <code>struct sockaddr_storage</code> structure is large enough to hold both types, unlike the original small <code>struct sockaddr</code>.</p><h3 id="example-23" class="unnumbered unlisted">Example</h3><div class="sourceCode" id="cb135"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb135-1" title="1"><span class="co">// IPv4:</span></a>
+<a class="sourceLine" id="cb135-2" title="2"></a>
+<a class="sourceLine" id="cb135-3" title="3"><span class="kw">struct</span> sockaddr_in ip4addr;</a>
+<a class="sourceLine" id="cb135-4" title="4"><span class="dt">int</span> s;</a>
+<a class="sourceLine" id="cb135-5" title="5"></a>
+<a class="sourceLine" id="cb135-6" title="6">ip4addr.sin_family = AF_INET;</a>
+<a class="sourceLine" id="cb135-7" title="7">ip4addr.sin_port = htons(<span class="dv">3490</span>);</a>
+<a class="sourceLine" id="cb135-8" title="8">inet_pton(AF_INET, <span class="st">&quot;10.0.0.1&quot;</span>, &amp;ip4addr.sin_addr);</a>
+<a class="sourceLine" id="cb135-9" title="9"></a>
+<a class="sourceLine" id="cb135-10" title="10">s = socket(PF_INET, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb135-11" title="11">bind(s, (<span class="kw">struct</span> sockaddr*)&amp;ip4addr, <span class="kw">sizeof</span> ip4addr);</a></code></pre></div><div class="sourceCode" id="cb136"><pre class="sourceCode numberSource c numberLines"><code class="sourceCode c"><a class="sourceLine" id="cb136-1" title="1"><span class="co">// IPv6:</span></a>
+<a class="sourceLine" id="cb136-2" title="2"></a>
+<a class="sourceLine" id="cb136-3" title="3"><span class="kw">struct</span> sockaddr_in6 ip6addr;</a>
+<a class="sourceLine" id="cb136-4" title="4"><span class="dt">int</span> s;</a>
+<a class="sourceLine" id="cb136-5" title="5"></a>
+<a class="sourceLine" id="cb136-6" title="6">ip6addr.sin6_family = AF_INET6;</a>
+<a class="sourceLine" id="cb136-7" title="7">ip6addr.sin6_port = htons(<span class="dv">4950</span>);</a>
+<a class="sourceLine" id="cb136-8" title="8">inet_pton(AF_INET6, <span class="st">&quot;2001:db8:8714:3a90::12&quot;</span>, &amp;ip6addr.sin6_addr);</a>
+<a class="sourceLine" id="cb136-9" title="9"></a>
+<a class="sourceLine" id="cb136-10" title="10">s = socket(PF_INET6, SOCK_STREAM, <span class="dv">0</span>);</a>
+<a class="sourceLine" id="cb136-11" title="11">bind(s, (<span class="kw">struct</span> sockaddr*)&amp;ip6addr, <span class="kw">sizeof</span> ip6addr);</a></code></pre></div><h3 id="see-also-22" class="unnumbered unlisted">See Also</h3><p><a href="man-pages.html#acceptman"><code>accept()</code></a>, <a href="man-pages.html#bindman"><code>bind()</code></a>, <a href="man-pages.html#connectman"><code>connect()</code></a>, <a href="man-pages.html#inet_ntoaman"><code>inet_aton()</code></a>, <a href="man-pages.html#inet_ntoaman"><code>inet_ntoa()</code></a></p><hr><div style="text-align:center"><span><a href="common-questions.html">Prev</a> | </span><a href="index.html">Contents</a><span> | <a href="more-references.html">Next</a></span></div></body>
+</html>

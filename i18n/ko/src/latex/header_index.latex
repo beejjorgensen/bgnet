@@ -1,0 +1,3 @@
+% Create the index
+\usepackage{makeidx}
+\makeindex
