@@ -17,7 +17,7 @@ pretendard 폰트 관련 파일이 들어있습니다.
 한국어용으로 빌드하기 위해서 루트 경로에서 아래와 같이 입력합니다.
 
 ```
-docker run --rm -v "$PWD":/guide -ti beej make -e SHELL=/bin/bash pristine all stage SRCDIR=i18n/ko/src
+docker run --rm -v "$PWD":/guide -ti {루트 폴더의 Dockerfile로 만든 이미지 태그} make -e SHELL=/bin/bash pristine all stage SRCDIR=i18n/ko/src
 ```
 
 빌드 결과물은 영어와 동일하게 루트의 stage폴더에 생성됩니다.
