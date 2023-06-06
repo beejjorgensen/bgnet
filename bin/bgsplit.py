@@ -293,7 +293,7 @@ class SplitHTMLParser(HTMLParser):
         file_path = os.path.sep.join((self.out_directory, file_name))
         self.out_file = open(file_path, "w")
 
-        if file_name is not 'index.html':
+        if file_name != 'index.html':
           self.write_header()
 
     def output(self, s):
