@@ -1,151 +1,143 @@
-# System Calls or Bust
+# 시스템 콜이 아니면 죽음을
 
-This is the section where we get into the system calls (and other
-library calls) that allow you to access the network functionality of a
-Unix box, or any box that supports the sockets API for that matter (BSD,
-Windows, Linux, Mac, what-have-you.) When you call one of these
-functions, the kernel takes over and does all the work for you
-automagically.
+이 절에서 우리는 유닉스 장치나 기타 소켓 API를 지원하는 다른 장치(BSD,
+윈도우즈, 리눅스, 맥, 여러분이 가진 다른 장치)에서 네트워크 기능에 접근할
+수 있게 해 주는 시스템 호출(*System call)(과 다른 라이브러리 호출
+(*Library Call))에 대해서 다룰 것입니다. 이런 함수 중 하나를 호출하면
+커널이 넘겨받고 여러분을 위해 모든 일을 자동으로 마법같이 처리합니다.
 
-The place most people get stuck around here is what order to call these
-things in. In that, the `man` pages are no use, as you've probably
-discovered. Well, to help with that dreadful situation, I've tried to
-lay out the system calls in the following sections in _exactly_
-(approximately) the same order that you'll need to call them in your
-programs.
+대부분의 사람들이 어려워하는 점은 이 함수들을 어떤 순서로 호출해야 하는가
+입니다. 이미 찾아보셨겠지만 그런 쪽으로는 `man`페이지는 아무 쓸모도 없습니다.
+그 끔찍한 상황을 해결하기 위해 시스템콜들을 _정확히_(대략) 여러분의
+프로그램에서 호출해야 하는 순서 그대로 아래에 이어지는 절들에 제시했습니다.
 
-That, coupled with a few pieces of sample code here and there, some milk
-and cookies (which I fear you will have to supply yourself), and some
-raw guts and courage, and you'll be beaming data around the Internet
-like the Son of Jon Postel!
+그러니까 여기에 있는 몇몇 예제 코드와 우유, 과자(이것들은 직접 준비하셔야 합니다)
+그리고 두둑한 배짱과 용기만 있다면 여러분은 인터넷의 세계에서 존 포스텔의 아들처럼
+데이터를 나를 수 있게 될 것입니다.(역자 주 : John Postel은 인터넷의 초기에 큰
+기여를 한 컴퓨터 과학자 중 한 명입니다.)
 
-_(Please note that for brevity, many code snippets below do not include
-necessary error checking. And they very commonly assume that the result
-from calls to `getaddrinfo()` succeed and return a valid entry in the
-linked list. Both of these situations are properly addressed in the
-stand-alone programs, though, so use those as a model.)_
+_(아래의 예제 코드들은 대개 필수적인 에러코드를 간략함을 얻기 위해서 생략했음을
+기억하십시오. 그리고 예제 코드들은 대개 `getaddrinfo()`의 호출이 성공하고
+연결리스트로 적절한 결과물을 돌려준다고 가정합니다. 이런 상황은 독립 실행형
+프로그램에서는 제대로 처리되어 있으니, 그것들을 지침으로 삼으십시오.)_
 
 
-## `getaddrinfo()`---Prepare to launch!
+## `getaddrinfo()`---발사 준비!
 
-[i[`getaddrinfo()` function]] This is a real workhorse of a function
-with a lot of options, but usage is actually pretty simple. It helps set
-up the `struct`s you need later on.
+[i[`getaddrinfo()` function]], 이것은 여러 옵션을 가진 진짜 일꾼입니다.
+그러나 사용법은 사실 꽤 간단합니다. 이것은 여러분이 나중에 필요로 하는
+`struct`들을 초기화합니다.
 
-A tiny bit of history: it used to be that you would use a function
-called `gethostbyname()` to do DNS lookups. Then you'd load that
-information by hand into a `struct sockaddr_in`, and use that in your
-calls.
+역사 한토막 : 예전에는 DNS 검색을 위해서 `gethostbyname()`을 호출해야 했습니다.
+그리고 그 정보를 수작업으로 `struct sockaddr_in`에 담고 이후의 호출에서
+사용해야 했습니다.
 
-This is no longer necessary, thankfully. (Nor is it desirable, if you
-want to write code that works for both IPv4 and IPv6!)  In these modern
-times, you now have the function `getaddrinfo()` that does all kinds of
-good stuff for you, including DNS and service name lookups, and fills
-out the `struct`s you need, besides!
+고맙게도 더 이상은 그럴 필요가 없습니다. (여러분이 IPv4와 IPv6환경 모두에서
+동작하는 코드를 짜고싶다면 그래서도 안 됩니다!) 요새는 `getaddrinfo()`이라는
+것이 있어서 DNS 와 서비스 이름 검색, `struct`내용 채워넣기 등을 포함해서
+여러분이 필요로 하는 모든 일을 해 줍니다.
 
-Let's take a look!
+이제 살펴봅시다!
+
+(역자 주 : 아래에서부터 입니다, 하세요 등의 표현 대신 이다, 하라 등의 간결한 어미를 섞어서 씁니다.)
 
 ```{.c}
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 
-int getaddrinfo(const char *node,     // e.g. "www.example.com" or IP
-                const char *service,  // e.g. "http" or port number
+int getaddrinfo(const char *node,     // e.g. "www.example.com" 또ㅡㄴ IP
+                const char *service,  // e.g. "http" 또는 포트 숫자를 ""안에 감싸서 넣는다.
                 const struct addrinfo *hints,
                 struct addrinfo **res);
 ```
 
-You give this function three input parameters, and it gives you a
-pointer to a linked-list, `res`, of results.
+이 함수에는 3개의 입력 매개변수를 넘겨줍니다. 그리고 결과 연결리스트의 포인터인
+`res`를 돌려받습니다. 
 
-The `node` parameter is the host name to connect to, or an IP address.
+`node`매개변수는 접속하려는 호스트 이름이나 IP주소입니다.
 
-Next is the parameter `service`, which can be a port number, like "80",
-or the name of a particular service (found in [fl[The IANA Port
-List|https://www.iana.org/assignments/port-numbers]] or the
-`/etc/services` file on your Unix machine) like "http" or "ftp" or
-"telnet" or "smtp" or whatever.
+다음 매개변수는 `service`입니다. 이것은 "80"같은 포트 번호나 "http", "ftp",
+"telnet" 또는 "smtp"같은 특정한 서비스 이름이 될 수 있습니다. 
+([fl[IANA 포트 목록|https://www.iana.org/assignments/port-numbers]]
+혹은 여러분이 유닉스 장치를 쓴다면 `/etc/services`에서 볼 수 있습니다)
 
-Finally, the `hints` parameter points to a `struct addrinfo` that you've
-already filled out with relevant information.
+마지막으로 `hints`매개변수는 여러분이 관련된 정보로 이미 채워넣은 `struct addrinfo`
+를 가리킵니다.
 
-Here's a sample call if you're a server who wants to listen on your
-host's IP address, port 3490. Note that this doesn't actually do any
-listening or network setup; it merely sets up structures we'll use
-later:
+여기에 여러분이 호스트 IP주소의 포트 3490을 듣고자 할 때의 함수 호출 예제가
+있습니다. 이것이 듣기 작업이나 네트워크 설정을 하지는 않음을 기억하십시오.
+이것은 단지 나중에 사용할 구조체들을 설정할 뿐입니다.
 
 ```{.c .numberLines}
 int status;
 struct addrinfo hints;
-struct addrinfo *servinfo;  // will point to the results
+struct addrinfo *servinfo;  // 결과를 가리킬 것이다
 
-memset(&hints, 0, sizeof hints); // make sure the struct is empty
-hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
-hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
-hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+memset(&hints, 0, sizeof hints); // 구조체를 확실히 비워두라
+hints.ai_family = AF_UNSPEC;     // IPv4 이든 IPv6 이든 상관없다
+hints.ai_socktype = SOCK_STREAM; // TCP 스트림 소켓
+hints.ai_flags = AI_PASSIVE;     // 내 주소를 넣어달라
 
 if ((status = getaddrinfo(NULL, "3490", &hints, &servinfo)) != 0) {
     fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
     exit(1);
 }
 
-// servinfo now points to a linked list of 1 or more struct addrinfos
+// servinfo는 이제 1개 혹은 그 이상의 addrinfo 구조체에 대한 연결리스트를 가리킨다
 
-// ... do everything until you don't need servinfo anymore ....
+// ... servinfo가 더이상 필요없을 때까지 모든 작업을 한다...
 
-freeaddrinfo(servinfo); // free the linked-list
+freeaddrinfo(servinfo); // 연결리스트를 해제
 ```
 
-Notice that I set the `ai_family` to `AF_UNSPEC`, thereby saying that I
-don't care if we use IPv4 or IPv6. You can set it to `AF_INET` or
-`AF_INET6` if you want one or the other specifically.
+`ai_family`을 `AF_UNSPEC`으로 설정해서 IPv4든 IPv6이든 신경쓰지 않음을 나타낸
+것에 주목하라. 만약 특정한 하나를 원한다면 `AF_INET`이나 `AF_INET6`을 쓸 수 있다.
 
-Also, you'll see the `AI_PASSIVE` flag in there; this tells
-`getaddrinfo()` to assign the address of my local host to the socket
-structures. This is nice because then you don't have to hardcode it. (Or
-you can put a specific address in as the first parameter to
-`getaddrinfo()` where I currently have `NULL`, up there.)
+`AI_PASSIVE`도 볼 수 있다. 이것은 `getaddrinfo()`에게 소켓 구조체에
+내 로컬 호스트의 주소를 할당해달라고 말해준다. 이것은 여러분이 하드코딩할 필요를
+없애주기에 좋다. (아니면 위에서 `NULL`을 넣은 `getaddrinfo()`의 첫 번째
+매개변수에 특정한 주소를 넣을 수 있다. )
 
-Then we make the call. If there's an error (`getaddrinfo()` returns
-non-zero), we can print it out using the function `gai_strerror()`, as
-you see. If everything works properly, though, `servinfo` will point to
-a linked list of `struct addrinfo`s, each of which contains a `struct
-sockaddr` of some kind that we can use later! Nifty!
+이렇게 함수를 호출한다. 오류가 있다면(`getaddrinfo()`이 0이 아닌 값을 돌려준다면)
+보다시피 그 오류를 `gai_strerror()`함수를 통해서 출력할 수 있다. 만약 모든
+것이 제대로 동작한다면 `servinfo`는 각각이 우리가 나중에 쓸 수 있는
+`struct sockaddr`나 비슷한 것을 가진 `struct addrinfo`의 연결리스트를 가리킬
+것이다. 멋지다!
 
-Finally, when we're eventually all done with the linked list that
-`getaddrinfo()` so graciously allocated for us, we can (and should) free
-it all up with a call to `freeaddrinfo()`.
+마지막으로 `getaddrinfo()`가 은혜롭게 우리에게 할당해 준 연결리스트를
+다 썼다면 우리는 `freeaddrinfo()`을 호출해서 그것을 할당 해제할 수 있습니다.
+(반드시 해야합니다.)
 
-Here's a sample call if you're a client who wants to connect to a
-particular server, say "www.example.net" port 3490. Again, this doesn't
-actually connect, but it sets up the structures we'll use later:
+여기에 여러분이 특정한 주소, 예를 들어 "www.example.net"의 3490포트에
+잡속하고자 하는 클라이언트일 경우의 호출 예제가 있습니다. 다시 말씀드리지만
+이것으로는 실제 연결이 이루어지지 않습니다. 그러나 이것은 우리가 나중에
+사용할 구조체를 설정해줍니다.
 
 ```{.c .numberLines}
 int status;
 struct addrinfo hints;
-struct addrinfo *servinfo;  // will point to the results
+struct addrinfo *servinfo;  // 결과물을 가리킬 것임
 
-memset(&hints, 0, sizeof hints); // make sure the struct is empty
-hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
-hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+memset(&hints, 0, sizeof hints); // 반드시 비워둘 것
+hints.ai_family = AF_UNSPEC;     // IPv4나 IPv6은 신경쓰지 않음
+hints.ai_socktype = SOCK_STREAM; // TCP 스트림 소켓
 
-// get ready to connect
+// 연결 준비
 status = getaddrinfo("www.example.net", "3490", &hints, &servinfo);
 
-// servinfo now points to a linked list of 1 or more struct addrinfos
+// servinfo는 이제 1개 혹은 그 이상의 addrinfo 구조체에 대한 연결리스트를 가리킨다
 
-// etc.
+// 등등.
 ```
 
-I keep saying that `servinfo` is a linked list with all kinds of address
-information. Let's write a quick demo program to show off this
-information. [flx[This short program|showip.c]] will print the IP
-addresses for whatever host you specify on the command line:
+`servinfo`은 모든 종류의 주소 정보를 가진 연결리스트라고 계속 이야기하고 있다.
+이 정보를 보기 위한 짧은 시연 프로그램을 작성해보자. [flx[이 짧은 프로그램|showip.c]]
+은 여러분이 명령줄에 적는 호스트의 IP주소들을 출력한다.
 
 ```{.c .numberLines}
 /*
-** showip.c -- show IP addresses for a host given on the command line
+** showip.c -- 명령줄에서 주어진 호스트의 주소들을 출력한다.
 */
 
 #include <stdio.h>
@@ -168,7 +160,7 @@ int main(int argc, char *argv[])
     }
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+    hints.ai_family = AF_UNSPEC; // 버전을 지정하려면 AF_INET또는 AF_INET6을 사용
     hints.ai_socktype = SOCK_STREAM;
 
     if ((status = getaddrinfo(argv[1], NULL, &hints, &res)) != 0) {
@@ -182,8 +174,7 @@ int main(int argc, char *argv[])
         void *addr;
         char *ipver;
 
-        // get the pointer to the address itself,
-        // different fields in IPv4 and IPv6:
+        // 주소 자체에 대한 포인터를 받는다. IPv4와 IPv6은 필드가 다르다.
         if (p->ai_family == AF_INET) { // IPv4
             struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
             addr = &(ipv4->sin_addr);
@@ -194,26 +185,25 @@ int main(int argc, char *argv[])
             ipver = "IPv6";
         }
 
-        // convert the IP to a string and print it:
+        // IP주소를 문자열로 변환하고 출력한다.
         inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
         printf("  %s: %s\n", ipver, ipstr);
     }
 
-    freeaddrinfo(res); // free the linked list
+    freeaddrinfo(res); // 연결 목록을 해제한다.
 
     return 0;
 }
 ```
 
-As you see, the code calls `getaddrinfo()` on whatever you pass on the
-command line, that fills out the linked list pointed to by `res`, and
-then we can iterate over the list and print stuff out or do whatever.
+보다시피 이 코드는 당신이 명령줄에 넘기는 것이 무엇이든 `getaddrinfo()`을
+호출한다. 그리고 `res`에 연결목록의 포인터를 넘겨준다. 그래서 우리는
+이 목록을 순회해서 출력하거나 다른 일을 할 수 있다.
 
-(There's a little bit of ugliness there where we have to dig into the
-different types of `struct sockaddr`s depending on the IP version. Sorry
-about that! I'm not sure of a better way around it.)
+(저 예제코드에는 IP 버전에 따라 다른 종류의 `struct sockaddr`을 처리해야 하는
+흉한 부분이 있다. 그 점에 대해서 사과한다. 그러나 더 나은 방법이 있는지는 모르겠다.)
 
-Sample run! Everyone loves screenshots:
+실행 예제! 모두가 스크린샷을 좋아합니다.
 
 ```
 $ showip www.example.net
@@ -228,15 +218,14 @@ IP addresses for ipv6.example.com:
   IPv6: 2001:db8:8c00:22::171
 ```
 
-Now that we have that under control, we'll use the results we get from
-`getaddrinfo()` to pass to other socket functions and, at long last, get
-our network connection established! Keep reading!
+이제 저것을 다룰 수 있으니, `getaddrinfo()`에서 얻은 결과를 다른 소켓 함수에 
+넘기고 결과적으로는 네트워크 연결을 성립할 수 있도록 해 보자! 계속 읽어보라!
 
 
-## `socket()`---Get the File Descriptor! {#socket}
+## `socket()`---파일 설명자를 받아오라! {#socket}
 
-I guess I can put it off no longer---I have to talk about the
-[i[`socket()` function]] `socket()` system call. Here's the breakdown:
+더 이상 미룰 수가 없을 듯 하다. 이제 [i[`socket()` function]] `socket()`
+시스템 콜에 대해서 이야기해야 한다. 개요는 이렇다.
 
 ```{.c}
 #include <sys/types.h>
@@ -245,72 +234,61 @@ I guess I can put it off no longer---I have to talk about the
 int socket(int domain, int type, int protocol); 
 ```
 
-But what are these arguments? They allow you to say what kind of socket
-you want (IPv4 or IPv6, stream or datagram, and TCP or UDP).
+그러나 이 인수들이 무엇인지 모를 것이다. 이것들은 어떤 종류의 소켓을 원하는지
+정할 수 있게 해 준다.(IPv4 또는 IPv6, 스트림 혹은 데이터그램, TCP 혹은 UDP)
 
-It used to be people would hardcode these values, and you can absolutely
-still do that. (`domain` is `PF_INET` or `PF_INET6`, `type` is
-`SOCK_STREAM` or `SOCK_DGRAM`, and `protocol` can be set to `0` to
-choose the proper protocol for the given `type`. Or you can call
-`getprotobyname()` to look up the protocol you want, "tcp" or "udp".)
+사용자들이 그 값을 직접 적어야 했고, 지금도 그렇게 할 수 있다.
+(`domain`은 `PF_INET`이나 `PF_INET6`이고, `type`은 `SOCK_STREAM`또는 `SOCK_DGRAM`
+이며, `protocol`은 주어진 `type`에 적절한 값을 자동으로 선택하게 하려면 `0`을
+넘겨주거나 "tcp"나 "udp" 중 원하는 프로토콜의 값을 얻기 위해서 `getprotobyname()`
+을 쓸 수도 있다.)
 
-(This `PF_INET` thing is a close relative of the [i[`AF_INET` macro]]
-`AF_INET` that you can use when initializing the `sin_family` field in
-your `struct sockaddr_in`. In fact, they're so closely related that they
-actually have the same value, and many programmers will call `socket()`
-and pass `AF_INET` as the first argument instead of `PF_INET`. Now, get
-some milk and cookies, because it's time for a story. Once upon a time,
-a long time ago, it was thought that maybe an address family (what the
-"AF" in "`AF_INET`" stands for) might support several protocols that
-were referred to by their protocol family (what the "PF" in "`PF_INET`"
-stands for). That didn't happen. And they all lived happily ever after,
-The End. So the most correct thing to do is to use `AF_INET` in your
-`struct sockaddr_in` and `PF_INET` in your call to `socket()`.)
+(이 `PF_INET`은 `sin_family`필드에 넣어주는 [i[`AF_INET` macro]]`AF_INET`와 유사한 것이다.
+이것을 이해하려면 짧은 이야기가 필요하다. 아주 먼 옛날에는 어쩌면 하나의 주소 체통(*Address Family)
+("`AF_INET`"안에 들어있는 "AF")가 여러 종류의 프로토콜 계통(*Protocol Family)("`PF_INET`"의
+"PF"))을 지원할 것이라고 생각하던 시절이 있었다. 그런 일은 일어나지 않았다. 그리고 모두 행복하게
+오래오래 잘 살았다. 이런 이야기다. 그래서 할 수 있는 가장 정확한 일은
+`struct sockaddr_in`에서 `AF_INET`을 쓰고 `socket()`에서 `PF_INET`을 사용하는 것이다.
 
-Anyway, enough of that. What you really want to do is use the values
-from the results of the call to `getaddrinfo()`, and feed them into
-`socket()` directly like this:
+아무튼 이제 충분하다. 여러분이 정말로 하고싶은 일은 `getaddrinfo()`을
+호출한 결과로 돌아오는 값을 아래와 같이 `socket()`에 직접 넘겨주는 것이다.
 
 ```{.c .numberLines}
 int s;
 struct addrinfo hints, *res;
 
-// do the lookup
-// [pretend we already filled out the "hints" struct]
+// 탐색 시작
+// ["hints"구조체는 이미 채운 것으로 친다]
 getaddrinfo("www.example.com", "http", &hints, &res);
 
-// again, you should do error-checking on getaddrinfo(), and walk
-// the "res" linked list looking for valid entries instead of just
-// assuming the first one is good (like many of these examples do).
-// See the section on client/server for real examples.
+// 다시 말하지면 원래는 (이 안내서의 예제들이 하듯이) 첫 번째 것이 좋다고
+// 가정하는 대신 getaddrinfo()에 대해서 오류 확인을 하고
+// "res"링크드 리스트를 순회해야 한다.
+// client/server절의 진짜 예제들을 참고하라.
 
 s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 ```
 
-`socket()` simply returns to you a _socket descriptor_ that you can use
-in later system calls, or `-1` on error. The global variable `errno` is
-set to the error's value (see the [`errno`](#errnoman) man page for more
-details, and a quick note on using `errno` in multithreaded programs).
+`socket()`은 단순하게 이후의 시스템 호출에서 쓸 수 있는 _소켓 설명자_ 를 돌려준다.
+오류가 있으면 -1을 돌려준다. 전역 변수인  `errno`가 오류의 값으로 설정된다.
+(자세한 정보는 [`errno`](#errnoman) 의 맨페이지를 참고하라.)
 
-Fine, fine, fine, but what good is this socket? The answer is that it's
-really no good by itself, and you need to read on and make more system
-calls for it to make any sense.
+좋다. 그러면 이제 이 소켓을 어디에 쓰는가? 정답은 아직 못 쓴다는 것이다.
+실제로 쓰기 위해서는 안내서를 더 읽고 이것이 동작하게 하기 위한 시스템 호출을
+더 해야 한다.
 
 
-## `bind()`---What port am I on? {#bind}
+## `bind()`---나는 어떤 포트에 있는가? {#bind}
 
-[i[`bind()` function]] Once you have a socket, you might have to
-associate that socket with a [i[Port]] port on your local machine. (This
-is commonly done if you're going to [i[`listen()` function]] `listen()`
-for incoming connections on a specific port---multiplayer network games
-do this when they tell you to "connect to 192.168.5.10 port 3490".) The
-port number is used by the kernel to match an incoming packet to a
-certain process's socket descriptor. If you're going to only be doing a
-[i[`connect()`] function] `connect()` (because you're the client, not
-the server), this is probably unnecessary. Read it anyway, just for
-kicks.
+[i[`bind()` function]] 소켓을 가지면 여러분의 기계의 [i[Port]] 포트에 연동하고
+싶을 것이다. (이 작업은 보통 여러분이 [i[`listen()` function]] `listen()`
+으로 특정 포트에서 들어오는 연결을 듣고자(*listen) 할 때 이루어진다. ---다중 사용자
+네트워크 게임들은 "192.168.5.10의 3490포트에 연결합니다"라고 말할 때 이런
+작업을 한다.) 포트 번호는 커널이 특정 프로세스의 소켓 설명자를 들어오는 패킷과
+연관짓기 위해서 사용한다. 만약 여러분이 [i[`connect()`] function] `connect()`만
+할 생각이라면 `bind()`는 불필요하다. 그러나 재미를 위해 읽어두자.
 
-Here is the synopsis for the `bind()` system call:
+이것이 `bind()` 시스템 콜의 개요다.
 
 ```{.c}
 #include <sys/types.h>
@@ -319,52 +297,48 @@ Here is the synopsis for the `bind()` system call:
 int bind(int sockfd, struct sockaddr *my_addr, int addrlen);
 ```
 
-`sockfd` is the socket file descriptor returned by `socket()`. `my_addr`
-is a pointer to a `struct sockaddr` that contains information about your
-address, namely, port and [i[IP address]] IP address. `addrlen` is the
-length in bytes of that address.
+`sockfd`은 `socket()`이 돌려준 소켓 파일 설명자이다. `my_addr`은
+여러분의 주소, 말하자면 포트와 [i[IP address]] IP주소를 가진 `struct sockaddr`
+에 대한 포인터이다. `addrlen`은 그 주소의 바이트 단위 길이이다.
 
-Whew. That's a bit to absorb in one chunk. Let's have an example that
-binds the socket to the host the program is running on, port 3490:
+으엑. 한 번에 많이 배웠다. 프로그램이 실행되는 호스트의 3490번 포트에
+소켓을 바인드하는 예제를 보자.
 
 ```{.c .numberLines}
 struct addrinfo hints, *res;
 int sockfd;
 
-// first, load up address structs with getaddrinfo():
+// 먼저 getaddrinfo()으로 구조체에 정보를 불러온다.
 
 memset(&hints, 0, sizeof hints);
-hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+hints.ai_family = AF_UNSPEC;  // IPv4나 IPv6 중 아무 것이나 쓴다
 hints.ai_socktype = SOCK_STREAM;
-hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+hints.ai_flags = AI_PASSIVE;     // IP는 나의 아이피로 채운다.
 
 getaddrinfo(NULL, "3490", &hints, &res);
 
-// make a socket:
+// 소켓을 만든다.
 
 sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-// bind it to the port we passed in to getaddrinfo():
+// getaddrinfo()에 넘겼던 포트에 바인드한다.
 
 bind(sockfd, res->ai_addr, res->ai_addrlen);
 ```
 
-By using the `AI_PASSIVE` flag, I'm telling the program to bind to the
-IP of the host it's running on. If you want to bind to a specific local
-IP address, drop the `AI_PASSIVE` and put an IP address in for the first
-argument to `getaddrinfo()`.
+`AI_PASSIVE`플래그를 써서 프로그램에게 실행중인 호스트의 IP에 바인드하라고
+알려줍니다. 특정한 로컬 IP주소에 바인드하고싶다면 `AI_PASSIVE`을 버리고
+`getaddrinfo()`의 첫 번째 인수로 IP주소를 넣으라.
 
-`bind()` also returns `-1` on error and sets `errno` to the error's
-value.
+`bind()`도 오류가 발생하면 `-1`을 돌려주고 `errno`을 오류의 값으로 설정한다.
 
-Lots of old code manually packs the `struct sockaddr_in` before calling
-`bind()`. Obviously this is IPv4-specific, but there's really nothing
-stopping you from doing the same thing with IPv6, except that using
-`getaddrinfo()` is going to be easier, generally. Anyway, the old code
-looks something like this:
+많은 오래된 코드들이 `bind()`을 호출하기 전에 `struct sockaddr_in`을 직접
+채워넣는다. 이것은 분명히 IPv4 전용이지만 같은 일을 IPv6에 대해서도 못 할
+이유는 없다. 단지 `getaddrinfo()`을 쓰는 편이 일반적으로 더 쉽다. 어쨌든
+예전 코드는 이런 방식이다.
 
 ```{.c .numberLines}
-// !!! THIS IS THE OLD WAY !!!
+// !!! 이것은 예전 방식이다 !!!
 
 int sockfd;
 struct sockaddr_in my_addr;
@@ -372,41 +346,38 @@ struct sockaddr_in my_addr;
 sockfd = socket(PF_INET, SOCK_STREAM, 0);
 
 my_addr.sin_family = AF_INET;
-my_addr.sin_port = htons(MYPORT);     // short, network byte order
+my_addr.sin_port = htons(MYPORT);     // short, 네트워크 바이트 순서
 my_addr.sin_addr.s_addr = inet_addr("10.12.110.57");
 memset(my_addr.sin_zero, '\0', sizeof my_addr.sin_zero);
 
 bind(sockfd, (struct sockaddr *)&my_addr, sizeof my_addr);
 ```
 
-In the above code, you could also assign `INADDR_ANY` to the `s_addr`
-field if you wanted to bind to your local IP address (like the
-`AI_PASSIVE` flag, above).  The IPv6 version of `INADDR_ANY` is a global
-variable `in6addr_any` that is assigned into the `sin6_addr` field of
-your `struct sockaddr_in6`. (There is also a macro `IN6ADDR_ANY_INIT`
-that you can use in a variable initializer.)
+위의 코드에서 당신의 로컬 IP 주소에 바인드하고 싶었다면(위의 `AI_PASSIVE`처럼)
+`s_addr`필드에 `INADDR_ANY`을 대입할 수 있다. IPv6버전의 `INADDR_ANY`은
+당신의 `struct sockaddr_in6`의 `sin6_addr`필드에 대입해야 하는 전역변수인
+`in6addr_any`이다. (변수 초기화식에 쓸 수 있는 `IN6ADDR_ANY_INIT`이라는 매크로도
+있다.)
 
-Another thing to watch out for when calling `bind()`: don't go
-underboard with your port numbers. [i[Port]] All ports below 1024 are
-RESERVED (unless you're the superuser)! You can have any port number
-above that, right up to 65535 (provided they aren't already being used
-by another program).
+`bind()`을 쓸 때 주의해야 할 것 : 포트 번호는 낮은 것을 쓰지 말 것.
+[i[Port]] 1024번 아래의 모든 포트는 예약되어 있다(슈퍼유저가 아닌 이상)!
+그 위의 포트 번호는 (다른 프로그램이 이미
+쓰고 있지 않다면) 65535까지 아무 것이나 쓸 수 있다.
 
-Sometimes, you might notice, you try to rerun a server and `bind()`
-fails, claiming [i[Address already in use]] "Address already in use."
-What does that mean? Well, a little bit of a socket that was connected
-is still hanging around in the kernel, and it's hogging the port. You
-can either wait for it to clear (a minute or so), or add code to your
-program allowing it to reuse the port, like this:
+눈치챌 수 있듯이 때때로 서버를 다시 실행하려고 하면 `bind()`가 실패하고
+[i[Address already in use]] "주소가 이미 사용중입니다.."라고 할 때가 있다.
+그것은 연결되었던 소켓 중 일부가 여전히 커널에서 대기중이고 포트를 사용하고
+있다는 것을 의미한다. 여러분은 그것이 정리될 때까지 1분 정도를 기다리거나
+당신의 프로그램이 포트를 재사용할 수 있도록 하는 코드를 넣을 수도 있다.
 
 [i[`setsockopt()` function]]
  [i[`SO_REUSEADDR` macro]]
 
 ```{.c .numberLines}
 int yes=1;
-//char yes='1'; // Solaris people use this
+//char yes='1'; // 솔라리스는 이것을 사용
 
-// lose the pesky "Address already in use" error message
+// "주소가 이미 사용중입니다"라는 오류 메시지를 제거
 if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
     perror("setsockopt");
     exit(1);
