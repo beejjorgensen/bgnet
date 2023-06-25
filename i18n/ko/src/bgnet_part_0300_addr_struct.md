@@ -160,10 +160,10 @@ IP 주소를 호텔의 도로명 주소라고 생각하고, 포트 번호를 방
 하나의 IP주소로 어떻게 그 두 일을 구분할 수 있겠습니까?
 
 인터넷의 서로 다른 서비스들은 서로 다른 "잘 알려진" 포트번호를 가지고 있습니다.
-전체 목록은 [fl[the Big IANA Port List|https://www.iana.org/assignments/port-numbers]]
+전체 목록은 [fl[거대한 IANA 포트 목록|https://www.iana.org/assignments/port-numbers]]
 또는, 여러분이 유닉스 장치를 사용하신다면 `/etc/services`파일에서 볼 수 있습니다.
 HTTP(웹)는 80번 포트를 사용하고, telnet은 23번을, SMTP는 25를 쓰고 게임인
-DOOM[fl[DOOM|https://en.wikipedia.org/wiki/Doom_(1993_video_game)]]은
+[fl[DOOM|https://en.wikipedia.org/wiki/Doom_(1993_video_game)]]은
 666번(역자 주 : 둠은 지옥에서 온 악마와 싸우는 내용의 게임이며, 666은
 기독교에서 악마의 숫자로 알려져 있습니다) 포트를 사용했습니다.
 1024번 아래의 포트는 흔히 특별한 것으로 취급되어, 사용하기 위해서는 보통 운영체제
