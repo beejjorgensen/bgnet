@@ -250,7 +250,7 @@ Way|http://www.catb.org/~esr/faqs/smart-questions.html]]을 참고하십시오.
 
 ## Copyright, Distribution, and Legal {#legal}
 
-(Translator's Note : This section is not translated to keep it's legal information)
+(Translator's Note : This section has not been translated to keep it's legal information)
 (역자 주 : 이 절은 법적 정보를 보존하기 위해 번역하지 않았습니다.)
 
 Beej's Guide to Network Programming is Copyright © 2019 Brian "Beej
@@ -336,6 +336,6 @@ Markdown은 Python과 Pandoc, XeLaTex를 통해 HTML과 Latex/PDF로 변환되�
 영어 일반명사는 음역을 기본으로 하였으나, 일부는 의역하기도 하였고 혼동을 줄이기 위해서 병기한 부분도 있습니다.
 작업 과정에서 이전 번역자들의 원문을 유지하지는 못했습니다. 원문/번역본/새 번역본 사이의 대조/교정 작업은 개인적인 시간을 짜내서 진행하는 이 일에는
 너무 큰 작업이었습니다. 이러한 사정으로 인해 이전 번역자들의 작업이 직접적으로 유지되지는 못하지만, 다른 프로그래머들을 위해 수 십년 전 글을 남기신
-번역자 분들의 노력을 이어받고 그 작업을 존중하는 마음으로 다음 몇 년간 사람들이 읽을 수 있는 훌륭한 번역을 제공하기 위해 노력했습니다.
+번역자 분들의 노력을 이어받고 그 작업을 존중하는 마음으로 다음 몇 년간 사람들이 읽을 수 있는 번역을 제공하기 위해 노력했습니다.
 
 읽어주셔서 감사합니다.

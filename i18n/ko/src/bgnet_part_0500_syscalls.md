@@ -384,28 +384,26 @@ if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
 } 
 ```
 
-[i[`bind()` function]] One small extra final note about `bind()`: there
-are times when you won't absolutely have to call it. If you are
-[i[`connect()` function]] `connect()`ing to a remote machine and you
-don't care what your local port is (as is the case with `telnet` where
-you only care about the remote port), you can simply call `connect()`,
-it'll check to see if the socket is unbound, and will `bind()` it to an
-unused local port if necessary.
+[i[`bind()` function]] `bind()`에 대해서 한마디 더: 이 함수를 호출할 필요가
+전혀 없는 경우도 있습니다. [i[`connect()` function]] `connect()`를 호출해서
+원격 장치에 연결하려고 하고, 로컬 포트에 대해서는 신경쓰지 않는다면(`telnet`의
+경우 처럼 원격지 포트만 신경쓰는 경우) `connect()`가 자동으로 소켓이 바인드되지
+않았는지 확인하고 필요하다면 사용하지 않은 로컬 포트에 `bind()`해줄 것입니다.
 
 
-## `connect()`---Hey, you! {#connect}
+## `connect()`---이봐, 안녕! {#connect}
 
-[i[`connect()` function]] Let's just pretend for a few minutes that
-you're a telnet application. Your user commands you (just like in the
-movie [i[TRON]] _TRON_) to get a socket file descriptor. You comply and
-call `socket()`. Next, the user tells you to connect to "`10.12.110.57`"
-on port "`23`" (the standard telnet port). Yow! What do you do now?
+[i[`connect()` function]] 몇 분만 여러분이 텔넷 응용프로그램이 되었다고 생각해봅시다.
+여러분의 사용자들이 소켓 파일 설명자를 얻기 위해서 여러분에게 명령을 내립니다
+(영화 [i[TRON]] _트론_ 에서처럼요). 여러분은 그에 따라 `socket()`을 호출합니다.
+다음으로 사용자가 여러분에게 "`10.12.110.57`"의 "`23`"번 포트(텔넷 표준 포트)에
+연결하라고 합니다. 어떻게 해야할까요?
 
-Lucky for you, program, you're now perusing the section on
-`connect()`---how to connect to a remote host. So read furiously onward!
-No time to lose!
+응용프로그램 여러분, `connect()`에 대한 절을 읽는 중이라니 운이 좋습니다!
+이 절은 원격 호스트에 어떻게 연결하는지에 대해 알려줍니다. 거침없이 읽어봅시다!
+낭비할 시간이 없습니다!
 
-The `connect()` call is as follows:
+`connect()`에 대한 호출은 아래와 같습니다:
 
 ```{.c}
 #include <sys/types.h>
@@ -414,23 +412,21 @@ The `connect()` call is as follows:
 int connect(int sockfd, struct sockaddr *serv_addr, int addrlen); 
 ```
 
-`sockfd` is our friendly neighborhood socket file descriptor, as
-returned by the `socket()` call, `serv_addr` is a `struct sockaddr`
-containing the destination port and IP address, and `addrlen` is the
-length in bytes of the server address structure.
+`sockfd`는 `socket()`함수 호출이 돌려주는 우리의 친근한 이웃인 소켓
+파일 설명자 입니다. `serv_addr`는 `struct sockaddr`이고 목적지 포트와
+아이피 주소를 담고 있습니다. `addrlen`은 서버 주소 구조체의 바이트단위
+길이를 담고 있습니다.
 
-All of this information can be gleaned from the results of the
-`getaddrinfo()` call, which rocks.
+모든 정보는 멋진 `getaddrinfo()`호출의 결과에서 추출할 수 있습니다.
 
-Is this starting to make more sense? I can't hear you from here, so I'll
-just have to hope that it is. Let's have an example where we make a
-socket connection to "`www.example.com`", port `3490`:
+이해가 되기 시작합니까? 여기서는 대답을 들을 수 없으니 그럴 것이라 생각하겠습니다.
+"`www.example.com`"의 `3490`포트로 소켓 연결을 만드는 예제를 살펴봅시다:
 
 ```{.c .numberLines}
 struct addrinfo hints, *res;
 int sockfd;
 
-// first, load up address structs with getaddrinfo():
+// getaddrinfo()으로 주소 구조체를 채웁니다:
 
 memset(&hints, 0, sizeof hints);
 hints.ai_family = AF_UNSPEC;
@@ -438,66 +434,65 @@ hints.ai_socktype = SOCK_STREAM;
 
 getaddrinfo("www.example.com", "3490", &hints, &res);
 
-// make a socket:
+// 소켓을 만듭니다:
 
 sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-// connect!
+// 연결합니다!
 
 connect(sockfd, res->ai_addr, res->ai_addrlen);
 ```
 
-Again, old-school programs filled out their own `struct sockaddr_in`s to
-pass to `connect()`. You can do that if you want to. See the similar
-note in the [`bind()` section](#bind), above.
+다시 이야기하자면 구식 프로그램들은 `connect()`에 넘겨줄 `struct sockaddr_in`
+을 직접 채워넣었습니다. 그렇게 하고싶다면 해도 됩니다. 위에 있는 [`bind()` 절](#bind)
+에서 비슷한 내용을 참고하십시오.
 
-Be sure to check the return value from `connect()`---it'll return `-1`
-on error and set the variable `errno`.
+`connect()`의 복귀값을 확인하는 것을 잊지 마십시오. 오류가 발생하면 `-1`을
+돌려주고 `errno`변수를 설정할 것입니다.
 
 [i[`bind()` function-->implicit]]
 
-Also, notice that we didn't call `bind()`. Basically, we don't care
-about our local port number; we only care where we're going (the remote
-port). The kernel will choose a local port for us, and the site we
-connect to will automatically get this information from us. No worries.
+우리가 `bind()`를 호출하지 않았음에 주목하십시오. 간단히 말하자면 우리의
+로컬 포트 번호에 대해서는 신경쓰지 않습니다. 우리가 어디로 가는지만 신경씁니다
+(원격지 포트). 커널이 우리 대신 로컬 포트를 고를 것입니다. 우리가 접속하는
+사이트는 이 정보를 자동으로 우리에게서 얻어냅니다. 신경쓰실 필요가 없습니다.
 
 
-## `listen()`---Will somebody please call me? {#listen}
+## `listen()`---누가 연락 좀 해주실래요? {#listen}
 
-[i[`listen()` function]] OK, time for a change of pace. What if you
-don't want to connect to a remote host. Say, just for kicks, that you
-want to wait for incoming connections and handle them in some way. The
-process is two step: first you `listen()`, then you [i[`accept()`
-function]] `accept()` (see below).
+[i[`listen()` function]] 이제 흐름이 변할 때입니다. 우리가 원격지 호스트에
+접속하고 싶지 않은 경우라면 어떻게 하시겠습니까? 재미로 하는 말이지만, 들어오는
+연결을 기다리고 그것을 어떤 방식으로 다루고자 한다면 어떻게 하시겠습니까?
+그 과정은 두 단계입니다. 먼저 `listen()`를 호출하고, [i[`accept()`
+function]] `accept()`를 씁니다.(아래를 참고하십시오.)
 
-The `listen()` call is fairly simple, but requires a bit of explanation:
+`listen()`함수 호출은 꽤 단순하지만 약간의 설명이 필요합니다:
 
 ```{.c}
 int listen(int sockfd, int backlog); 
 ```
 
-`sockfd` is the usual socket file descriptor from the `socket()` system
-call.  [i[`listen()` function-->backlog]] `backlog` is the number of
-connections allowed on the incoming queue. What does that mean? Well,
-incoming connections are going to wait in this queue until you
-`accept()` them (see below) and this is the limit on how many can queue
-up. Most systems silently limit this number to about 20; you can
-probably get away with setting it to `5` or `10`.
+`sockfd`은 `socket()`시스템 함수 호출로 얻어온 평범한 소켓 파일 설명자입니다.
+[i[`listen()` function-->backlog]] `backlog`는 들어오는 큐에 허용되는 
+연결의 숫자입니다. 이것이 무슨 뜻인지 궁금하십니까? 들어오는 연결들은
+여러분이 `accept()`를 해주기 전까지(아래를 참고하십시오) 이 큐 안에서
+기다릴 것이고 이것은 몇 개의 연결이 대기할 수 있는가를 정합니다. 대개의 시스템은
+이 값을 조용히 20 정도로 제한합니다. 그러나 `5`나 `10`정도의 값으로
+설정해도 괜찮을 것입니다.
 
-Again, as per usual, `listen()` returns `-1` and sets `errno` on error.
+또 평소와 다름없이 `listen()`도 오류가 발생할 경우 `-1`을 돌려주고 `errno`을
+설정할 것입니다.
 
-Well, as you can probably imagine, we need to call `bind()` before we
-call `listen()` so that the server is running on a specific port. (You
-have to be able to tell your buddies which port to connect to!)  So if
-you're going to be listening for incoming connections, the sequence of
-system calls you'll make is:
+아마도 상상하실 수 있겠지만 서버가 특정 포트에서 실행되도록 하기 위해서는
+`listen()`을 호출하기 전에 `bind()`을 호출해야 합니다. (여러분의 친구들에게
+어떤 포트로 연결해야 할지 말해줄 수 있어야 합니다.) 이런 식입니다.
 
 ```{.c .numberLines}
 getaddrinfo();
 socket();
 bind();
 listen();
-/* accept() goes here */ 
+/* accept()는 아래에 온다 */ 
 ```
 
 I'll just leave that in the place of sample code, since it's fairly
@@ -506,20 +501,18 @@ complete.) The really tricky part of this whole sha-bang is the call to
 `accept()`.
 
 
-## `accept()`---"Thank you for calling port 3490."
+## `accept()`---"3490포트에 접속해주셔서 감사합니다.."
 
-[i[`accept()` function]] Get ready---the `accept()` call is kinda weird!
-What's going to happen is this: someone far far away will try to
-`connect()` to your machine on a port that you are `listen()`ing on.
-Their connection will be queued up waiting to be `accept()`ed. You call
-`accept()` and you tell it to get the pending connection. It'll return
-to you a _brand new socket file descriptor_ to use for this single
-connection! That's right, suddenly you have _two socket file
-descriptors_ for the price of one! The original one is still listening
-for more new connections, and the newly created one is finally ready to
-`send()` and `recv()`. We're there! 
+[i[`accept()` function]] 각오하십시오! `accept()`함수는 조금 이상합니다.
+이렇게 돌아갑니다: 아주 먼 곳에 있는 누군가가 여러분의 장치에 `connect()`
+함수로 연결하려고 합니다. 여러분은 특정 포트에서 `listen()`을 실행하고
+있습니다. 그들의 연결은 `accept()`로 받아들여질 때까지 대기열에 쌓일 것입니다.
+여러분은 `accept()`을 해서 대기중인 연결을 받아들이겠다고 알려줍니다.
+`accept()`는 이 연결만을 위해서 쓸 _완전히 새로운 소켓 파일 설명자_ 를 돌려줄 것입니다.
+그렇습니다! 갑자기 `send()`와 `recv()`를 쓸 수 있는 _두 개_ 의 소켓 파일을
+가지게 된 것입니다.
 
-The call is as follows:
+호출은 아래와 같이 합니다:
 
 ```{.c}
 #include <sys/types.h>
@@ -528,20 +521,17 @@ The call is as follows:
 int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen); 
 ```
 
-`sockfd` is the `listen()`ing socket descriptor. Easy enough. `addr`
-will usually be a pointer to a local `struct sockaddr_storage`. This is
-where the information about the incoming connection will go (and with it
-you can determine which host is calling you from which port). `addrlen`
-is a local integer variable that should be set to `sizeof(struct
-sockaddr_storage)` before its address is passed to `accept()`.
-`accept()` will not put more than that many bytes into `addr`. If it
-puts fewer in, it'll change the value of `addrlen` to reflect that.
+`sockfd`은 `listen()`을 하고있는 소켓 설명자입니다. 어렵지 않습니다.
+`addr`은 대개 로컬 `struct sockaddr_storage`에 대한 포인터입니다.
+여기에 들어오는 연결의 정보가 들어가게 됩니다(그리고 그것을 통해서 어떤 호스트가
+어떤 포트에서 여러분을 호출하고 있는지 알 수 있습니다.) `addrlen`은
+sockaddr_storage을 `accept()`에 넘기기 전에 `sizeof(struct
+sockaddr_storage)`으로 설정되어야 하는 로컬 정수 변수입니다.
+`accept()`는 `addr`에 `addrlen`의 크기 이상의 바이트를 적지 않을 것입니다.
+예상하셨습니까? `accept()`도 오류가 발생하면 `-1`을 돌려주고 `errno`에
+값을 설정합니다. 전혀 예상하지 못하셨으리라 생각합니다.
 
-Guess what? `accept()` returns `-1` and sets `errno` if an error occurs.
-Betcha didn't figure that.
-
-Like before, this is a bunch to absorb in one chunk, so here's a sample
-code fragment for your perusal:
+전과 마찬가지로 한 번에 많은 내용입니다. 여러분의 독서를 위한 예제 코드 조각입니다:
 
 ```{.c .numberLines}
 #include <string.h>
@@ -549,8 +539,8 @@ code fragment for your perusal:
 #include <sys/socket.h>
 #include <netdb.h>
 
-#define MYPORT "3490"  // the port users will be connecting to
-#define BACKLOG 10     // how many pending connections queue will hold
+#define MYPORT "3490"  // 사용자들이 접속할 포트
+#define BACKLOG 10     // 대기열에 몇 개의 연결이 대기할 수 있는가
 
 int main(void)
 {
@@ -559,60 +549,56 @@ int main(void)
     struct addrinfo hints, *res;
     int sockfd, new_fd;
 
-    // !! don't forget your error checking for these calls !!
+    // !! 이 호출들에 대한 오류 확인을 잊지 마십시오 !!
 
-    // first, load up address structs with getaddrinfo():
+    // getaddrinfo()으로 정보를 채워넣습니다:
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+    hints.ai_family = AF_UNSPEC;  // IPv4또는 IPv6, 아무것이나 씁니다.
     hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+    hints.ai_flags = AI_PASSIVE;     // 나를 위해 자동으로 내 IP를 채워넣을 것.
 
     getaddrinfo(NULL, MYPORT, &hints, &res);
 
-    // make a socket, bind it, and listen on it:
+    // 소켓을 만들고, 바인드하고, 듣기 시작:
 
     sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     bind(sockfd, res->ai_addr, res->ai_addrlen);
     listen(sockfd, BACKLOG);
 
-    // now accept an incoming connection:
+    // 들어오는 연결을 받습니다:
 
     addr_size = sizeof their_addr;
     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
 
-    // ready to communicate on socket descriptor new_fd!
+    // new_fd 소켓 설명자에서 통신할 준비 완료!
     .
     .
     .
 ```
 
-Again, note that we will use the socket descriptor `new_fd` for all
-`send()` and `recv()` calls. If you're only getting one single
-connection ever, you can `close()` the listening `sockfd` in order to
-prevent more incoming connections on the same port, if you so desire.
+다시 말하지만 모든 `send()`와 `recv()` 호출에 대해서 `new_fd`를 사용할
+것입니다. 만약 단 한 개의 연결만을 받아들이길 원한다면 추가적인 연결이 같은
+포트를 통해 들어오는 것을 막기 위해서 `sockfd`을 `close()`처리할 수 있습니다.
 
 
-## `send()` and `recv()`---Talk to me, baby! {#sendrecv}
+## `send()`와 `recv()`---Talk to me, baby! {#sendrecv}
 
-These two functions are for communicating over stream sockets or
-connected datagram sockets. If you want to use regular unconnected
-datagram sockets, you'll need to see the section on [`sendto()` and
-`recvfrom()`](#sendtorecv), below.
+(역자 주 : Talk to me, baby!는 Elmore James의 노래입니다. 그러나 원저자의 의도가 이것인지 확실하지는 않습니다.)
+이 두 함수들은 스트림 소켓이나 연결된 데이터그램 소켓을 통해 통신하기 위해서 쓰입니다.
+일반적인 연결되지 않은 데이터그램 소켓을 쓰고싶다면 [`sendto()`과
+`recvfrom()`](#sendtorecv) 절을 보시면 됩니다.
 
-[i[`send()` function]] The `send()` call:
+[i[`send()` function]] `send()` 함수:
 
 ```{.c}
 int send(int sockfd, const void *msg, int len, int flags); 
 ```
 
-`sockfd` is the socket descriptor you want to send data to (whether it's
-the one returned by `socket()` or the one you got with `accept()`).
-`msg` is a pointer to the data you want to send, and `len` is the length
-of that data in bytes.  Just set `flags` to `0`. (See the `send()` man
-page for more information concerning flags.)
+`sockfd` 은 데이터를 보내고 싶은 소켓 설명자(`socket()`으로 만들었든 `accept()`로 만들었든)입니다.
+`msg`는 당신이 보낼 데이터에 대한 포인터이며, `len`은 그 길이입니다.
 
-Some sample code might be:
+예제 코드는 이렇게 될 수 있겠습니다:
 
 ```{.c .numberLines}
 char *msg = "Beej was here!";
@@ -627,168 +613,157 @@ bytes_sent = send(sockfd, msg, len, 0);
 . 
 ```
 
-`send()` returns the number of bytes actually sent out---_this might be
-less than the number you told it to send!_  See, sometimes you tell it
-to send a whole gob of data and it just can't handle it. It'll fire off
-as much of the data as it can, and trust you to send the rest later.
-Remember, if the value returned by `send()` doesn't match the value in
-`len`, it's up to you to send the rest of the string. The good news is
-this: if the packet is small (less than 1K or so) it will _probably_
-manage to send the whole thing all in one go.  Again, `-1` is returned
-on error, and `errno` is set to the error number.
+한 방에 모든 것을 보냈습니다. 다시 강조하지만 오류가 발생하면 `-1`이 반환되고
+`errno`가 오류 번호로 설정됩니다.
 
-[i[`recv()` function]] The `recv()` call is similar in many respects:
+
+[i[`recv()` function]] `recv()`함수는 많은 면에서 유사합니다:
 
 ```{.c}
 int recv(int sockfd, void *buf, int len, int flags);
 ```
 
-`sockfd` is the socket descriptor to read from, `buf` is the buffer to
-read the information into, `len` is the maximum length of the buffer,
-and `flags` can again be set to `0`. (See the `recv()` man page for flag
-information.)
+`sockfd`은 읽어들일 소켓 설명자이며, `buf`는 정보를 읽어들일 버퍼이고, `len`은 버퍼의
+최대 길이이고 `flags`는 여기서도 0으로 설정될 수 있습니다. (플래그 정보에 대해서는
+`recv()`의 man page를 참고하십시오.)
 
-`recv()` returns the number of bytes actually read into the buffer, or
-`-1` on error (with `errno` set, accordingly).
+`recv()`는 실제로 버퍼에 읽어들인 바이트의 수를 돌려주거나 오류가 발생할 경우 (`errno`
+를 적절한 값으로 설정하고) `-1`을 돌려줍니다.
 
-Wait! `recv()` can return `0`. This can mean only one thing: the remote
-side has closed the connection on you! A return value of `0` is
-`recv()`'s way of letting you know this has occurred.
+잠깐! `recv()`는 `0`을 돌려줄 수 있습니다. 이것은 한 가지 의미입니다: 원격지 측에서
+당신에 대한 연결을 닫은 것입니다! 복귀값 `0`은 `recv()`가 연결이 끊어졌음을
+알려주는 방식입니다.
 
-There, that was easy, wasn't it? You can now pass data back and forth on
-stream sockets! Whee! You're a Unix Network Programmer!
+자, 정말 쉽지않습니까? 이제 여러분은 스트림 소켓에서 자료를 주고받을 수 있습니다.
+와! 이제 여러분은 유닉스 네트워크 프로그래머입니다!
 
 
-## `sendto()` and `recvfrom()`---Talk to me, DGRAM-style {#sendtorecv}
+## `sendto()`와 `recvfrom()`---Talk to me, DGRAM-방식 {#sendtorecv}
 
-[i[`SOCK_DGRAM` macro]] "This is all fine and dandy," I hear you saying,
-"but where does this leave me with unconnected datagram sockets?" No
-problemo, amigo. We have just the thing.
+[i[`SOCK_DGRAM` macro]] "이제 다 깔끔하고 좋네요"라고 말씀하시는 소리가 
+들립니다. "그렇지만 연결이 없는 데이터그램 소켓은 어떻게 처리하지요?"라고도
+하시는군요. 문제 없습니다, 토모다치여(역자 주 : 원문은 amigo). 딱 맞는 것이
+있습니다.
 
-Since datagram sockets aren't connected to a remote host, guess which
-piece of information we need to give before we send a packet? That's
-right! The destination address! Here's the scoop:
+데이터그램 소켓은 원격지 호스트에 연결되어 있지 않으므로, 패킷을 보낼 때에
+필요한 정보는 조금 다릅니다. 그렇습니다. 목적지 주소가 필요합니다. 이런 식입니다:
 
 ```{.c}
 int sendto(int sockfd, const void *msg, int len, unsigned int flags,
            const struct sockaddr *to, socklen_t tolen); 
 ```
 
-As you can see, this call is basically the same as the call to `send()`
-with the addition of two other pieces of information. `to` is a pointer
-to a `struct sockaddr` (which will probably be another `struct
-sockaddr_in` or `struct sockaddr_in6` or `struct sockaddr_storage` that
-you cast at the last minute) which contains the destination [i[IP
-address]] IP address and [i[Port]] port. `tolen`, an `int` deep-down,
-can simply be set to `sizeof *to` or `sizeof(struct sockaddr_storage)`.
+보시다시피 `send()`와 같지만 두 개의 정보가 더 있습니다. `to`는 목적지의
+[i[IP address]] IP주소와 [i[Port]] 포트를 담은 `struct sockaddr`
+이며(아마도 여러분이 형변환해서 사용하실 `struct sockaddr_in`이나
+`struct sockaddr_in6` 또는 `struct sockaddr_storage`일 것입니다.)
+`tolen`은 내부적으로는 `int`이며 간단하게 `sizeof *to`나 `sizeof(struct sockaddr_storage)`로
+설정하면 됩니다.
 
-To get your hands on the destination address structure, you'll probably
-either get it from `getaddrinfo()`, or from `recvfrom()`, below, or
-you'll fill it out by hand.
+목적지 주소 구조체를 얻으려면 `getaddrinfo()`이나 아래의 `recvfrom()`을 사용하시거나
+수작업으로 값을 채워넣을 수도 있습니다.
 
-Just like with `send()`, `sendto()` returns the number of bytes actually
-sent (which, again, might be less than the number of bytes you told it
-to send!), or `-1` on error.
+`send()`와 마찬가지로 `sendto()`도 실제로 보낸 바이트 수를 돌려줍니다. (
+그 말은 보내려고 한 바이트의 수보다 적은 수가 돌아올 수도 있다는 의미입니다.)
+오류가 발생하면 `-1`을 돌려줍니다.
 
-Equally similar are `recv()` and [i[`recvfrom()` function]]
-`recvfrom()`. The synopsis of `recvfrom()` is:
+이와 유사한 관계가 `recv()`과 [i[`recvfrom()` function]] `recvfrom()`입니다.
+`recvfrom()`의 개요는 이렇습니다:
 
 ```{.c}
 int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
              struct sockaddr *from, int *fromlen); 
 ```
 
-Again, this is just like `recv()` with the addition of a couple fields.
-`from` is a pointer to a local [i[`struct sockaddr` type]] `struct
-sockaddr_storage` that will be filled with the IP address and port of
-the originating machine. `fromlen` is a pointer to a local `int` that
-should be initialized to `sizeof *from` or `sizeof(struct
-sockaddr_storage)`. When the function returns, `fromlen` will contain
-the length of the address actually stored in `from`.
+또 다시 이것은 몇 개의 추가적인 필드가 있는 `recv()`과 같습니다.
+`from`은 근원지 장치의 아이피 주소와 포트로 채워진 로컬 [i[`struct sockaddr` type]]
+`struct sockaddr_storage`에 대한 포인터입니다. `fromlen`은 로컬 `int`에 대한 포인터이며
+`sizeof *from`이나 `sizeof(struct sockaddr_storage)`으로 초기화되어야
+합니다. 함수가 반환될 때 `fromlen`은 `from`에 실제로 저장된 주소의 길이로
+설정되어 있을 것입니다.
 
-`recvfrom()` returns the number of bytes received, or `-1` on error
-(with `errno` set accordingly).
+`recvfrom()`은 받은 바이트의 갯수를 반환하며 오류가 나면 (`errno`를 적절히 설정하고)
+`-1`을 돌려줍니다.
 
-So, here's a question: why do we use `struct sockaddr_storage` as the
-socket type? Why not `struct sockaddr_in`? Because, you see, we want to
-not tie ourselves down to IPv4 or IPv6. So we use the generic `struct
-sockaddr_storage` which we know will be big enough for either.
+여기 질문이 하나 있을 것입니다: 왜 우리는 `struct sockaddr_storage`을 소켓의 타입으로
+사용하는가? 왜 그냥 `struct sockaddr_in`을 쓸 수 없는가? 이유는 보시다시피
+우리가 IPv4나 IPv6중 하나에 얽메이고 싶지 않기 때문입니다. 그래서 우리는 양쪽 모두에
+충분히 크고 일반적인 `struct sockaddr_storage`을 사용합니다.
 
-(So... here's another question: why isn't `struct sockaddr` itself big
-enough for any address? We even cast the general-purpose `struct
-sockaddr_storage` to the general-purpose `struct sockaddr`! Seems
-extraneous and redundant, huh. The answer is, it just isn't big enough,
-and I'd guess that changing it at this point would be Problematic. So
-they made a new one.)
+(그럼... 여기에서 다른 질문 하나: 왜 `struct sockaddr`을 모든 주소를 담을
+수 있을 정도로 크게 만들지 않았는가? 우리는 일반 목적의 `struct sockaddr_storage`
+을 다시 일반 목적의 `struct sockaddr`으로 형변환하고 있습니다! 이런 동작은
+과하고 불필요해 보입니다. 여기에 대한 대답은 그냥 이 `struct sockaddr`은
+만들어질 때부터 그렇게 크지 않았다는 것이고, 이제와서 그것을 바꾸는 것은
+문제의 소지가 있다는 것입니다. 그래서 그들은 그냥 새로운 타입을 만들었습니다.)
+(역자 주 : `struct sockaddr`은 소켓 통신의 초기에 만들어진 구조체이므로
+IPv6을 담기에 충분하지 않은 것은 당연한 일입니다.)
 
-Remember, if you [i[`connect()` function-->on datagram sockets]]
-`connect()` a datagram socket, you can then simply use `send()` and
-`recv()` for all your transactions. The socket itself is still a
-datagram socket and the packets still use UDP, but the socket interface
-will automatically add the destination and source information for you.
+만약 여러분이 데이터그램 소켓을 [i[`connect()` function-->on datagram sockets]]
+`connect()`하게 되면 모든 통신에 `send()`와 `recv()`을 쓸 수 있음을
+기억하십시오. 소켓 자체는 여전히 데이터그램 소켓일 것이고 패킷은 여전히
+UDP를 사용할 것이지만 소켓 인터페이스가 자동으로 여러분을 위해서
+목적지와 원천지 정보를 추가할 것입니다.
 
 
-## `close()` and `shutdown()`---Get outta my face!
+## `close()`와 `shutdown()`---내 앞에서 꺼져!
 
-Whew! You've been `send()`ing and `recv()`ing data all day long, and
-you've had it. You're ready to close the connection on your socket
-descriptor. This is easy. You can just use the regular Unix file
-descriptor [i[`close()` function]] `close()` function:
+휴! 여러분은 하루 종일 `send()`와 `recv()`을 사용했고, 이제 충분합니다.
+이제 여러분의 소켓 설명자를 닫을 준비가 되었습니다. 이건 쉽습니다. 그냥
+평범한 유닉스 파일 설명자 닫기 함수인 [i[`close()` function]] `close()`
+를 쓸 수 있습니다:
 
 ```{.c}
 close(sockfd); 
 ```
 
-This will prevent any more reads and writes to the socket. Anyone
-attempting to read or write the socket on the remote end will receive an
-error.
+이것은 해당 소켓에 대한 후속 읽기와 쓰기를 방지할 것입니다. 원격지에서
+이 소켓을 쓰거나 읽으려는 모든 시도는 오류를 반환할 것입니다.
 
-Just in case you want a little more control over how the socket closes,
-you can use the [i[`shutdown()` function]] `shutdown()` function. It
-allows you to cut off communication in a certain direction, or both ways
-(just like `close()` does). Synopsis:
+소켓이 어떻게 닫히는지 좀 더 조절하고 싶은 경우에 [i[`shutdown()` function]] `shutdown()`
+함수를 사용할 수 있습니다. 이것은 특정 방향으로의 통신만 끊는 일을 할
+수 있으며 양쪽 모두 막을 수도 있습니다(마치 `close()`가 하듯이).
+개요는 이렇습니다:
 
 ```{.c}
 int shutdown(int sockfd, int how); 
 ```
 
-`sockfd` is the socket file descriptor you want to shutdown, and `how`
-is one of the following:
+`sockfd`는 종료하고 싶은 소켓 파일 설명자이고, `how`는 다음 중 하나입니다:
 
-| `how` | Effect                                                     |
+| `how` | 효과                                                     |
 |:-----:|------------------------------------------------------------|
-|  `0`  | Further receives are disallowed                            |
-|  `1`  | Further sends are disallowed                               |
-|  `2`  | Further sends and receives are disallowed (like `close()`) |
+|  `0`  | 후속 수신이 금지됩니다.                            |
+|  `1`  | 후속 송신이 금지됩니다.                               |
+|  `2`  | 후속 송수신이 금지됩니다. (`close()`처럼) |
 
-`shutdown()` returns `0` on success, and `-1` on error (with `errno` set
-accordingly).
-
-If you deign to use `shutdown()` on unconnected datagram sockets, it
-will simply make the socket unavailable for further `send()` and
-`recv()` calls (remember that you can use these if you `connect()` your
-datagram socket).
-
-It's important to note that `shutdown()` doesn't actually close the file
-descriptor---it just changes its usability. To free a socket descriptor,
-you need to use `close()`.
-
-Nothing to it.
-
-(Except to remember that if you're using [i[Windows]] Windows and
-[i[Winsock]] Winsock that you should call [i[`closesocket()` function]]
-`closesocket()` instead of `close()`.)
+`shutdown()`은 성공시에 `0`을 반환하고, 오류가 발생하면 (`errno`를 적절한 값으로 설정하고)
+`-1`을 반환합니다.
 
 
-## `getpeername()`---Who are you?
+연결되지 않은 데이터그램 소켓에 기꺼이 `shutdown()`을 해주신다면,
+그것은 단순히 해당 소켓에 `send()`와 `recv()`를 사용할 수 없도록
+만들 것입니다(데이터그램 소켓에 `connect()`를 사용하면 이 두 함수를
+사용할 수 있음을 기억하십시오).
 
-[i[`getpeername()` function]] This function is so easy.
+`shutdown()`이 실제로 파일 설명자를 닫지는 않음에 주목하십시오. 소켓 설명자를
+해제하기 위해서는 `close()`를 호출해야 합니다.
 
-It's so easy, I almost didn't give it its own section. But here it is
-anyway.
+별 것 없군요.
 
-The function `getpeername()` will tell you who is at the other end of a
-connected stream socket. The synopsis:
+(예외적으로 여러분이 [i[Windows]] 윈도우즈와 [i[Winsock]] Winsock을
+사용하실 경우 `close()`대신 [i[`closesocket()` function]]
+`closesocket()`을 호출해야 합니다.)
+
+
+## `getpeername()`---누구십니까?
+
+[i[`getpeername()` function]] 이 함수는 너무 쉽습니다.
+
+너무 쉬워서 이 함수에 별도의 장을 주지도 않았습니다. 아무튼 알려드리겠습니다.
+
+`getpeername()`함수는 연결된 스트림 소켓의 반대편 끝에 누가 있는지를 알려줄
+것입니다. 개요입니다:
 
 ```{.c}
 #include <sys/socket.h>
@@ -796,33 +771,34 @@ connected stream socket. The synopsis:
 int getpeername(int sockfd, struct sockaddr *addr, int *addrlen); 
 ```
 
-`sockfd` is the descriptor of the connected stream socket, `addr` is a
-pointer to a `struct sockaddr` (or a `struct sockaddr_in`) that will
-hold the information about the other side of the connection, and
-`addrlen` is a pointer to an `int`, that should be initialized to
-`sizeof *addr` or `sizeof(struct sockaddr)`.
+`sockfd`는 연결된 스트림 소켓의 설명자입니다. `addr`은 연결의 반대편
+끝에 대한 정보를 담을 `struct sockaddr` (또는 `struct sockaddr_in`)
+에 대한 포인터입니다. `addrlen`은 `int`에 대한 포인터이며 `sizeof *addr`이나
+`sizeof(struct sockaddr)`으로 초기화되어야 합니다.
+(역자 주 : 이 함수도 IPv6과 동작하기 위해서 `struct sockaddr_storage`
+을 사용할 수 있습니다.)
 
-The function returns `-1` on error and sets `errno` accordingly.
+이 함수는 오류가 발생하면 `-1`을 돌려주고 `errno`를 알맞게 설정합니다.
 
-Once you have their address, you can use [i[`inet_ntop()` function]]
-`inet_ntop()`, [i[`getnameinfo()` function]] `getnameinfo()`, or
-[i[`gethostbyaddr()` function]] `gethostbyaddr()` to print or get more
-information. No, you can't get their login name. (Ok, ok. If the other
-computer is running an ident daemon, this is possible. This, however, is
-beyond the scope of this document. Check out [flrfc[RFC 1413|1413]] for
-more info.)
+여러분이 상대방의 주소를 가지면 그것을 [i[`inet_ntop()` function]]
+`inet_ntop()`, [i[`getnameinfo()` function]] `getnameinfo()` 또는
+[i[`gethostbyaddr()` function]] `gethostbyaddr()`에 넣어서 화면에
+출력하거나 추가적인 정보를 가져올 수 있습니다. 그들의 로그인 이름을 가져올
+수는 없습니다. (좋습니다, 좋아요. 만약 저쪽 컴퓨터가 ident 데몬을 실행중이라면
+가능합니다. 그러나 그것은 이 문서의 범위를 넘어섭니다. 더 자세한 정보를
+원한다면 [flrfc[RFC 1413|1413]]을 참고하십시오.)
 
 
-## `gethostname()`---Who am I?
+## `gethostname()`---나는 누구인가?
 
-[i[`gethostname()` function]] Even easier than `getpeername()` is the
-function `gethostname()`. It returns the name of the computer that your
-program is running on. The name can then be used by [i[`getaddrinfo()`
-function]] `getaddrinfo()`, above, to determine the [i[IP address]] IP
-address of your local machine.
+[i[`gethostname()` function]] `getpeername()`보다 더 쉬운 것이 바로 `gethostname()`
+함수입니다. 이것은 여러분의 프로그램이 실행되고 있는 컴퓨터의 이름을 돌려줍니다.
+돌려받은 이름은 위에 있는 [i[`getaddrinfo()` function]] `getaddrinfo()`
+을 써서 여러분의 로컬 장치의 [i[IP address]] IP주소를 알아내는 일에
+쓰일 수 있습니다.
 
-What could be more fun? I could think of a few things, but they don't
-pertain to socket programming. Anyway, here's the breakdown:
+이보다 더 재미있는 일이 있을 수 있겠습니까? 사실 몇 가지 생각나긴 합니다만
+소켓 프로그래밍에 대한 것이 아니군요. 아무튼 정리하자면 이렇습니다:
 
 ```{.c}
 #include <unistd.h>
@@ -830,9 +806,8 @@ pertain to socket programming. Anyway, here's the breakdown:
 int gethostname(char *hostname, size_t size); 
 ```
 
-The arguments are simple: `hostname` is a pointer to an array of chars that will
-contain the hostname upon the function's return, and `size` is the length in
-bytes of the `hostname` array.
+인수들은 단순합니다: `hostname`은 함수가 반환하는 호스트 이름을 담을
+char의 배열에 대한 포인터입니다. `size`는 `hostname`배열의 길이입니다.
 
-The function returns `0` on successful completion, and `-1` on error, setting
-`errno` as usual.
+함수는 성공적인 완료 후에 `0`을 반환하고, 오류에 대해서는 흔히 그렇듯
+`errno`를 설정하고 `-1`을 반환합니다.
