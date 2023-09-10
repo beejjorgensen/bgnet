@@ -2,12 +2,12 @@
 
 [i[Client/Server]<]
 
-It's a client-server world, baby. Just about
-everything on the network deals with client processes talking to server
-processes and vice-versa. Take `telnet`, for instance. When you connect
-to a remote host on port 23 with telnet (the client), a program on that
-host (called `telnetd`, the server) springs to life. It handles the
-incoming telnet connection, sets you up with a login prompt, etc.
+클라이언트-서버에 대해 이야기할 차례이다. 통신망에 있는 거의 모든 것들은
+서버 프로세스에게 이야기하는 클라이언트 프로세스를 상대하거나 그 반대이다.
+`telnet`을 예로 들어보자. 여러분이 텔넷(클라이언트)로 원격지 호스트의 23번
+포트에 접속할 때 그 호스트의 프로그램(`telnetd`라고 불리는 서버)이 생명을
+얻는다. 그것이 들어오는 텔넷 요청을 처리하고 당신에게 로그인 프롬프트를
+띄워주는 등의 일을 처리한다.
 
 ![클라이언트 - 서버 상호작용](cs.pdf "[클라이언트- 서버 상호작용 도표]")
 
