@@ -217,5 +217,5 @@ clean:
 pristine: clean
 	rm -f $(HTML) $(BOOKS)
 	rm -rf $(SPLIT_DIRS)
-
+ 
 .PHONY: all, html, clean, pristine, install-fonts
