@@ -1,4 +1,4 @@
-# 클라인트-서버 배경지식
+# Client-Server Background
 
 [i[Client/Server]<]
 
@@ -9,34 +9,37 @@ to a remote host on port 23 with telnet (the client), a program on that
 host (called `telnetd`, the server) springs to life. It handles the
 incoming telnet connection, sets you up with a login prompt, etc.
 
-![클라이언트 - 서버 상호작용](cs.pdf "[클라이언트- 서버 상호작용 도표]")
+![Client-Server Interaction.](cs.pdf "[Client-Server Interaction Diagram]")
 
-위의 도표에 클라이언트와 서버의 정보 교환이 정리되어 있습니다.
+The exchange of information between client and server is summarized in
+the above diagram.
 
-클라이언트-서버 쌍은 `SOCK_STREAM`이나 `SOCK_DGRAM` 또는 다른 어떤 것이라도
-말할 수 있음을 기억하십시오.(둘이 같은 방식으로 말하기만 한다면) 클라이언트-서버
-쌍의 좋은 예시는 `telnet`/`telnetd`, `ftp`/`ftpd` 또는 `Firefox`/`Apache`
-입니다. 당신이 `ftp`를 쓸 때마다 당신의 요청을 받아들이는 원격지 프로그램인
-`ftpd`가 있습니다.
+Note that the client-server pair can speak `SOCK_STREAM`, `SOCK_DGRAM`,
+or anything else (as long as they're speaking the same thing). Some good
+examples of client-server pairs are `telnet`/`telnetd`, `ftp`/`ftpd`, or
+`Firefox`/`Apache`. Every time you use `ftp`, there's a remote program,
+`ftpd`, that serves you.
 
-흔히 한 개의 장기체는 오직 하나의 서버만이 있을 것이며 그 서버는 [i[`fork()` function]] `fork()`
-를 통해서 여러 클라이언트를 처리할 것입니다. 기본적인 과정은 아래와 같습니다.
-서버가 연결을 기다리고, `accept()`한 후, 요청을 처리할 자식 프로세스를 `fork()`
-합니다. 이것이 다음 절에서 우리의 예제 서버가 하는 일입니다.
+Often, there will only be one server on a machine, and that server will
+handle multiple clients using [i[`fork()` function]] `fork()`. The basic
+routine is: server will wait for a connection, `accept()` it, and
+`fork()` a child process to handle it. This is what our sample server
+does in the next section.
 
-## 단순한 스트림 서버
+
+## A Simple Stream Server
 
 [i[Server-->stream]<]
 
-이 서버가 하는 일은 스트림 연결에 "`Hello, world!`"을 전송하는 것 뿐입니다.
-이 서버를 시험하기 위해서 할 일은 하나의 창에서 이것을 실행한 후 다른 창에서
-텔넷에 아래 명령어로 접속하는 일 뿐입니다.
+All this server does is send the string "`Hello, world!`" out over a
+stream connection. All you need to do to test this server is run it in
+one window, and telnet to it from another with:
 
 ```
 $ telnet remotehostname 3490
 ```
 
-`remotehostname`은 당신이 실행하는 장치의 아이피입니다.
+where `remotehostname` is the name of the machine you're running it on.
 
 [flx[The server code|server.c]]:
 
@@ -58,13 +61,13 @@ $ telnet remotehostname 3490
 #include <sys/wait.h>
 #include <signal.h>
 
-#define PORT "3490"  // 사용자들이 접속할 포트
+#define PORT "3490"  // the port users will be connecting to
 
-#define BACKLOG 10   // 몇 개의 대기중인 연결이 유지될 것인가
+#define BACKLOG 10   // how many pending connections queue will hold
 
 void sigchld_handler(int s)
 {
-    // waitpid()이 errno를 덮어쓸 수 있으므로 저장했다가 되살린다.
+    // waitpid() might overwrite errno, so we save and restore it:
     int saved_errno = errno;
 
     while(waitpid(-1, NULL, WNOHANG) > 0);
@@ -73,7 +76,7 @@ void sigchld_handler(int s)
 }
 
 
-// IPv4 또는 IPv6 sockaddr을 받아온다.
+// get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
     if (sa->sa_family == AF_INET) {
@@ -85,9 +88,9 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(void)
 {
-    int sockfd, new_fd;  // sock_fd에서 대기하고 들어오는 연결은 new_fd에 저장
+    int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
     struct addrinfo hints, *servinfo, *p;
-    struct sockaddr_storage their_addr; // 접속자의 주소 정보
+    struct sockaddr_storage their_addr; // connector's address information
     socklen_t sin_size;
     struct sigaction sa;
     int yes=1;
@@ -104,7 +107,7 @@ int main(void)
         return 1;
     }
 
-    // 모든 결과를 조회하고 쓸 수 있는 첫 번째 것을 사용
+    // loop through all the results and bind to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
@@ -127,7 +130,7 @@ int main(void)
         break;
     }
 
-    freeaddrinfo(servinfo); // 이 구조체는 더 이상 필요없음
+    freeaddrinfo(servinfo); // all done with this structure
 
     if (p == NULL)  {
         fprintf(stderr, "server: failed to bind\n");
@@ -139,9 +142,9 @@ int main(void)
         exit(1);
     }
 
-    sa.sa_handler = sigchld_handler; // 죽은 프로세스를 다 거둬들이자
+    sa.sa_handler = sigchld_handler; // reap all dead processes
     sigemptyset(&sa.sa_mask);
-    sa.sa_flags =   ;
+    sa.sa_flags = SA_RESTART;
     if (sigaction(SIGCHLD, &sa, NULL) == -1) {
         perror("sigaction");
         exit(1);
@@ -149,7 +152,7 @@ int main(void)
 
     printf("server: waiting for connections...\n");
 
-    while(1) {  // 주 accept() 루프
+    while(1) {  // main accept() loop
         sin_size = sizeof their_addr;
         new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
         if (new_fd == -1) {
@@ -162,39 +165,42 @@ int main(void)
             s, sizeof s);
         printf("server: got connection from %s\n", s);
 
-        if (!fork()) { // 자식 프로세스이다.
-            close(sockfd); // 자식은 리스너가 필요없다.
+        if (!fork()) { // this is the child process
+            close(sockfd); // child doesn't need the listener
             if (send(new_fd, "Hello, world!", 13, 0) == -1)
                 perror("send");
             close(new_fd);
             exit(0);
         }
-        close(new_fd);  // 부모는 이것이 필요없다.
+        close(new_fd);  // parent doesn't need this
     }
 
     return 0;
 }
 ```
 
-궁금한 독자들을 위해 덧붙이자면 구문의 명료함을 위해서 하나의 큰 `main()`함수
-안에 모든 코드를 다 적었습니다. 원한다면 더 작은 함수들로 나누어도 좋습니다.
+In case you're curious, I have the code in one big `main()` function for
+(I feel) syntactic clarity. Feel free to split it into smaller functions
+if it makes you feel better.
 
-(아마도 이 [i[`sigaction()` function]] `sigaction()`을 처음 볼 수도 있는데
-괜찮다. 이 코드는 `fork()`된 자식 프로세스가 종료되면서 생기는 좀비 프로세스를
-거둬들이는 데 사용된다. 좀비 프로세스를 많이 만들고 거둬들이지 않으면 시스템
-관리자가 흥분할 것이다.)
+(Also, this whole [i[`sigaction()` function]] `sigaction()` thing might
+be new to you---that's OK. The code that's there is responsible for
+reaping [i[Zombie process]] zombie processes that appear as the
+`fork()`ed child processes exit. If you make lots of zombies and don't
+reap them, your system administrator will become agitated.)
 
-다음 절에 나오는 클라이언트를 사용해서 이 서버로부터 데이터를 얻을 수 있다.
+You can get the data from this server by using the client listed in the
+next section.
 
 [i[Server-->stream]>]
 
-## 단순한 스트림 클라이언트
+## A Simple Stream Client
 
 [i[Client-->stream]<]
 
-이 녀석은 서버보다도 더 쉽다. 이 클라이언트가 하는 일은 당신이 명령줄에
-지정한 호스트의 3490번 포트로 접속하는 것이다. 이것은 서버가 보낸 문자열을
-받는다.
+This guy's even easier than the server. All this client does is connect
+to the host you specify on the command line, port
+3490. It gets the string that the server sends.
 
 [flx[The client source|client.c]]:
 
@@ -215,9 +221,9 @@ int main(void)
 
 #include <arpa/inet.h>
 
-#define PORT "3490" // 클라이언트가 접속할 포트
+#define PORT "3490" // the port client will be connecting to 
 
-#define MAXDATASIZE 100 // 한 번에 받을 수 있는 최대 바이트 갯수
+#define MAXDATASIZE 100 // max number of bytes we can get at once 
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -231,7 +237,7 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;
+    int sockfd, numbytes;  
     char buf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
     int rv;
@@ -251,7 +257,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // 모든 결과를 순회하면서 쓸 수 있는 가장 첫 번째 것을 씀
+    // loop through all the results and connect to the first we can
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
@@ -277,7 +283,7 @@ int main(int argc, char *argv[])
             s, sizeof s);
     printf("client: connecting to %s\n", s);
 
-    freeaddrinfo(servinfo); // 이 구조체는 더 이상 필요 없음
+    freeaddrinfo(servinfo); // all done with this structure
 
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
         perror("recv");
@@ -294,31 +300,34 @@ int main(int argc, char *argv[])
 }
 ```
 
-클라이언트를 실행하기 전에 서버를 실행하지 않으면 `connect()`는
-[i[Connection refused]] "Connection refused"를 반환한다는 점을
-기억하라. 아주 유용하다.
+Notice that if you don't run the server before you run the client,
+`connect()` returns [i[Connection refused]] "Connection refused". Very
+useful.
 
 [i[Client-->stream]>]
 
-## 데이터그램 소켓 {#datagram}
+## Datagram Sockets {#datagram}
 
 [i[Server-->datagram]<]
 
-위에서 `sendto()`과 `recvfrom()`에 대해 논의할 때 UDP 데이터그램 소켓의
-기본에 대해서 이미 알아보았다. 그러므로 바로 2개의 예제 프로그램을 제시하겠다.
-`talker.c`와 `listener.c`이다.
+We've already covered the basics of UDP datagram sockets with our
+discussion of `sendto()` and `recvfrom()`, above, so I'll just present a
+couple of sample programs: `talker.c` and `listener.c`.
 
-`listener`는 장치에서 포트 4950으로 들어오는 패킷을 대기한다. `talker`는
-지정한 장치의 해당 포트로 사용자가 명령줄에 입력한 내용을 담은 패킷을 보낸다.
+`listener` sits on a machine waiting for an incoming packet on port
+4950. `talker` sends a packet to that port, on the specified machine,
+that contains whatever the user enters on the command line.
 
-데이터그램 소켓은 연결이 없고 소켓을 이더넷에 발송한 후 성공 여부는 신경쓰지
-않기 때문에 클라이언트와 서버에 IPv6을 사용하도록 명시할 것이다. 이렇게 하면
-서버가 IPv6에서 듣고 클라이언트가 IPv4에서 발송해서 데이터를 받을 수 없는
-상황을 피할 수 있을 것이다. (우리의 TCP 스트림 소켓 세상에서도 이런 불일치가
-발생할 수 있지만 `connect()`에서 하나의 주소 체계에 대해 에러를 발생시키고
-다른 주소체계를 쓰도록 해준다.)
+Because datagram sockets are connectionless and just fire packets off
+into the ether with callous disregard for success, we are going to tell
+the client and server to use specifically IPv6. This way we avoid the
+situation where the server is listening on IPv6 and the client sends on
+IPv4; the data simply would not be received. (In our connected TCP
+stream sockets world, we might still have the mismatch, but the error on
+`connect()` for one address family would cause us to retry for the
+other.)
 
-여기에 [flx[`listener.c`의 소스코드가 있다.|listener.c]]:
+Here is the [flx[source for `listener.c`|listener.c]]:
 
 ```{.c .numberLines}
 /*
@@ -418,12 +427,8 @@ int main(void)
 }
 ```
 
-`getaddrinfo()`에서 우리가 마침내 `SOCK_DGRAM`을 사용한다는 것에
-주목하라. 또한, `listen()`와 `accept()`이 필요하지 않다는 점도
-기억하라. 이것이 연결 없는 데이터그램 소켓을 사용할 때의 장점
-중 하나이다.
 Notice that in our call to `getaddrinfo()` we're finally using
-`SOCK_DGRAM`. Also, note that there's no need to `listen()` or
+`SOCK_DGRAM`.  Also, note that there's no need to `listen()` or
 `accept()`. This is one of the perks of using unconnected datagram
 sockets!
 
@@ -503,23 +508,25 @@ int main(int argc, char *argv[])
 }
 ```
 
-이것이 전부다! 하나의 장치에서 `listener`를 실행하고 `talker`를 다른 장치에서
-실행하라.(역자 주 : 하나의 장치에서도 순서만 맞게 실행하면 문제는 없다. 여러
-터미널을 동시에 열 수 있는 다양한 방법이 있다.) 그것들이 통신하는 것을 지켜보라.
-핵가족 전체를 위한 전연령 엔터테인먼트다.
+And that's all there is to it! Run `listener` on some machine, then run
+`talker` on another. Watch them communicate! Fun G-rated excitement for
+the entire nuclear family!
 
-이번에는 서버르 실행할 필요도 없다! `talker`를 혼자 실행시키면 패킷을 행복하게
-발송하고, 아무도 반대쪽에서 `recvfrom()`을 호출하지 않는다면 그저 패킷은 사라질
-뿐이다. 기억하라 : UDP 데이터그램 소켓으로 보낸 데이터는 도착을 보장하지 않는다.!
+You don't even have to run the server this time! You can run `talker` by
+itself, and it just happily fires packets off into the ether where they
+disappear if no one is ready with a `recvfrom()` on the other side.
+Remember: data sent using UDP datagram sockets isn't guaranteed to
+arrive!
 
 [i[Client-->datagram]>]
 
-전에 몇 번 말한 사소한 것 한 가지를 빼면 전부다: [i[`connect()` function-->on datagram sockets]]
-연결된 데이터그램 소켓이 그것이다. 그것에 대해서 여기에서 말해야하는데,
-이 문서의 데이터그램에 대한 부분이 바로 여기이기 때문이다. 위의 `talker`
-가 `listener`의 주소를 지정하고 `connect()`를 호출한다고 하자. 그 순간부터
-`talker`는 `connect()`로 지정한 주소로만 데이터를 보내고 받을 수 있다.
-이런 이유로 `sendto()`와 `recvfrom()`을 쓸 필요가 없다. 단순히 `send()`
-와 `recv()`를 쓰면 된다.
+Except for one more tiny detail that I've mentioned many times in the
+past: [i[`connect()` function-->on datagram sockets]] connected datagram
+sockets. I need to talk about this here, since we're in the datagram
+section of the document. Let's say that `talker` calls `connect()` and
+specifies the `listener`'s address. From that point on, `talker` may
+only send to and receive from the address specified by `connect()`. For
+this reason, you don't have to use `sendto()` and `recvfrom()`; you can
+simply use `send()` and `recv()`.
 
 [i[Client/Server]>]
