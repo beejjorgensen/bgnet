@@ -1,31 +1,28 @@
-# Slightly Advanced Techniques
+# 약간 더 고급스러운 기술
 
-These aren't _really_ advanced, but they're getting out of the more
-basic levels we've already covered. In fact, if you've gotten this far,
-you should consider yourself fairly accomplished in the basics of Unix
-network programming!  Congratulations!
+이것들은 _진짜로_ 고급 기술인 것은 아니지만 우리가 지금까지 다룬 기본적인 것들을
+벗어나고 있다. 사실 당신이 여기까지 왔다면 스스로가 기본적인 유닉스 네트워크 프로그래밍을
+꽤 잘 한다고 생각해도 된다. 축하한다.
 
-So here we go into the brave new world of some of the more esoteric
-things you might want to learn about sockets. Have at it!
+이제 당신이 소켓에 대해서 배우고 싶어할 좀 더 비밀스러운 것들의 세상으로
+용감하게 가보자. 열심히 해 보자!
 
-
-## Blocking {#blocking}
+## 블로킹 {#blocking}
 
 [i[Blocking]<]
 
-Blocking. You've heard about it---now what the heck is it? In a
-nutshell, "block" is techie jargon for "sleep". You probably noticed
-that when you run `listener`, above, it just sits there until a packet
-arrives. What happened is that it called `recvfrom()`, there was no
-data, and so `recvfrom()` is said to "block" (that is, sleep there)
-until some data arrives.
+블로킹. 그것에 대해서 이미 들어보았다. 그것은 도대체 무엇인가? 간단히 말하면
+"블록"은 "잠자기"에 대한 기술적 용어이다. 위에서 `listener`를 실행하면
+패킷이 도착할 때까지 그대로 기다리고 있다는 것을 눈치챘을 것이다. 내부적으로는
+`recvfrom()`이 호출되고, 데이터가 없으므로 `recvfrom()`는 데이터가 도착할
+때까지 "블록"된 상태인 것이다.(즉 그대로 잠들어 있게 된다.)
 
-Lots of functions block. `accept()` blocks. All the `recv()` functions
-block.  The reason they can do this is because they're allowed to. When
-you first create the socket descriptor with `socket()`, the kernel sets
-it to blocking.  [i[Non-blocking sockets]] If you don't want a socket to
-be blocking, you have to make a call to [i[`fcntl()` function]]
-`fcntl()`:
+많은 함수들이 블록상태가 된다. `accept()`는 블로킹 함수이다. 모든 `recv()`
+함수들도 블록 동작을 하는 함수이다.(역자 주 : 원문에서는 block자체를 동사로
+쓴다.) 그것들이 블록동작을 할 수 있는 이유는 그렇게 할 수 있게 허락을 받았기
+때문이다. `socket()`으로 소켓 설명자를 처음 만들 때 커널이 이 소켓을 블로킹
+소켓으로 설정한다. [i[Non-blocking sockets]] 만약 소켓이 블록 동작을 하지
+않길 원한다면 [i[`fcntl()` 함수]]에 대한 호출을 해야한다. :
 
 ```{.c .numberLines}
 #include <unistd.h>
@@ -37,49 +34,51 @@ sockfd = socket(PF_INET, SOCK_STREAM, 0);
 fcntl(sockfd, F_SETFL, O_NONBLOCK);
 .
 .
-. 
+.
 ```
 
-By setting a socket to non-blocking, you can effectively "poll" the
-socket for information. If you try to read from a non-blocking socket
-and there's no data there, it's not allowed to block---it will return
-`-1` and `errno` will be set to [i[`EAGAIN` macro]] `EAGAIN` or
-[i[`EWOULDBLOCK` macro]] `EWOULDBLOCK`.
+소켓을 논블로킹으로 설정하면 정보를 얻기 위해서 소켓을 효과적으로 "조사(원문 : poll)"
+할 수 있다. 논 블로킹 소켓을 읽으려고 할 때 정보가 없다면 그것이 블록 동작을
+하는 것은 허락되지 않는다. 그것은 -1을 반환할 것이고 `errno`은 [i[`EAGAIN` 매크로]]
+`EAGAIN` 이나 [i[`EWOULDBLOCK` 매크로]] `EWOULDBLOCK`로 설정될 것이다.
 
-(Wait---it can return [i[`EAGAIN` macro]] `EAGAIN` _or_
-[i[`EWOULDBLOCK` macro]] `EWOULDBLOCK`? Which do you check for?  The
-specification doesn't actually specify which your system will return, so
-for portability, check them both.)
+(잠깐, [i[`EAGAIN` 매크로]] `EAGAIN` _이나_ [i[`EWOULDBLOCK` 매크로]] `EWOULDBLOCK`
+를 돌려준다니 무엇을 확인해야 한다는 말인가? 명세서에는 사실 당신의 시스템이 어떤 값을
+돌려줘야 하는지가 정의되어 있지 않다. 그러므로 이식성을 위해서는 둘을 모두 확인해야 한다.)
 
-Generally speaking, however, this type of polling is a bad idea. If you
-put your program in a busy-wait looking for data on the socket, you'll
-suck up CPU time like it was going out of style. A more elegant solution
-for checking to see if there's data waiting to be read comes in the
-following section on [i[`poll()` function]] `poll()`.
+그러나 일반적으로 말하자면 이런 방식의 조사는 좋은 생각이 아니다. 당신의 프로그램이
+소켓의 자료를 기다리면서 바쁜 대기 상태가 되면 당신은 보통의 프로그램보다 훨씬
+CPU시간을 많이 사용할 것이다. (역자 주 : 특별한 제한을 걸지 않으면 최대 단일 코어
+하나를 100% 점유할 수 있다.) 읽기 작업을 기다리는 정보가 있는지 확인하기 위한
+조금 더 우아한 해결책은 [i[`poll()` 함수]] `poll()`에 대해 다루는 다음 절에 있다.
 
 [i[Blocking]>]
 
-## `poll()`---Synchronous I/O Multiplexing {#poll}
+## `poll()`---동기 입출력 다중화 {#poll}
 
 [i[poll()]<]
 
-What you really want to be able to do is somehow monitor a _bunch_ of
-sockets at once and then handle the ones that have data ready. This way
-you don't have to continuously poll all those sockets to see which are
-ready to read.
+당신이 정말로 하고자 해야하는 일은 소켓 _한 무더기_ 를 한 번에 감시하고 그 중에
+데이터가 준비된 것을 처리하는 것이다. 이런 방식을 통해서 당신은 모든 소켓을
+지속적으로 조사하지 않아도 여러 개의 소켓 중 어떤 것이 데이터가 준비되었는지 알
+수 있다.
 
-> _A word of warning: `poll()` is horribly slow when it comes to giant
-> numbers of connections. In those circumstances, you'll get better
-> performance out of an event library such as
-> [fl[libevent|https://libevent.org/]] that attempts to use the fastest
-> possible method availabile on your system._
+> 경고 : `poll()`은 엄청나게 많은 수의 연결을 처리할 때 끔찍하게 느려진다.
+> 이런 상황에서는 [fl[libevent|https://libevent.org/]] 같은 이벤트 라이브러리
+> 를 사용하면 더 좋은 성능을 얻을 수 있다. 이런 라이브러리는 당신의 운영체제에서
+> 사용할 수 있는 가장 빠른 방법을 사용하려고 시도할 것이다.
 
-So how can you avoid polling? Not slightly ironically, you can avoid
-polling by using the `poll()` system call. In a nutshell, we're going to
-ask the operating system to do all the dirty work for us, and just let
-us know when some data is ready to read on which sockets. In the
-meantime, our process can go to sleep, saving system resources.
+그래서 어떻게 조사를 피할 수 있는가? 놀랍게도 `poll()` 시스템 함수를 사용해서 조사를
+피할 수 있다. (역자 주 : poll은 투표, 설문, 그러한 부류의 조사라는 뜻이다.) 간단히
+말하자면 운영체제에게 모든 번거로운 작업을 우리 대신 하고 어떤 소켓에
+자료가 도착하면 알려달라고 부탁하는 것이다. 그 동안 우리의 프로세스는 대기 상태가
+될 수 있고 시스템 자원을 아낄 수 있다.
 
+전체적인 계획은 우리가 감시하고 싶은 소켓 설명자와 우리가 감시하고 싶은 이벤트의
+종류에 대한 정보를 담은 `struct pollfd`의 배열을 보관하는 것이다.
+운영체제는 해당하는 종류의 이벤트가 발생(예를 들어 "소켓에 읽을 자료가 있다!"
+같은 이벤트)하거나 사용자가 지정한 제한 시간이 지날 때까지 `poll()` 호출을 블록할
+것이다.
 The general gameplan is to keep an array of `struct pollfd`s with
 information about which socket descriptors we want to monitor, and what
 kind of events we want to monitor for. The OS will block on the `poll()`
@@ -91,7 +90,7 @@ incoming connection is ready to be `accept()`ed.
 
 That's enough banter. How do we use this?
 
-``` {.c}
+```{.c}
 #include <poll.h>
 
 int poll(struct pollfd fds[], nfds_t nfds, int timeout);
@@ -106,7 +105,7 @@ Let's have a look at that `struct`:
 
 [i[`struct pollfd` type]]
 
-``` {.c}
+```{.c}
 struct pollfd {
     int fd;         // the socket descriptor
     short events;   // bitmap of events we're interested in
@@ -121,10 +120,10 @@ we're interested in.
 
 The `events` field is the bitwise-OR of the following:
 
-| Macro     | Description                                                  |
-|-----------|--------------------------------------------------------------|
-| `POLLIN`  | Alert me when data is ready to `recv()` on this socket.      |
-| `POLLOUT` | Alert me when I can `send()` data to this socket without blocking.|
+| Macro     | Description                                                        |
+| --------- | ------------------------------------------------------------------ |
+| `POLLIN`  | Alert me when data is ready to `recv()` on this socket.            |
+| `POLLOUT` | Alert me when I can `send()` data to this socket without blocking. |
 
 Once you have your array of `struct pollfd`s in order, then you can pass
 it to `poll()`, also passing the size of the array, as well as a timeout
@@ -140,7 +139,7 @@ After `poll()` returns, you can check the `revents` field to see if
 Here's [flx[an example|poll.c]] where we'll wait 2.5 seconds for data to
 be ready to read from standard input, i.e. when you hit `RETURN`:
 
-``` {.c .numberLines}
+```{.c .numberLines}
 #include <stdio.h>
 #include <poll.h>
 
@@ -216,7 +215,7 @@ Not only that, but if you hit `CTRL-]` and type `quit` to exit `telnet`,
 the server should detect the disconnection and remove you from the array
 of file descriptors.
 
-``` {.c .numberLines}
+```{.c .numberLines}
 /*
 ** pollserver.c -- a cheezy multiperson chat server
 */
@@ -262,13 +261,13 @@ int get_listener_socket(void)
         fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
         exit(1);
     }
-    
+
     for(p = ai; p != NULL; p = p->ai_next) {
         listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-        if (listener < 0) { 
+        if (listener < 0) {
             continue;
         }
-        
+
         // Lose the pesky "address already in use" error message
         setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 
@@ -426,7 +425,7 @@ int main(void)
             } // END got ready-to-read from poll()
         } // END looping through file descriptors
     } // END for(;;)--and you thought it would never end!
-    
+
     return 0;
 }
 ```
@@ -439,7 +438,6 @@ use. Choose the one you like the best, as long as it's supported on your
 system.
 
 [i[poll()]>]
-
 
 ## `select()`---Synchronous I/O Multiplexing, Old School {#select}
 
@@ -456,7 +454,7 @@ you going to `recv()` data at the same time? "Use non-blocking sockets!"
 No way! You don't want to be a CPU hog. What, then?
 
 `select()` gives you the power to monitor several sockets at the same
-time.  It'll tell you which ones are ready for reading, which are ready
+time. It'll tell you which ones are ready for reading, which are ready
 for writing, and which sockets have raised exceptions, if you really
 want to know that.
 
@@ -474,7 +472,7 @@ Without any further ado, I'll offer the synopsis of `select()`:
 #include <unistd.h>
 
 int select(int numfds, fd_set *readfds, fd_set *writefds,
-           fd_set *exceptfds, struct timeval *timeout); 
+           fd_set *exceptfds, struct timeval *timeout);
 ```
 
 The function monitors "sets" of file descriptors; in particular
@@ -490,19 +488,19 @@ the file descriptors you selected which is ready for reading. You can
 test them with the macro `FD_ISSET()`, below.
 
 Before progressing much further, I'll talk about how to manipulate these
-sets.  Each set is of the type `fd_set`. The following macros operate on
+sets. Each set is of the type `fd_set`. The following macros operate on
 this type:
 
-| Function                         | Description                          |
-|----------------------------------|--------------------------------------|
-| [i[`FD_SET()` macro]]`FD_SET(int fd, fd_set *set);`   | Add `fd` to the `set`.               |
-| [i[`FD_CLR()` macro]]`FD_CLR(int fd, fd_set *set);`   | Remove `fd` from the `set`.          |
+| Function                                                | Description                          |
+| ------------------------------------------------------- | ------------------------------------ |
+| [i[`FD_SET()` macro]]`FD_SET(int fd, fd_set *set);`     | Add `fd` to the `set`.               |
+| [i[`FD_CLR()` macro]]`FD_CLR(int fd, fd_set *set);`     | Remove `fd` from the `set`.          |
 | [i[`FD_ISSET()` macro]]`FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`. |
-| [i[`FD_ZERO()` macro]]`FD_ZERO(fd_set *set);`          | Clear all entries from the `set`.    |
+| [i[`FD_ZERO()` macro]]`FD_ZERO(fd_set *set);`           | Clear all entries from the `set`.    |
 
 [i[`struct timeval` type]<]
 
-Finally, what is this weirded-out  `struct timeval`? Well, sometimes you
+Finally, what is this weirded-out `struct timeval`? Well, sometimes you
 don't want to wait forever for someone to send you some data. Maybe
 every 96 seconds you want to print "Still Going..." to the terminal even
 though nothing has happened. This time structure allows you to specify a
@@ -516,23 +514,23 @@ The `struct timeval` has the follow fields:
 struct timeval {
     int tv_sec;     // seconds
     int tv_usec;    // microseconds
-}; 
+};
 ```
 
 Just set `tv_sec` to the number of seconds to wait, and set `tv_usec` to
 the number of microseconds to wait. Yes, that's _micro_seconds, not
-milliseconds.  There are 1,000 microseconds in a millisecond, and 1,000
+milliseconds. There are 1,000 microseconds in a millisecond, and 1,000
 milliseconds in a second. Thus, there are 1,000,000 microseconds in a
-second. Why is it "usec"?  The "u" is supposed to look like the Greek
+second. Why is it "usec"? The "u" is supposed to look like the Greek
 letter μ (Mu) that we use for "micro". Also, when the function returns,
-`timeout` _might_ be updated to show the time still remaining. This
+`timeout` \_might_ be updated to show the time still remaining. This
 depends on what flavor of Unix you're running.
 
 Yay! We have a microsecond resolution timer! Well, don't count on it.
 You'll probably have to wait some part of your standard Unix timeslice
 no matter how small you set your `struct timeval`.
 
-Other things of interest:  If you set the fields in your `struct
+Other things of interest: If you set the fields in your `struct
 timeval` to `0`, `select()` will timeout immediately, effectively
 polling all the file descriptors in your sets. If you set the parameter
 `timeout` to NULL, it will never timeout, and will wait until the first
@@ -574,7 +572,7 @@ int main(void)
         printf("Timed out.\n");
 
     return 0;
-} 
+}
 ```
 
 If you're on a line buffered terminal, the key you hit should be RETURN
@@ -595,7 +593,7 @@ elapsed. It's a bummer, I know, but that's the way it is.)
 
 What happens if a socket in the read set closes the connection? Well, in
 that case, `select()` returns with that socket descriptor set as "ready
-to read".  When you actually do `recv()` from it, `recv()` will return
+to read". When you actually do `recv()` from it, `recv()` will return
 `0`. That's how you know the client has closed the connection.
 
 One more note of interest about `select()`: if you have a socket that is
@@ -676,13 +674,13 @@ int main(void)
         fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
         exit(1);
     }
-    
+
     for(p = ai; p != NULL; p = p->ai_next) {
         listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-        if (listener < 0) { 
+        if (listener < 0) {
             continue;
         }
-        
+
         // lose the pesky "address already in use" error message
         setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 
@@ -776,7 +774,7 @@ int main(void)
             } // END got new incoming connection
         } // END looping through file descriptors
     } // END for(;;)--and you thought it would never end!
-    
+
     return 0;
 }
 ```
@@ -861,7 +859,7 @@ int sendall(int s, char *buf, int *len)
     *len = total; // return number actually sent here
 
     return n==-1?-1:0; // return -1 on failure, 0 on success
-} 
+}
 ```
 
 In this example, `s` is the socket you want to send the data to, `buf`
@@ -885,7 +883,7 @@ len = strlen(buf);
 if (sendall(s, buf, &len) == -1) {
     perror("sendall");
     printf("We only sent %d bytes because of the error!\n", len);
-} 
+}
 ```
 
 [i[`sendall()` function]>]
@@ -895,9 +893,8 @@ packets are variable length, how does the receiver know when one packet
 ends and another begins? Yes, real-world scenarios are a royal pain in
 the [i[Donkeys]] donkeys. You probably have to [i[Data encapsulation]]
 _encapsulate_ (remember that from the [data encapsulation
-section](#lowlevel) way back there at the beginning?)  Read on for
+section](#lowlevel) way back there at the beginning?) Read on for
 details!
-
 
 ## Serialization---How to Pack Data {#serialization}
 
@@ -937,7 +934,7 @@ let's talk about some of the drawbacks and advantages to the other two.
 
 The first method, encoding the numbers as text before sending, has the
 advantage that you can easily print and read the data that's coming over
-the wire.  Sometimes a human-readable protocol is excellent to use in a
+the wire. Sometimes a human-readable protocol is excellent to use in a
 non-bandwidth-intensive situation, such as with [i[IRC]] [fl[Internet
 Relay Chat (IRC)|https://en.wikipedia.org/wiki/Internet_Relay_Chat]].
 However, it has the disadvantage that it is slow to convert, and the
@@ -1004,7 +1001,7 @@ uint32_t htonf(float f)
 
     if (f < 0) { sign = 1; f = -f; }
     else { sign = 0; }
-        
+
     p = ((((uint32_t)f)&0x7fff)<<16) | (sign<<31); // whole part and sign
     p |= (uint32_t)(((f - (int)f) * 65536.0f))&0xffff; // fraction
 
@@ -1057,7 +1054,7 @@ places are not correctly preserved.
 
 What can we do instead? Well, _The_ Standard for storing floating point
 numbers is known as [i[IEEE-754]]
-[fl[IEEE-754|https://en.wikipedia.org/wiki/IEEE_754]].  Most computers
+[fl[IEEE-754|https://en.wikipedia.org/wiki/IEEE_754]]. Most computers
 use this format internally for doing floating point math, so in those
 cases, strictly speaking, conversion wouldn't need to be done. But if
 you want your source code to be portable, that's an assumption you can't
@@ -1066,7 +1063,7 @@ should optimize this out on platforms that don't need to do it! That's
 what `htons()` and its ilk do.)
 
 [flx[Here's some code that encodes floats and doubles into IEEE-754
-format|ieee754.c]].  (Mostly---it doesn't encode NaN or Infinity, but it
+format|ieee754.c]]. (Mostly---it doesn't encode NaN or Infinity, but it
 could be modified to do that.)
 
 ```{.c .numberLines}
@@ -1170,7 +1167,6 @@ int main(void)
 }
 ```
 
-
 The above code produces this output:
 
 ```
@@ -1186,9 +1182,9 @@ double after  : 3.14159265358979311600
 Another question you might have is how do you pack `struct`s?
 Unfortunately for you, the compiler is free to put padding all over the
 place in a `struct`, and that means you can't portably send the whole
-thing over the wire in one chunk.  (Aren't you getting sick of hearing
+thing over the wire in one chunk. (Aren't you getting sick of hearing
 "can't do this", "can't do that"? Sorry! To quote a friend, "Whenever
-anything goes wrong, I always blame Microsoft."  This one might not be
+anything goes wrong, I always blame Microsoft." This one might not be
 Microsoft's fault, admittedly, but my friend's statement is completely
 true.)
 
@@ -1217,7 +1213,7 @@ big-ol' Serializable interface that can be used in a similar way.
 
 But if you want to write your own packing utility in C, K&P's trick is
 to use variable argument lists to make `printf()`-like functions to
-build the packets.  [flx[Here's a version I cooked up|pack2.c]] on my
+build the packets. [flx[Here's a version I cooked up|pack2.c]] on my
 own based on that which hopefully will be enough to give you an idea of
 how such a thing can work.
 
@@ -1233,7 +1229,7 @@ into a `char` array instead of another integer.)
 
 /*
 ** packi16() -- store a 16-bit int into a char buffer (like htons())
-*/ 
+*/
 void packi16(unsigned char *buf, unsigned int i)
 {
     *buf++ = i>>8; *buf++ = i;
@@ -1241,7 +1237,7 @@ void packi16(unsigned char *buf, unsigned int i)
 
 /*
 ** packi32() -- store a 32-bit int into a char buffer (like htonl())
-*/ 
+*/
 void packi32(unsigned char *buf, unsigned long int i)
 {
     *buf++ = i>>24; *buf++ = i>>16;
@@ -1250,7 +1246,7 @@ void packi32(unsigned char *buf, unsigned long int i)
 
 /*
 ** packi64() -- store a 64-bit int into a char buffer (like htonl())
-*/ 
+*/
 void packi64(unsigned char *buf, unsigned long long int i)
 {
     *buf++ = i>>56; *buf++ = i>>48;
@@ -1261,7 +1257,7 @@ void packi64(unsigned char *buf, unsigned long long int i)
 
 /*
 ** unpacki16() -- unpack a 16-bit int from a char buffer (like ntohs())
-*/ 
+*/
 int unpacki16(unsigned char *buf)
 {
     unsigned int i2 = ((unsigned int)buf[0]<<8) | buf[1];
@@ -1276,7 +1272,7 @@ int unpacki16(unsigned char *buf)
 
 /*
 ** unpacku16() -- unpack a 16-bit unsigned from a char buffer (like ntohs())
-*/ 
+*/
 unsigned int unpacku16(unsigned char *buf)
 {
     return ((unsigned int)buf[0]<<8) | buf[1];
@@ -1284,7 +1280,7 @@ unsigned int unpacku16(unsigned char *buf)
 
 /*
 ** unpacki32() -- unpack a 32-bit int from a char buffer (like ntohl())
-*/ 
+*/
 long int unpacki32(unsigned char *buf)
 {
     unsigned long int i2 = ((unsigned long int)buf[0]<<24) |
@@ -1302,7 +1298,7 @@ long int unpacki32(unsigned char *buf)
 
 /*
 ** unpacku32() -- unpack a 32-bit unsigned from a char buffer (like ntohl())
-*/ 
+*/
 unsigned long int unpacku32(unsigned char *buf)
 {
     return ((unsigned long int)buf[0]<<24) |
@@ -1313,7 +1309,7 @@ unsigned long int unpacku32(unsigned char *buf)
 
 /*
 ** unpacki64() -- unpack a 64-bit int from a char buffer (like ntohl())
-*/ 
+*/
 long long int unpacki64(unsigned char *buf)
 {
     unsigned long long int i2 = ((unsigned long long int)buf[0]<<56) |
@@ -1335,7 +1331,7 @@ long long int unpacki64(unsigned char *buf)
 
 /*
 ** unpacku64() -- unpack a 64-bit unsigned from a char buffer (like ntohl())
-*/ 
+*/
 unsigned long long int unpacku64(unsigned char *buf)
 {
     return ((unsigned long long int)buf[0]<<56) |
@@ -1353,14 +1349,14 @@ unsigned long long int unpacku64(unsigned char *buf)
 **
 **   bits |signed   unsigned   float   string
 **   -----+----------------------------------
-**      8 |   c        C         
+**      8 |   c        C
 **     16 |   h        H         f
 **     32 |   l        L         d
 **     64 |   q        Q         g
 **      - |                               s
 **
 **  (16-bit unsigned length is automatically prepended to strings)
-*/ 
+*/
 
 unsigned int pack(unsigned char *buf, char *format, ...)
 {
@@ -1492,7 +1488,7 @@ unsigned int pack(unsigned char *buf, char *format, ...)
 **
 **   bits |signed   unsigned   float   string
 **   -----+----------------------------------
-**      8 |   c        C         
+**      8 |   c        C
 **     16 |   h        H         f
 **     32 |   l        L         d
 **     64 |   q        Q         g
@@ -1649,7 +1645,7 @@ int main(void)
     char s2[96];
     int16_t packetsize, ps2;
 
-    packetsize = pack(buf, "chhlsf", (int8_t)'B', (int16_t)0, (int16_t)37, 
+    packetsize = pack(buf, "chhlsf", (int8_t)'B', (int16_t)0, (int16_t)37,
             (int32_t)-5, s, (float32_t)-3490.6677);
     packi16(buf+1, packetsize); // store packet size in packet for kicks
 
@@ -1713,7 +1709,7 @@ t o m H i B e n j a m i n H e y g u y s w h a t i s u p ?
 ```
 
 And so on. How does the client know when one message starts and another
-stops?  You could, if you wanted, make all messages the same length and
+stops? You could, if you wanted, make all messages the same length and
 just call the [i[`sendall()` function]] `sendall()` we implemented,
 [above](#sendall). But that wastes bandwidth! We don't want to `send()`
 1024 bytes just so "tom" can say "Hi".
@@ -1730,7 +1726,7 @@ variable length, up to a maximum of 128 characters. Let's have a look a
 sample packet structure that we might use in this situation:
 
 1. `len` (1 byte, unsigned)---The total length of the packet, counting
-    the 8-byte user name and chat data.
+   the 8-byte user name and chat data.
 
 2. `name` (8 bytes)---The user's name, NUL-padded if necessary.
 
@@ -1741,7 +1737,7 @@ sample packet structure that we might use in this situation:
 Why did I choose the 8-byte and 128-byte limits for the fields? I pulled
 them out of the air, assuming they'd be long enough. Maybe, though, 8
 bytes is too restrictive for your needs, and you can have a 30-byte name
-field, or whatever.  The choice is up to you.
+field, or whatever. The choice is up to you.
 
 Using the above packet definition, the first packet would consist of the
 following information (in hex and ASCII):
@@ -1768,19 +1764,19 @@ similar to [`sendall()`](#sendall), above, so you know all the data is
 sent, even if it takes multiple calls to `send()` to get it all out.
 
 Likewise, when you're receiving this data, you need to do a bit of extra
-work.  To be safe, you should assume that you might receive a partial
+work. To be safe, you should assume that you might receive a partial
 packet (like maybe we receive "`18 42 65 6E 6A`" from Benjamin, above,
 but that's all we get in this call to `recv()`). We need to call
 `recv()` over and over again until the packet is completely received.
 
 But how? Well, we know the number of bytes we need to receive in total
 for the packet to be complete, since that number is tacked on the front
-of the packet.  We also know the maximum packet size is 1+8+128, or 137
+of the packet. We also know the maximum packet size is 1+8+128, or 137
 bytes (because that's how we defined the packet).
 
 There are actually a couple things you can do here. Since you know every
 packet starts off with a length, you can call `recv()` just to get the
-packet length.  Then once you have that, you can call it again
+packet length. Then once you have that, you can call it again
 specifying exactly the remaining length of the packet (possibly
 repeatedly to get all the data) until you have the complete packet. The
 advantage of this method is that you only need a buffer large enough for
@@ -1834,7 +1830,6 @@ I never said it was easy. Ok, I did say it was easy. And it is; you just
 need practice and pretty soon it'll come to you naturally. By
 [i[Excalibur]] Excalibur I swear it!
 
-
 ## Broadcast Packets---Hello, World!
 
 So far, this guide has talked about sending data from one host to one
@@ -1882,7 +1877,7 @@ common ways:
    address is `network_number` OR (NOT `netmask`).) You can send this
    type of broadcast packet to remote networks as well as your local
    network, but you run the risk of the packet being dropped by the
-   destination's router.  (If they didn't drop it, then some random
+   destination's router. (If they didn't drop it, then some random
    smurf could start flooding their LAN with broadcast traffic.)
 
 2. Send the data to the "global" broadcast address. This is
@@ -1985,7 +1980,7 @@ int main(int argc, char *argv[])
 ```
 
 What's different between this and a "normal" UDP client/server
-situation?  Nothing! (With the exception of the client being allowed to
+situation? Nothing! (With the exception of the client being allowed to
 send broadcast packets in this case.) As such, go ahead and run the old
 UDP [`listener`](#datagram) program in one window, and `broadcaster` in
 another. You should be now be able to do all those sends that failed,
