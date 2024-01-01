@@ -12,15 +12,13 @@ C 프로그래머가 귀찮은 네트워킹을 처리할 수 있게 도와줄 �
 그리고 확인하실 것: 제가 드디어 미래의 기술을 따라잡았고(정말 겨우 시간을 맟췄죠)
 IPv6에 대한 안내를 갱신했습니다. 재밌게 보십시오!
 
-
 ## 읽는이에게
 
 이 문서는 완전한 참고문서가 아닌 튜토리얼로서 작성되었습니다.
 아마도 이제 막 소켓 프로그래밍을 시작해서 발받침이 필요한 사람이 읽기에 적합할 것입니다.
 이것은 분명히 어떤 의미로든 _완벽하고 완전한_ 소켓프로그래밍 가이드는 아닙니다.
 
-그럼에도 희망적으로, 이 문서를 읽고나면 man page가 이해되기 시작할 것입니다. 
-
+그럼에도 희망적으로, 이 문서를 읽고나면 man page가 이해되기 시작할 것입니다.
 
 ## 실행환경과 컴파일러
 
@@ -29,18 +27,17 @@ IPv6에 대한 안내를 갱신했습니다. 재밌게 보십시오!
 실행환경에서도 빌드가 되어야 합니다. 그 말인즉 당신이 윈도우를 위해서 프로그램을
 만들고 있다면 해당사항이 없다는 의미입니다. 그런 경우라면 [윈도우즈 프로그래밍을 위한 절](#windows)을 참고하십시오.
 
-
 ## 공식 홈페이지와 책 구매
 
-이 문서의 공식 위치는 아래와 같습니다: 
+이 문서의 공식 위치는 아래와 같습니다:
 
-* [`https://beej.us/guide/bgnet/`](https://beej.us/guide/bgnet/)
+- [`https://beej.us/guide/bgnet/`](https://beej.us/guide/bgnet/)
 
 이 곳에서 예제 코드와 이 안내서의 여러 언어로 된 번역본도 찾을 수 있습니다.
 
 사람들이 책이라고 부르는 잘 제본된 인쇄된 복사본을 사고싶다면 여기에 방문하십시오:
 
-* [`https://beej.us/guide/url/bgbuy`](https://beej.us/guide/url/bgbuy)
+- [`https://beej.us/guide/url/bgbuy`](https://beej.us/guide/url/bgbuy)
 
 구매해주신다면 저의 먹물밥으로 먹고 사는 라이프 스타일을 유지하는 일에 도움이
 되므로 감사하겠습니다.
@@ -74,7 +71,6 @@ char yes='1';
 
 제가 Sun 장치를 가지지 않았으므로, 위에 적은 내용들을 시험해보지는 않았습니다.
 저 내용들은 단지 사람들이 저에게 이메일로 알려준 것입니다.
-
 
 ## Windows 프로그래머들을 위한 노트 {#windows}
 
@@ -122,7 +118,7 @@ Linux|https://learn.microsoft.com/en-us/windows/wsl/]] 입니다. 이것은 간�
 #include <ws2tcpip.h>
 ```
 
-`winsock`는 "새로운"(1994년 기준으로) 윈도우즈 소켓 라이브러리입니다.
+`winsock`은 "새로운"(1994년 기준으로) 윈도우즈 소켓 라이브러리입니다.
 
 불행하게도 당신이 `windows.h`를 인클루드하면 그것이 자동으로 버전1인 오래된 `winsock.h`
 를 끌어오고 `winsock2.h`와 충돌을 일으킬 것입니다. 정말 재밌지요.
@@ -137,7 +133,7 @@ Linux|https://learn.microsoft.com/en-us/windows/wsl/]] 입니다. 이것은 간�
 #include <winsock2.h>        // 이것도요.
 ```
 
-잠깐! 소켓 라이브러리를 쓰기 전에  [i[`WSAStartup()` function]]
+잠깐! 소켓 라이브러리를 쓰기 전에 [i[`WSAStartup()` function]]
 `WSAStartup()`을 호출해야 합니다. 이 함수에게 사용하길 원하는 Winsock
 버전(예를 들어 2.2)을 넘겨주고 결과값을 확인해서 쓰고자 하는 버전이
 사용 가능한지 확인해야 합니다.
@@ -195,12 +191,11 @@ POSIX라이브러리에 링크하거나 다른 작업이 필요할 것입니다.
 를 대신 쓸 수도 있습니다. `fork()`는 인수를 받지 않지만 `CreateProcess()`는
 인수를 4800만개 정도 받습니다. 그게 부담스럽다면 [i[`CreateThread()`
 function]] `CreateThread()` 이 조금 더 쓰기 쉬울겁니다. 불행히도
-멀티스레딩에 대한 논의는 이 문서의 범위를 벗어납니다. 저는 이 정도 까지밖에 
+멀티스레딩에 대한 논의는 이 문서의 범위를 벗어납니다. 저는 이 정도 까지밖에
 말씀드릴 수가 없습니다.
 
 정말 마지막으로, Steven Mitchell이 [fl[몇몇 예제들을 Winsock으로 변환했습니다.|https://www.tallyhawk.net/WinsockExamples/]]
 확인해보십시오.
-
 
 ## 이메일 정책
 
@@ -226,13 +221,11 @@ Way|http://www.catb.org/~esr/faqs/smart-questions.html]]을 참고하십시오.
 그것은 정말로 정신적인 힘이 됩니다. 이 안내서가 좋은 일에 쓰였다는 말을 듣는 일은
 저를 기쁘게 합니다. `:-)` 감사합니다!
 
-
 ## 미러링
 
 이 웹사이트를 공개로든 사적으로든 미러링하는 것은 정말로 환영합니다. 이 웹사이트를
 공개적으로 미러링하고 제가 메인 페이지에 링크를 걸게 하고 싶다면 [`beej@beej.us`](beej@beej.us)
 로 메일을 보내주십시오.
-
 
 ## Note for Translators 번역가들을 위한 노트
 
@@ -240,13 +233,12 @@ Way|http://www.catb.org/~esr/faqs/smart-questions.html]]을 참고하십시오.
 메일을 보내주십시오. 당신의 번역본의 링크를 제 메인 페이지에 걸어두겠습니다.
 당신의 이름과 연락처 정보를 번역본에 추가하셔도 좋습니다.
 
-이 원본 마크다운 문서는 UTF-8로 인코드 되었습니다. 
+이 원본 마크다운 문서는 UTF-8로 인코드 되었습니다.
 
 아래의 Copyright, Distribution, and Legal 절을 참고하십시오.
 
 제가 번역본을 호스트하길 바란다면, 말씀해주십시오. 당신이 호스트하길 원한다면
 그것도 링크하겠습니다. 어느 쪽이든 좋습니다.
-
 
 ## Copyright, Distribution, and Legal {#legal}
 
@@ -294,7 +286,6 @@ damages.
 
 Contact [`beej@beej.us`](mailto:beej@beej.us) for more information.
 
-
 ## 헌사
 
 이 안내서를 쓸 수 있도록 저를 과거에 도와주신, 그리고 미래에 도와주실 모든 분들에게
@@ -307,7 +298,6 @@ Slackware, vim, Python, Inkscape, pandoc, 기타 등등...)를 만든 모든
 Donald Knuth, Bruce Schneier, W. Richard Stevens, Steve The Woz Wozniak,
 독자 여러분, 그리고 모든 자유 및 공개 소프트웨어 커뮤니티
 
-
 ## 출판 정보
 
 이 책은 GNU 도구를 적재한 Arch Linux장치에서 Vim 편집기를 사용해서 Markdown
@@ -316,13 +306,12 @@ Markdown은 Python과 Pandoc, XeLaTex를 통해 HTML과 Latex/PDF로 변환되�
 문서에는 Liberation 폰트를 사용했습니다. 툴체인은 전적으로 자유/공개 소프트웨어를
 사용해서 구성했습니다.
 
-
 ## 옮긴이의 말
 
 이 문서의 첫 한국어 번역 버전은 박성호(tempter@fourthline.com)님이 1998/08/20(yyyy/MM/d)에 인터넷의 어딘가에 게시하신 것으로 보입니다. 현재는 KLDP에 있습니다.
 
 이 문서의 두 번째 한국어 번역 버전은 김수봉(연락처 없음)님이 2003/12/15(yyyy/MM/d)에 KLDP에 게시하셨습니다.
-첫 번역 문서를 html에서 wiki형태로 변환했다고 적혀 있습니다. 
+첫 번역 문서를 html에서 wiki형태로 변환했다고 적혀 있습니다.
 
 지금 읽고 계시는 세 번째 버전은 정민석(javalia.javalia@gmail.com)이 작업했으며, 2023년 5월 28일부터 작업했습니다.
 
