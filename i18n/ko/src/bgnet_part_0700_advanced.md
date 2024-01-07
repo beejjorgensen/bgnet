@@ -79,16 +79,11 @@ CPU시간을 많이 사용할 것이다. (역자 주 : 특별한 제한을 걸�
 운영체제는 해당하는 종류의 이벤트가 발생(예를 들어 "소켓에 읽을 자료가 있다!"
 같은 이벤트)하거나 사용자가 지정한 제한 시간이 지날 때까지 `poll()` 호출을 블록할
 것이다.
-The general gameplan is to keep an array of `struct pollfd`s with
-information about which socket descriptors we want to monitor, and what
-kind of events we want to monitor for. The OS will block on the `poll()`
-call until one of those events occurs (e.g. "socket ready to read!") or
-until a user-specified timeout occurs.
 
-Usefully, a `listen()`ing socket will return "ready to read" when a new
-incoming connection is ready to be `accept()`ed.
+유용하게도 `listen()` 상태인 소켓은 새로운 연결이 `accept()`될 수 있는 상태가
+되었을 때 "ready to read"를 반환할 것이다.
 
-That's enough banter. How do we use this?
+이만하면 충분히 떠들었다. 이것을 쓰는 방법은 어떨지 보자.
 
 ```{.c}
 #include <poll.h>
@@ -96,48 +91,44 @@ That's enough banter. How do we use this?
 int poll(struct pollfd fds[], nfds_t nfds, int timeout);
 ```
 
-`fds` is our array of information (which sockets to monitor for what),
-`nfds` is the count of elements in the array, and `timeout` is a timeout
-in milliseconds. It returns the number of elements in the array that
-have had an event occur.
+`fds`는 우리의 정보(어떤 소켓을 무엇을 위해 감시할지)의 배열이다.
+`nfds`는 배열에 담긴 요소의 갯수이다. `timeout`은 밀리초 단위의 제한시간이다.
+이것은 이벤트가 발생한 요소의 갯수를 돌려준다.
 
-Let's have a look at that `struct`:
+위에 등장하는 구조체는 무엇인지 살펴보자:
 
 [i[`struct pollfd` type]]
 
 ```{.c}
 struct pollfd {
-    int fd;         // the socket descriptor
-    short events;   // bitmap of events we're interested in
-    short revents;  // when poll() returns, bitmap of events that occurred
+    int fd;         // 소켓 설명자
+    short events;   // 우리가 관심있는 이벤트의 비트맵
+    short revents;  // poll()이 반환하는 시점에 발생한 이벤트의 비트맵
 };
 ```
 
-So we're going to have an array of those, and we'll set the `fd` field
-for each element to a socket descriptor we're interested in monitoring.
-And then we'll set the `events` field to indicate the type of events
-we're interested in.
+즉 이것의 배열을 하나 설정하고 각각의 `fd`필드를 우리가 관찰하고 싶은 소켓 설명자로
+설정한다. 그리고 각각의 `events`필드는 우리가 관심있는 이벤트로 설정하는 것이다.
 
+`events`필드는 아래 값들을 비트단위 논리합 계산한 결과값이다.
 The `events` field is the bitwise-OR of the following:
 
-| Macro     | Description                                                        |
-| --------- | ------------------------------------------------------------------ |
-| `POLLIN`  | Alert me when data is ready to `recv()` on this socket.            |
-| `POLLOUT` | Alert me when I can `send()` data to this socket without blocking. |
+| 매크로    | 설명                                                          |
+| --------- | ------------------------------------------------------------- |
+| `POLLIN`  | 이 소켓이 데이터를 `recv()`할 준비가 되면 알려달라.           |
+| `POLLOUT` | 이 소켓에 블로킹 없이 데이터를 `send()`할 수 있으면 알려달라. |
 
-Once you have your array of `struct pollfd`s in order, then you can pass
-it to `poll()`, also passing the size of the array, as well as a timeout
-value in milliseconds. (You can specify a negative timeout to wait
-forever.)
+`struct pollfd`의 배열을 준비하면 `poll()`에 그것을 넘길 수 있다. 배열의 크기와
+밀리초 단위의 제한시간도 같이 넘겨야 한다.(영원히 기다리려면 음수를 지정하면 된다.)
 
-After `poll()` returns, you can check the `revents` field to see if
-`POLLIN` or `POLLOUT` is set, indicating that event occurred.
+`poll()`이 반환하면 이벤트가 발생했음을 나타내는 `POLLIN`이나 `POLLOUT`이
+설정되었는지 보기위해서 `revents` 필드를 확인할 수 있다.
 
-(There's actually more that you can do with the `poll()` call. See the
-[`poll()` man page, below](#pollman), for more details.)
+(실제로는 `poll()`호출로 할 수 있는 것들이 더 있다. 자세한 내용은
+[아래의 `poll()` 맨페이지](#pollman)를 참고하라.)
 
-Here's [flx[an example|poll.c]] where we'll wait 2.5 seconds for data to
-be ready to read from standard input, i.e. when you hit `RETURN`:
+여기 표준 입력에서 데이터를 읽어들일 수 있을 때까지(예를 들어 당신이 줄바꿈을 입력할 때까지)
+2.5초를 기다리는 예제가 있다.[flx[an example|poll.c]]
 
 ```{.c .numberLines}
 #include <stdio.h>
@@ -145,28 +136,28 @@ be ready to read from standard input, i.e. when you hit `RETURN`:
 
 int main(void)
 {
-    struct pollfd pfds[1]; // More if you want to monitor more
+    struct pollfd pfds[1]; // 더 많은 것들을 관찰하고 싶다면 더 크게 하라.
 
-    pfds[0].fd = 0;          // Standard input
-    pfds[0].events = POLLIN; // Tell me when ready to read
+    pfds[0].fd = 0;          // 표준 입력
+    pfds[0].events = POLLIN; // 읽을 준비가 되면 알려달라.
 
-    // If you needed to monitor other things, as well:
-    //pfds[1].fd = some_socket; // Some socket descriptor
-    //pfds[1].events = POLLIN;  // Tell me when ready to read
+    // 만약 다른 것들도 관찰하고 싶다면
+    //pfds[1].fd = some_socket; // 임의의 소켓 설명자
+    //pfds[1].events = POLLIN;  // 읽을 준비가 되면 알려달라.
 
-    printf("Hit RETURN or wait 2.5 seconds for timeout\n");
+    printf("엔터키를 누르거나 제한시간 도달을 위해 2.5초를 기다리라\n");
 
-    int num_events = poll(pfds, 1, 2500); // 2.5 second timeout
+    int num_events = poll(pfds, 1, 2500); // 2.5초 제한 시간
 
     if (num_events == 0) {
-        printf("Poll timed out!\n");
+        printf("Poll 시간 초과!\n");
     } else {
         int pollin_happened = pfds[0].revents & POLLIN;
 
         if (pollin_happened) {
-            printf("File descriptor %d is ready to read\n", pfds[0].fd);
+            printf("파일 설명자 %d을 읽을 준비가 되었다\n", pfds[0].fd);
         } else {
-            printf("Unexpected event occurred: %d\n", pfds[0].revents);
+            printf("예상하지 못한 이벤트가 발생했다: %d\n", pfds[0].revents);
         }
     }
 
@@ -174,11 +165,10 @@ int main(void)
 }
 ```
 
-Notice again that `poll()` returns the number of elements in the `pfds`
-array for which events have occurred. It doesn't tell you _which_
-elements in the array (you still have to scan for that), but it does
-tell you how many entries have a non-zero `revents` field (so you can
-stop scanning after you find that many).
+`poll()`이 `pfds`배열에서 이벤트가 발생한 요소의 갯수를 돌려준다는 것을 다시
+기억하라. 배열의 _어떤_ 요소에서 이벤트가 발생했는지는 알려주지 않지만 몇 개의
+`revents` 필드가 0이 아닌 값으로 설정되었는지는 알려준다. 이것을 활용해서
+반환된 숫자만큼의 0이 아닌 `revents`를 읽은 후에는 스캔을 중단할 수 있다.
 
 A couple questions might come up here: how to add new file descriptors
 to the set I pass to `poll()`? For this, simply make sure you have
