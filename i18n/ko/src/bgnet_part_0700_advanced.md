@@ -111,7 +111,6 @@ struct pollfd {
 설정한다. 그리고 각각의 `events`필드는 우리가 관심있는 이벤트로 설정하는 것이다.
 
 `events`필드는 아래 값들을 비트단위 논리합 계산한 결과값이다.
-The `events` field is the bitwise-OR of the following:
 
 | 매크로    | 설명                                                          |
 | --------- | ------------------------------------------------------------- |
@@ -170,44 +169,42 @@ int main(void)
 `revents` 필드가 0이 아닌 값으로 설정되었는지는 알려준다. 이것을 활용해서
 반환된 숫자만큼의 0이 아닌 `revents`를 읽은 후에는 스캔을 중단할 수 있다.
 
-A couple questions might come up here: how to add new file descriptors
-to the set I pass to `poll()`? For this, simply make sure you have
-enough space in the array for all you need, or `realloc()` more space as
-needed.
+몇 가지 질문이 떠오를 것이다: `poll()`에 넘겨준 집합에 새 파일 설명자를 추가하려면
+어떻게 해야하는가? 이를 위해서 단순히 당신의 모든 필요에 부합할 만큼 충분한
+크기의 배열을 만들거나 추가적인 공간이 필요할 때 `realloc()`을 사용하라.
 
-What about deleting items from the set? For this, you can copy the last
-element in the array over-top the one you're deleting. And then pass in
-one fewer as the count to `poll()`. Another option is that you can set
-any `fd` field to a negative number and `poll()` will ignore it.
+집합에서 요소를 제거하려면 어떻게 해야하는가? 이것을 위해서 당신은 배열의 마지막
+요소를 삭제할 요소에 덮어씌우고, `poll()`의 count에 하나 더 적은 값을 전달하라.
+(역자 주 : 이것은 배열에서 임의의 요소 1개를 빠르게 제거하기 위해서 일반적으로
+사용하는 방법이다.) 다른 한 가지 방법은 `fd`필드를 음수로 설정하는 것이며
+`poll()`은 해당 요소를 무시할 것이다.
 
-How can we put it all together into a chat server that you can `telnet`
-to?
+이 모든 것을 당신이 `telnet`할 수 있는 하나의 채팅 서버에 합치려면 어떻게
+해야할까?
 
-What we'll do is start a listener socket, and add it to the set of file
-descriptors to `poll()`. (It will show ready-to-read when there's an
-incoming connection.)
+우리가 할 일은 리스너 소켓을 시작한 후에 그것을 `poll()`할 파일 설명자
+집합에 추가하는 일이다. (그 파일설명자는 들어오는 연결이 있을 때 읽기 준비된
+상태가 될 것이다.)
 
-Then we'll add new connections to our `struct pollfd` array. And we'll
-grow it dynamically if we run out of space.
+그 후에 새로운 연결을 우리의 `struct pollfd` 배열에 추가하면 된다.
+만약 배열의 크기가 부족하다면 동적으로 키우면 된다.
 
-When a connection is closed, we'll remove it from the array.
+연결이 닫힌 후에는 그것을 배열로부터 제거한다.
 
-And when a connection is ready-to-read, we'll read the data from it and
-send that data to all the other connections so they can see what the
-other users typed.
+연결이 읽기 준비되면 우리는 그것에서 데이터를 읽어들인 후 다른 모든 연결에
+전송한다. 그렇게 해서 사용자들은 서로가 입력한 내용을 볼 수 있다.
 
-So give [flx[this poll server|pollserver.c]] a try. Run it in one
-window, then `telnet localhost 9034` from a number of other terminal
-windows. You should be able to see what you type in one window in the
-other ones (after you hit RETURN).
+이제 [flx[이 폴 서버|pollserver.c]]를 한 번 시험해보라. 이것을 하나의
+창에서 실행한 후 몇 개의 다른 터미널 창에서 `telnet localhost 9034`를
+실행해보라. 당신이 하나의 창에서 입력하는 것을 (당신이 엔터키를 누른 후에)
+다른 창들에서 볼 수 있어야한다.
 
-Not only that, but if you hit `CTRL-]` and type `quit` to exit `telnet`,
-the server should detect the disconnection and remove you from the array
-of file descriptors.
+그것 뿐 아니라 당신이 `CTRL-]`를 누른 후 `quit`을 입력해서 `telnet`을 종료할
+경우 서버는 연결종료를 감지하고 그 연결을 파일 설명자 배열에서 제거할 것이다.
 
 ```{.c .numberLines}
 /*
-** pollserver.c -- a cheezy multiperson chat server
+** pollserver.c -- 형편없는 다인 대화 서버
 */
 
 #include <stdio.h>
