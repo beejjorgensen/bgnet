@@ -218,7 +218,7 @@ int main(void)
 #include <netdb.h>
 #include <poll.h>
 
-#define PORT "9034"   // Port we're listening on
+#define PORT "9034"   // 우리가 듣는(listening) 포트
 
 // Get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -233,13 +233,13 @@ void *get_in_addr(struct sockaddr *sa)
 // Return a listening socket
 int get_listener_socket(void)
 {
-    int listener;     // Listening socket descriptor
-    int yes=1;        // For setsockopt() SO_REUSEADDR, below
+    int listener;     // 듣는 소켓 설명자
+    int yes=1;        // setsockopt() SO_REUSEADDR을 위해서는 아래를 보라
     int rv;
 
     struct addrinfo hints, *ai, *p;
 
-    // Get us a socket and bind it
+    // 소켓을 받아서 바인드하자
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -255,7 +255,7 @@ int get_listener_socket(void)
             continue;
         }
 
-        // Lose the pesky "address already in use" error message
+        // 귀찮은 "주소가 이미 사용중입니다"에러메시지를 제거한다
         setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 
         if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
@@ -266,14 +266,14 @@ int get_listener_socket(void)
         break;
     }
 
-    freeaddrinfo(ai); // All done with this
+    freeaddrinfo(ai); // 더 이상 필요없다.
 
-    // If we got here, it means we didn't get bound
+    // 여기가 실행되면 우리가 바인드하지 못했다는 의미다
     if (p == NULL) {
         return -1;
     }
 
-    // Listen
+    // 리슨
     if (listen(listener, 10) == -1) {
         return -1;
     }
@@ -281,65 +281,65 @@ int get_listener_socket(void)
     return listener;
 }
 
-// Add a new file descriptor to the set
+// 집합에 새 파일 설명자를 추가한다
 void add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
 {
-    // If we don't have room, add more space in the pfds array
+    // 공간이 부족하면 pfds 배열을 늘린다.
     if (*fd_count == *fd_size) {
-        *fd_size *= 2; // Double it
+        *fd_size *= 2; // 두배로 한다.
 
         *pfds = realloc(*pfds, sizeof(**pfds) * (*fd_size));
     }
 
     (*pfds)[*fd_count].fd = newfd;
-    (*pfds)[*fd_count].events = POLLIN; // Check ready-to-read
+    (*pfds)[*fd_count].events = POLLIN; // 읽을 준비가 되었는지 확인
 
     (*fd_count)++;
 }
 
-// Remove an index from the set
+// 집합에서 하나의 인덱스를 제거한다
 void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
 {
-    // Copy the one from the end over this one
+    // 마지막에서 하나를 삭제 대상 인덱스로 복사해온다
     pfds[i] = pfds[*fd_count-1];
 
     (*fd_count)--;
 }
 
-// Main
+// 메인
 int main(void)
 {
-    int listener;     // Listening socket descriptor
+    int listener;     // 리슨 소켓 설명자
 
-    int newfd;        // Newly accept()ed socket descriptor
-    struct sockaddr_storage remoteaddr; // Client address
+    int newfd;        // 새롭게 accept()한 소켓 설명자
+    struct sockaddr_storage remoteaddr; // 클라이언트 주소
     socklen_t addrlen;
 
-    char buf[256];    // Buffer for client data
+    char buf[256];    // 클라이언트 데이터를 위한 버퍼
 
     char remoteIP[INET6_ADDRSTRLEN];
 
-    // Start off with room for 5 connections
-    // (We'll realloc as necessary)
+    // 5개의 연결을 위한 공간을 가지고 시작한다
+    // (필요해지면 realloc할 것이다.)
     int fd_count = 0;
     int fd_size = 5;
     struct pollfd *pfds = malloc(sizeof *pfds * fd_size);
 
-    // Set up and get a listening socket
+    // 초기화 후 리스닝 소켓을 얻는다
     listener = get_listener_socket();
 
     if (listener == -1) {
-        fprintf(stderr, "error getting listening socket\n");
+        fprintf(stderr, "리스닝 소켓 얻기 실패\n");
         exit(1);
     }
 
-    // Add the listener to set
+    // 리스너를 집합에 추가
     pfds[0].fd = listener;
-    pfds[0].events = POLLIN; // Report ready to read on incoming connection
+    pfds[0].events = POLLIN; // 들어오는 연결을 읽을 준비가 되면 보고하라
 
-    fd_count = 1; // For the listener
+    fd_count = 1; // 리스너를 위한 설정
 
-    // Main loop
+    // 주 반복문
     for(;;) {
         int poll_count = poll(pfds, fd_count, -1);
 
@@ -348,14 +348,14 @@ int main(void)
             exit(1);
         }
 
-        // Run through the existing connections looking for data to read
+        // 읽어들일 데이터를 찾기 위해서 존재하는 연결을 순회
         for(int i = 0; i < fd_count; i++) {
 
-            // Check if someone's ready to read
-            if (pfds[i].revents & POLLIN) { // We got one!!
+            // 무엇인가 읽을 준비가 되었는지 확인
+            if (pfds[i].revents & POLLIN) { // 하나를 찾았다!!
 
                 if (pfds[i].fd == listener) {
-                    // If listener is ready to read, handle new connection
+                    // 리스너를 읽을 준비가 되었다면 새 연결을 처리한다
 
                     addrlen = sizeof remoteaddr;
                     newfd = accept(listener,
@@ -367,40 +367,40 @@ int main(void)
                     } else {
                         add_to_pfds(&pfds, newfd, &fd_count, &fd_size);
 
-                        printf("pollserver: new connection from %s on "
-                            "socket %d\n",
+                        printf("폴서버: 새로운 연결 %s"
+                            " 소켓 %d\n",
                             inet_ntop(remoteaddr.ss_family,
                                 get_in_addr((struct sockaddr*)&remoteaddr),
                                 remoteIP, INET6_ADDRSTRLEN),
                             newfd);
                     }
                 } else {
-                    // If not the listener, we're just a regular client
+                    // 리스너가 아닐 경우 일반적인 클라이언트다
                     int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0);
 
                     int sender_fd = pfds[i].fd;
 
                     if (nbytes <= 0) {
-                        // Got error or connection closed by client
+                        // 오류가 발생했거나 연결이 클라이언트에 의해 닫혔다
                         if (nbytes == 0) {
-                            // Connection closed
-                            printf("pollserver: socket %d hung up\n", sender_fd);
+                            // 연결이 닫혔다.
+                            printf("폴서버: 소켓 %d 이 끊어짐\n", sender_fd);
                         } else {
                             perror("recv");
                         }
 
-                        close(pfds[i].fd); // Bye!
+                        close(pfds[i].fd); // 잘가!
 
                         del_from_pfds(pfds, i, &fd_count);
 
                     } else {
-                        // We got some good data from a client
+                        // 클라이언트로부터 뭔가 좋은 데이터를 받았다
 
                         for(int j = 0; j < fd_count; j++) {
-                            // Send to everyone!
+                            // 모두에게 보내자!
                             int dest_fd = pfds[j].fd;
 
-                            // Except the listener and ourselves
+                            // 리스너와 보낸 사람을 제외한다
                             if (dest_fd != listener && dest_fd != sender_fd) {
                                 if (send(dest_fd, buf, nbytes, 0) == -1) {
                                     perror("send");
@@ -408,10 +408,10 @@ int main(void)
                             }
                         }
                     }
-                } // END handle data from client
-            } // END got ready-to-read from poll()
-        } // END looping through file descriptors
-    } // END for(;;)--and you thought it would never end!
+                } // 클라이언트로부터 온 데이터를 처리하는 부분의 끝
+            } // poll()에서 읽을 준비가 된 부분의 끝
+        } // 파일 설명자 순회의 끝
+    } // for(;;)의 끝--절대 안 끝나겠지만!
 
     return 0;
 }
