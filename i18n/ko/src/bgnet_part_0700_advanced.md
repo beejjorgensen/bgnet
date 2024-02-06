@@ -417,41 +417,38 @@ int main(void)
 }
 ```
 
-In the next section, we'll look at a similar, older function called
-`select()`. Both `select()` and `poll()` offer similar functionality and
-performance, and only really differ in how they're used. `select()`
-might be slightly more portable, but is perhaps a little clunkier in
-use. Choose the one you like the best, as long as it's supported on your
-system.
+다음 절에서는 비슷하지만 오래된 함수인 `select()`를 살펴볼 것이다.
+`select()`와 `poll()` 모두 비슷한 기능과 성능을 제공하고 쓰는 방식만
+조금 다르다. `select()`쪽이 조금 더 이식성이 좋을지도 모르나 사용하기에는
+조금 더 어색할 것이다. 당신의 시스템에서 지원되기만 한다면 더 마음에
+드는 쪽을 선택하라.
 
 [i[poll()]>]
 
-## `select()`---Synchronous I/O Multiplexing, Old School {#select}
+## `select()`---동기화된 I/O 멀티플렉싱, 예전 방식 {#select}
 
-[i[`select()` function]<]
+[i[`select()` 함수]<]
 
-This function is somewhat strange, but it's very useful. Take the
-following situation: you are a server and you want to listen for
-incoming connections as well as keep reading from the connections you
-already have.
+이 함수는 이상하지만 아주 유용하다. 다음과 같은 상황을 생각해보라: 당신은
+서버이고 들어오는 연결을 감지함과 동시에 이미 가진 연결로부터 계속 자료를
+읽어들이고 싶다.
 
-No problem, you say, just an `accept()` and a couple of `recv()`s. Not
-so fast, buster! What if you're blocking on an `accept()` call? How are
-you going to `recv()` data at the same time? "Use non-blocking sockets!"
-No way! You don't want to be a CPU hog. What, then?
+별 문제가 없다고 말할지도 모른다. 그냥 `accept()`와 몇 개의 `recv()`를
+쓰면 될 뿐이다. 정말로 그럴까? `accept()`호출이 블록 상태로 들어갔다면
+어떻게 하겠는가? 어떻게 `recv()`로 동시에 데이터를 받을 수 있겠는가?
+"논 블로킹 소켓을 써라!" 역시 안 될 말이다. CPU를 모조리 쓰고 싶지는 않을
+것이다. 그럼 어떻게 해야하는가?
 
-`select()` gives you the power to monitor several sockets at the same
-time. It'll tell you which ones are ready for reading, which are ready
-for writing, and which sockets have raised exceptions, if you really
-want to know that.
+`select()`가 여러 소켓을 동시에 관찰할 수 있는 능력을 준다. 그것이 어떤 것이
+읽을 준비가 되었는지, 어떤 것이 쓸 준비가 되었는지, 그리고 정말로 관심이
+있다면 어떤 것에 오류가 발생했는지까지 알려줄 것이다.
 
-> _A word of warning: `select()`, though very portable, is terribly slow
-> when it comes to giant numbers of connections. In those circumstances,
-> you'll get better performance out of an event library such as
-> [fl[libevent|https://libevent.org/]] that attempts to use the fastest
-> possible method availabile on your system._
+> 경고 한마디: `select()`가 이식성이 아주 좋지만 연결이 아주 많은 상황에서는
+> 끔찍하게 느려진다. 그런 상황에서는 당신의 시스템에서 쓸 수 있는 가장 빠른
+> 방법을 시도하는 [fl[libevent|https://libevent.org/]] 같은 이벤트
+> 라이브러리를 쓰면 더 나은 성능을 얻을 수 있다.
 
-Without any further ado, I'll offer the synopsis of `select()`:
+잡담은 그만하고 `select()`의 개요를 제시하겠다.
 
 ```{.c}
 #include <sys/time.h>
@@ -462,70 +459,66 @@ int select(int numfds, fd_set *readfds, fd_set *writefds,
            fd_set *exceptfds, struct timeval *timeout);
 ```
 
-The function monitors "sets" of file descriptors; in particular
-`readfds`, `writefds`, and `exceptfds`. If you want to see if you can
-read from standard input and some socket descriptor, `sockfd`, just add
-the file descriptors `0` and `sockfd` to the set `readfds`. The
-parameter `numfds` should be set to the values of the highest file
-descriptor plus one. In this example, it should be set to `sockfd+1`,
-since it is assuredly higher than standard input (`0`).
+이 함수는 특정한 `readfds`과 `writefds` 그리고 `exceptfds`로 이루어진
+파일 설명자의 "집합들"을 관찰한다. 만약 당신이 표준 입력과 몇 개의 소켓
+설명자로부터 읽어들일 수 있는지 확인하고 싶다면 `readfds` 집합에 0과
+`sockfd`를 추가하라. `numfds`는 가장 큰 파일 설명자에 1을 더한 값으로
+설정해야 한다. 이 예제에서는 `sockfd+1`이 될 것이며 이유는 당연히 그것이
+표준 입력(`0`)보다 클 것이기 때문이다.
 
+`select()`가 반환할 때 `readfds`는 당신이 선택한 파일 설명자 중에서 읽기를
+위해 준비된 것들을 반영하기 위해서 변해있을 것이다. 당신은 그것들을
+아래에 나오는 `FD_ISSET()`매크로로 검사할 수 있다.
 When `select()` returns, `readfds` will be modified to reflect which of
 the file descriptors you selected which is ready for reading. You can
 test them with the macro `FD_ISSET()`, below.
 
-Before progressing much further, I'll talk about how to manipulate these
-sets. Each set is of the type `fd_set`. The following macros operate on
-this type:
+더 진행하기 전에 이 집합들을 어떻게 조작하는지에 대해 이야기할 것이다. 각 집합은
+`fd_set`형이다. 이 자료형에 대해서 아래의 매크로들을 쓸 수 있다.
 
-| Function                                                | Description                          |
-| ------------------------------------------------------- | ------------------------------------ |
-| [i[`FD_SET()` macro]]`FD_SET(int fd, fd_set *set);`     | Add `fd` to the `set`.               |
-| [i[`FD_CLR()` macro]]`FD_CLR(int fd, fd_set *set);`     | Remove `fd` from the `set`.          |
-| [i[`FD_ISSET()` macro]]`FD_ISSET(int fd, fd_set *set);` | Return true if `fd` is in the `set`. |
-| [i[`FD_ZERO()` macro]]`FD_ZERO(fd_set *set);`           | Clear all entries from the `set`.    |
+| 함수                                                     | 설명                                 |
+| -------------------------------------------------------- | ------------------------------------ |
+| [i[`FD_SET()` 매크로]]`FD_SET(int fd, fd_set *set);`     | `fd`를 `set`에 더한다.               |
+| [i[`FD_CLR()` 매크로]]`FD_CLR(int fd, fd_set *set);`     | `fd`를 `set`에서 제거한다.           |
+| [i[`FD_ISSET()` 매크로]]`FD_ISSET(int fd, fd_set *set);` | `fd`이 `set`에 있다면 참을 돌려준다. |
+| [i[`FD_ZERO()` 매크로]]`FD_ZERO(fd_set *set);`           | `set`의 모든 요소를 제거한다.        |
 
-[i[`struct timeval` type]<]
+[i[`struct timeval` 형]<]
 
-Finally, what is this weirded-out `struct timeval`? Well, sometimes you
-don't want to wait forever for someone to send you some data. Maybe
-every 96 seconds you want to print "Still Going..." to the terminal even
-though nothing has happened. This time structure allows you to specify a
-timeout period. If the time is exceeded and `select()` still hasn't
-found any ready file descriptors, it'll return so you can continue
-processing.
+마지막으로 이 이상한 `struct timeval`은 무엇일까? 누군가 당신에게 자료를
+보낼 때까지 무한히 기다리고 싶지 않을 때가 있다. 아마도 매 96초마다
+실제로는 아무 일도 일어나지 않았어도 "진행중..."이라고 출력하고 싶을 수도 있다.
+이 시간 구조체가 제한시간을 지정할 수 있도록 해 준다. 시간이 초과하고 `select()`
+가 준비된 파일 설명자를 찾지 못할 경우, 그것은 반환하고 당신은 처리를 계속할
+수 있다.
 
-The `struct timeval` has the follow fields:
+`struct timeval`는 아래와 같은 필드를 가지고 있다:
 
 ```{.c}
 struct timeval {
-    int tv_sec;     // seconds
-    int tv_usec;    // microseconds
+    int tv_sec;     // 초
+    int tv_usec;    // 마이크로초
 };
 ```
 
-Just set `tv_sec` to the number of seconds to wait, and set `tv_usec` to
-the number of microseconds to wait. Yes, that's _micro_seconds, not
-milliseconds. There are 1,000 microseconds in a millisecond, and 1,000
-milliseconds in a second. Thus, there are 1,000,000 microseconds in a
-second. Why is it "usec"? The "u" is supposed to look like the Greek
-letter μ (Mu) that we use for "micro". Also, when the function returns,
-`timeout` \_might_ be updated to show the time still remaining. This
-depends on what flavor of Unix you're running.
+단순히 `tv_sec`을 기다리고 싶은 초로, `tv_usec`을 기다리고 싶은 마이크로초로
+설정하라. 그렇다. _마이크로_ 초다. 밀리초가 아니다. 1밀리초는 1,000마이크로초다.
+그리고 1,000밀리초는 1초이다. 그러므로 1초는 1,000,000초이다. 왜 "usec"일까?
+"u"는 우리가 "마이크로"를 뜻하기 위해서 쓰는 그리스 문자 μ(뮤)와 닮았기 때문이다.
+또 함수가 반환할 때 `timeout`은 남아있는 시간을 보여주기 위해서 업데이트 될 수도
+있다. 이것은 당신이 실행중인 유닉스의 종류에 따라 다르다.
 
-Yay! We have a microsecond resolution timer! Well, don't count on it.
-You'll probably have to wait some part of your standard Unix timeslice
-no matter how small you set your `struct timeval`.
+와! 우리는 마이크로초 해상도의 타이머를 가졌다! 사실 별로 기대하지 않는 것이 좋다.
+당신이 `struct timeval`을 아무리 작게 설정해도 당신의 표준 유닉스 타임슬라이스
+(역자 주 : 커널이 프로세스 스케쥴링의 최소 단위로 쓰는 시간)만큼은 기다려야 한다.
 
-Other things of interest: If you set the fields in your `struct
-timeval` to `0`, `select()` will timeout immediately, effectively
-polling all the file descriptors in your sets. If you set the parameter
-`timeout` to NULL, it will never timeout, and will wait until the first
-file descriptor is ready. Finally, if you don't care about waiting for a
-certain set, you can just set it to NULL in the call to `select()`.
+다른 흥미로운 것들: `struct timeval`을 `0`으로 설정하면 `select()`는 당신의 집합에
+있는 모든 파일 설명자를 조사한 즉시 시간초과가 될 것이다. 매개변수 `timeout`을 NULL
+로 설정하면 절대 시간초과가 되지 않으며 파일 설명자가 준비될 때까지 기다릴 것이다.
+마지막으로 만약 특정 집합을 기다릴 필요가 없다면 그 집합은 `select()`를 호출할 때
+NULL로 설정하면 된다.
 
-[flx[The following code snippet|select.c]] waits 2.5 seconds for
-something to appear on standard input:
+[flx[아래의 코드 조각|select.c]]은 표준 입력에 뭔가 나타날 때까지 2.5초를 기다린다:
 
 ```{.c .numberLines}
 /*
@@ -537,7 +530,7 @@ something to appear on standard input:
 #include <sys/types.h>
 #include <unistd.h>
 
-#define STDIN 0  // file descriptor for standard input
+#define STDIN 0  // 표준 입력의 파일 설명자
 
 int main(void)
 {
@@ -550,60 +543,59 @@ int main(void)
     FD_ZERO(&readfds);
     FD_SET(STDIN, &readfds);
 
-    // don't care about writefds and exceptfds:
+    // writefds와 exceptfds는 신경쓰지 않는다:
     select(STDIN+1, &readfds, NULL, NULL, &tv);
 
     if (FD_ISSET(STDIN, &readfds))
-        printf("A key was pressed!\n");
+        printf("키가 눌렸다!\n");
     else
-        printf("Timed out.\n");
+        printf("시간이 초과되었다.\n");
 
     return 0;
 }
 ```
 
-If you're on a line buffered terminal, the key you hit should be RETURN
-or it will time out anyway.
+만약 당신이 줄 단위로 버퍼처리되는 터미널을 사용한다면 엔터를 누르지 않으면
+제한시간이 초과될 것이다.
 
-Now, some of you might think this is a great way to wait for data on a
-datagram socket---and you are right: it _might_ be. Some Unices can use
-select in this manner, and some can't. You should see what your local
-man page says on the matter if you want to attempt it.
+이제 여러분 중 일부는 이것이 데이터그램 소켓의 데이터를 기다리는 아주 훌륭한
+방법이라고 생각할 것이다. 그리고 맞다. 맞을 _수도_ 있다. 일부 유닉스에서는
+select를 이 목적으로 쓸 수 있고, 일부에서는 그럴 수 없다. 그 방식을 시도하고
+싶다면 당신의 로컬 맨페이지 내용을 참고해야 한다.
 
-Some Unices update the time in your `struct timeval` to reflect the
-amount of time still remaining before a timeout. But others do not.
-Don't rely on that occurring if you want to be portable. (Use
-[i[`gettimeofday()` function]] `gettimeofday()` if you need to track time
-elapsed. It's a bummer, I know, but that's the way it is.)
+일부 유닉스는 제한시간이 초과되기까지 남은 시간을 반영하기 위해서 당신의
+`struct timeval`를 업데이트한다. 그러나 다른 것들은 그렇게 하지 않는다.
+만약 이식성있는 코드를 작성하고자 한다면 그것에 의존해서는 안된다.
+(경과한 시간을 알고싶다면[i[`gettimeofday()`함수]]`gettimeofday()`
+을 사용하라. 실망스럽겠지만 그것이 올바른 방법이다.)
 
-[i[`struct timeval` type]>]
+[i[`struct timeval` 형]>]
 
-What happens if a socket in the read set closes the connection? Well, in
-that case, `select()` returns with that socket descriptor set as "ready
-to read". When you actually do `recv()` from it, `recv()` will return
-`0`. That's how you know the client has closed the connection.
+만약 읽기 집합에 잇는 소켓이 연결을 닫는다면 어떤 일이 생길까? 그 경우
+`select()`는 그 소켓 설명자를 "읽기 준비된 상태"로 설정할 것이다. 실제로
+그 소켓에 `recv()`하면 `recv()`는 `0`을 돌려줄 것이다. 그것이 클라이언트가
+연결을 닫았음을 알아내는 방법이다.
 
-One more note of interest about `select()`: if you have a socket that is
+`select()`에 관한 흥미로운 이야기 하나 더: 만약
 [i[`select()` function-->with `listen()`]]
 [i[`listen()` function-->with `select()`]]
-`listen()`ing, you can check to see if there is a new connection by
-putting that socket's file descriptor in the `readfds` set.
+`listen()`작업중인 소켓을 가지고 있을 경우, 그 소켓의 파일 설명자를 `readfds`
+집합에 넣어서 새로운 연결이 있는지 알 수 있다.
 
-And that, my friends, is a quick overview of the almighty `select()`
-function.
+지금까지 전능한 `select()`함수에 대한 간략한 개관이었다.
 
-But, by popular demand, here is an in-depth example. Unfortunately, the
-difference between the dirt-simple example, above, and this one here is
-significant. But have a look, then read the description that follows it.
+그러나 대중적 요구가 있으므로 아래에 심도있는 예제를 첨부한다. 불행하게도
+위의 아주 단순한 예제와 아래의 에제에는 상당한 차이가 있다. 그렇지만 한 번
+살펴보고 뒤따르는 설명을 읽어보라.
 
-[flx[This program|selectserver.c]] acts like a simple multi-user chat
-server. Start it running in one window, then `telnet` to it ("`telnet
-hostname 9034`") from multiple other windows. When you type something in
-one `telnet` session, it should appear in all the others.
+[flx[이 프로그램|selectserver.c]] 은 단순한 다중 사용자 챗 서버처럼 동작한다.
+하나의 창에서 이것을 실행한 후 다른 창에서 `telnet`을 통해 접속하라. ("`telnet
+hostname 9034`") 하나의 `telnet`세션에서 뭔가 입력하면 나머지 모두에서 그 내용이
+나타나야 한다.
 
 ```{.c .numberLines}
 /*
-** selectserver.c -- a cheezy multiperson chat server
+** selectserver.c -- 허술한 다중 사용자 대화 서버
 */
 
 #include <stdio.h>
@@ -616,7 +608,7 @@ one `telnet` session, it should appear in all the others.
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#define PORT "9034"   // port we're listening on
+#define PORT "9034"   // 우리가 듣는 포트
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -630,29 +622,29 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(void)
 {
-    fd_set master;    // master file descriptor list
-    fd_set read_fds;  // temp file descriptor list for select()
-    int fdmax;        // maximum file descriptor number
+    fd_set master;    // 마스터 파일 설명자 리스트
+    fd_set read_fds;  // select()를 위한 임시 파일 설명자 리스트
+    int fdmax;        // 가장 큰 파일 설명자 번호
 
-    int listener;     // listening socket descriptor
-    int newfd;        // newly accept()ed socket descriptor
-    struct sockaddr_storage remoteaddr; // client address
+    int listener;     // 듣는 소켓 설명자
+    int newfd;        // 새롭게 accept() 처리한 소켓 설명자
+    struct sockaddr_storage remoteaddr; // 클라이언트 주소
     socklen_t addrlen;
 
-    char buf[256];    // buffer for client data
+    char buf[256];    // 클라이언트 데이터를 위한 버퍼
     int nbytes;
 
     char remoteIP[INET6_ADDRSTRLEN];
 
-    int yes=1;        // for setsockopt() SO_REUSEADDR, below
+    int yes=1;        // setsockopt() SO_REUSEADDR를 위해서는 아래를 보라
     int i, j, rv;
 
     struct addrinfo hints, *ai, *p;
 
-    FD_ZERO(&master);    // clear the master and temp sets
+    FD_ZERO(&master);    // 마스터와 임시 집합을 초기화
     FD_ZERO(&read_fds);
 
-    // get us a socket and bind it
+    // 소켓을 하나 받아와서 바인드한다.
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -668,7 +660,7 @@ int main(void)
             continue;
         }
 
-        // lose the pesky "address already in use" error message
+        // 짜증나는 "address already in use" 오류 메시지를 제거한다.
         setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
 
         if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
@@ -679,39 +671,39 @@ int main(void)
         break;
     }
 
-    // if we got here, it means we didn't get bound
+    // 이곳이 실행되면 바인드가 되지 않은 것이다.
     if (p == NULL) {
         fprintf(stderr, "selectserver: failed to bind\n");
         exit(2);
     }
 
-    freeaddrinfo(ai); // all done with this
+    freeaddrinfo(ai); // 더 이상 필요없다.
 
-    // listen
+    // 듣는다.
     if (listen(listener, 10) == -1) {
         perror("listen");
         exit(3);
     }
 
-    // add the listener to the master set
+    // 리스너를 마스터 집합에 추가한다.
     FD_SET(listener, &master);
 
-    // keep track of the biggest file descriptor
-    fdmax = listener; // so far, it's this one
+    // 가장 큰 파일 설명자를 기록한다.
+    fdmax = listener; // 현재까지는 이것이다.
 
-    // main loop
+    // 주 반복문
     for(;;) {
-        read_fds = master; // copy it
+        read_fds = master; // 복사한다.
         if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
             perror("select");
             exit(4);
         }
 
-        // run through the existing connections looking for data to read
+        // 존재하는 연결을 순회하며 읽을 데이터가 있는지 확인한다.
         for(i = 0; i <= fdmax; i++) {
             if (FD_ISSET(i, &read_fds)) { // we got one!!
                 if (i == listener) {
-                    // handle new connections
+                    // 새 연결을 처리한다.
                     addrlen = sizeof remoteaddr;
                     newfd = accept(listener,
                         (struct sockaddr *)&remoteaddr,
@@ -720,8 +712,8 @@ int main(void)
                     if (newfd == -1) {
                         perror("accept");
                     } else {
-                        FD_SET(newfd, &master); // add to master set
-                        if (newfd > fdmax) {    // keep track of the max
+                        FD_SET(newfd, &master); // 마스터 집합에 추가한다.
+                        if (newfd > fdmax) {    // 가장 큰 것을 기록한다.
                             fdmax = newfd;
                         }
                         printf("selectserver: new connection from %s on "
@@ -732,23 +724,23 @@ int main(void)
                             newfd);
                     }
                 } else {
-                    // handle data from a client
+                    // 클라이언트에서 온 자료를 처리한다.
                     if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
-                        // got error or connection closed by client
+                        // 오류가 발생했거나 클라이언트에 의해 연결이 종료되었다.
                         if (nbytes == 0) {
-                            // connection closed
+                            // 연결이 종료되었다.
                             printf("selectserver: socket %d hung up\n", i);
                         } else {
                             perror("recv");
                         }
-                        close(i); // bye!
-                        FD_CLR(i, &master); // remove from master set
+                        close(i); // 잘가!
+                        FD_CLR(i, &master); // 마스터 집합에서 삭제
                     } else {
-                        // we got some data from a client
+                        // 클라이언트로부터 데이터가 들어왔다.
                         for(j = 0; j <= fdmax; j++) {
-                            // send to everyone!
+                            // 모두에게 보낸다!
                             if (FD_ISSET(j, &master)) {
-                                // except the listener and ourselves
+                                // 리스너와 그 자신을 제외
                                 if (j != listener && j != i) {
                                     if (send(j, buf, nbytes, 0) == -1) {
                                         perror("send");
@@ -757,57 +749,51 @@ int main(void)
                             }
                         }
                     }
-                } // END handle data from client
-            } // END got new incoming connection
-        } // END looping through file descriptors
-    } // END for(;;)--and you thought it would never end!
+                } // 클라이언트로부터 온 데이터를 다루는 부분의 끝
+            } // 새 연결을 얻는 부분의 끝
+        } // 파일 설명자 순회 코드의 끝
+    } // 무한루프의 끝. 절대 끝나지 않는다고 생각할 것이다!
 
     return 0;
 }
 ```
 
-Notice I have two file descriptor sets in the code: `master` and
-`read_fds`. The first, `master`, holds all the socket descriptors that
-are currently connected, as well as the socket descriptor that is
-listening for new connections.
+코드에 `master`와 `read_fds` 두 개의 파일 설명자 집합이 있음에 주목하라.
+전자인 `master`는 새 연결을 듣는 소켓 설명자와 현재 연결된 모든 소켓의
+설명자를 가진다.
 
-The reason I have the `master` set is that `select()` actually _changes_
-the set you pass into it to reflect which sockets are ready to read.
-Since I have to keep track of the connections from one call of
-`select()` to the next, I must store these safely away somewhere. At the
-last minute, I copy the `master` into the `read_fds`, and then call
-`select()`.
+`master`를 가지는 이유는 `select()`가 사실 당신이 넘기는 집합을 _변형해서_
+읽기 준비된 소켓을 반영하기 때문이다. 우리는 하나의 `select()`호출과 다음
+호출 사이에서 연결들을 계속 기억해야 하므로 이것들은 다른 곳에 안전하게
+보관해야 하는 것이다. 그래서 우리는 실제로 쓰기 전에 `master`를 `read_fds`에
+복사하고 `select()`를 호출하는 것이다.
 
-But doesn't this mean that every time I get a new connection, I have to
-add it to the `master` set? Yup! And every time a connection closes, I
-have to remove it from the `master` set? Yes, it does.
+하지만 그것은 우리가 새로운 연결을 받을 때마다 그것을 `master`집합에 추가해야
+한다는 의미가 아닌가? 맞다! 그리고 연결이 닫힐 때마다 `master`집합에서 제거해야
+하지않은가? 맞다, 그렇게 해야한다.
 
-Notice I check to see when the `listener` socket is ready to read. When
-it is, it means I have a new connection pending, and I `accept()` it and
-add it to the `master` set. Similarly, when a client connection is ready
-to read, and `recv()` returns `0`, I know the client has closed the
-connection, and I must remove it from the `master` set.
+`listener`소켓이 읽을 준비가 되었는지 확인한다는 사실에 주목하라. 준비가 되어있다면
+대기중인 새로운 연결이 있다는 의미이고, `accept()`한 후에 `master`집합에 추가한다.
+비슷하게 클라이언트 연결을 읽을 준비가 되고 `recv()`가 `0`을 돌려준다면 클라이언트가
+연결을 닫았다는 사실을 알 수 있고, 우리는 그 연결을 `master` 집합에서 제거해야 한다.
 
-If the client `recv()` returns non-zero, though, I know some data has
-been received. So I get it, and then go through the `master` list and
-send that data to all the rest of the connected clients.
+클라이언트에 대한 `recv()`가 0이 아닌 값을 돌려준다면 우리는 어떤 데이터가 도착했다는
+것을 알 수 있다. 그러므로 자료를 받은 후에 `master`목록을 순회하면서 모든 나머지
+연결된 클라이언트들에게 그 자료를 보낸다.
 
-And that, my friends, is a less-than-simple overview of the almighty
-`select()` function.
+지금까지 전능한 `select()`함수에 대한 별로 단순하지 않은 개관이었다.
 
-Quick note to all you Linux fans out there: sometimes, in rare
-circumstances, Linux's `select()` can return "ready-to-read" and then
-not actually be ready to read! This means it will block on the `read()`
-after the `select()` says it won't! Why you little---! Anyway, the
-workaround solution is to set the [i[`O_NONBLOCK` macro]] `O_NONBLOCK`
-flag on the receiving socket so it errors with `EWOULDBLOCK` (which you
-can just safely ignore if it occurs). See the [`fcntl()` reference
-page](#fcntlman) for more info on setting a socket to non-blocking.
+모든 리눅스 팬들을 위한 짧은 이야기: 드문 몇몇 상황에서 때때로 리눅스의 `select()`
+는 실제로는 읽을 준비가 되어있지 않음에도 "읽을 준비가 되었다"고 하면서 반환한다.
+이것은 `select()`가 읽기 동작에 대한 블로킹이 없을 것이라고 말함에도 `read()`
+가 블록될 것임을 의미한다. 아무튼 해결책은 읽을 소켓에 [i[`O_NONBLOCK` 매크로]]
+`O_NONBLOCK` 플래그를 설정해서 `EWOULDBLOCK`오류가 발생하도록 하는 것이다.
+(이 오류가 생겨도 무시해도 된다.) 소켓을 논블로킹 모드로 설정하는 방법에 대해서는
+[`fcntl()` 참조 페이지`](#fcntlman)를 참고하라.
 
-In addition, here is a bonus afterthought: there is another function
-called [i[`poll()` function]] `poll()` which behaves much the same way
-`select()` does, but with a different system for managing the file
-descriptor sets. [Check it out!](#pollman)
+추가로 약간의 여담을 하자면 `select()`와 상당히 비슷한 일을 하지만 파일 설명자
+집합을 다른 방식으로 처리하는 [i[`poll()` 함수]] `poll()`이라는 다른 함수가 있다.
+[한 번 확인해 보라!](#pollman)
 
 [i[`select()` function]>]
 
