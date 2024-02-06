@@ -1726,7 +1726,7 @@ printf("from IP address %s\n",
     inet_ntop(addr.ss_family,
         addr.ss_family == AF_INET?
             ((struct sockadd_in *)&addr)->sin_addr:
-            ((struct sockadd_in6 *)&addr)->sin6_addr,
+            ((struct sockaddr_in6 *)&addr)->sin6_addr,
         ipstr, sizeof ipstr);
 ```
 
@@ -2269,7 +2269,7 @@ Sometimes it's a crazy `union` with all kinds of `#define`s and other
 nonsense. But what you should do is only use the `s_addr` field in this
 structure, because many systems only implement that one.
 
-`struct sockadd_in6` and `struct in6_addr` are very similar, except
+`struct sockaddr_in6` and `struct in6_addr` are very similar, except
 they're used for IPv6.
 
 `struct sockaddr_storage` is a struct you can pass to `accept()` or

@@ -7212,7 +7212,7 @@ printf("from IP address %s\n",
     inet_ntop(addr.ss_family,
         addr.ss_family == AF_INET?
             ((struct sockadd_in *)&amp;addr)-&gt;sin_addr:
-            ((struct sockadd_in6 *)&amp;addr)-&gt;sin6_addr,
+            ((struct sockaddr_in6 *)&amp;addr)-&gt;sin6_addr,
         ipstr, sizeof ipstr);
 
 </pre>
@@ -7868,7 +7868,7 @@ sistemas. Às vezes é uma <tt class="tt">union louca</tt> com todos os tipos de
 campo <i><tt class="var">s_addr</tt></i> nessa estrutura, porque muitos sistemas
 só implementam esse.</p>
 
-<p><nobr><tt class="type">struct sockadd_in6</tt></nobr> e <nobr><tt class="type">struct in6_addr</tt></nobr> são
+<p><nobr><tt class="type">struct sockaddr_in6</tt></nobr> e <nobr><tt class="type">struct in6_addr</tt></nobr> são
 muito semelhantes, exceto que elas são usadas ​​para IPv6.</p>
 
 <p><nobr><tt class="type">struct sockaddr_storage</tt></nobr> é uma struct que você pode passar para
