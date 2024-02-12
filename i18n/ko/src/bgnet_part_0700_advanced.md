@@ -22,7 +22,7 @@
 쓴다.) 그것들이 블록동작을 할 수 있는 이유는 그렇게 할 수 있게 허락을 받았기
 때문이다. `socket()`으로 소켓 설명자를 처음 만들 때 커널이 이 소켓을 블로킹
 소켓으로 설정한다. [i[Non-blocking sockets]] 만약 소켓이 블록 동작을 하지
-않길 원한다면 [i[`fcntl()` 함수]]에 대한 호출을 해야한다. :
+않길 원한다면 [i[`fcntl()` funtion]]에 대한 호출을 해야한다. :
 
 ```{.c .numberLines}
 #include <unistd.h>
@@ -39,10 +39,10 @@ fcntl(sockfd, F_SETFL, O_NONBLOCK);
 
 소켓을 논블로킹으로 설정하면 정보를 얻기 위해서 소켓을 효과적으로 "조사(원문 : poll)"
 할 수 있다. 논 블로킹 소켓을 읽으려고 할 때 정보가 없다면 그것이 블록 동작을
-하는 것은 허락되지 않는다. 그것은 -1을 반환할 것이고 `errno`은 [i[`EAGAIN` 매크로]]
-`EAGAIN` 이나 [i[`EWOULDBLOCK` 매크로]] `EWOULDBLOCK`로 설정될 것이다.
+하는 것은 허락되지 않는다. 그것은 -1을 반환할 것이고 `errno`은 [i[`EAGAIN` macro]]
+`EAGAIN` 이나 [i[`EWOULDBLOCK` macro]] `EWOULDBLOCK`로 설정될 것이다.
 
-(잠깐, [i[`EAGAIN` 매크로]] `EAGAIN` _이나_ [i[`EWOULDBLOCK` 매크로]] `EWOULDBLOCK`
+(잠깐, [i[`EAGAIN` macro]] `EAGAIN` _이나_ [i[`EWOULDBLOCK` macro]] `EWOULDBLOCK`
 를 돌려준다니 무엇을 확인해야 한다는 말인가? 명세서에는 사실 당신의 시스템이 어떤 값을
 돌려줘야 하는지가 정의되어 있지 않다. 그러므로 이식성을 위해서는 둘을 모두 확인해야 한다.)
 
@@ -50,7 +50,7 @@ fcntl(sockfd, F_SETFL, O_NONBLOCK);
 소켓의 자료를 기다리면서 바쁜 대기 상태가 되면 당신은 보통의 프로그램보다 훨씬
 CPU시간을 많이 사용할 것이다. (역자 주 : 특별한 제한을 걸지 않으면 최대 단일 코어
 하나를 100% 점유할 수 있다.) 읽기 작업을 기다리는 정보가 있는지 확인하기 위한
-조금 더 우아한 해결책은 [i[`poll()` 함수]] `poll()`에 대해 다루는 다음 절에 있다.
+조금 더 우아한 해결책은 [i[`poll()` funtion]] `poll()`에 대해 다루는 다음 절에 있다.
 
 [i[Blocking]>]
 
@@ -478,10 +478,10 @@ test them with the macro `FD_ISSET()`, below.
 
 | 함수                                                     | 설명                                 |
 | -------------------------------------------------------- | ------------------------------------ |
-| [i[`FD_SET()` 매크로]]`FD_SET(int fd, fd_set *set);`     | `fd`를 `set`에 더한다.               |
-| [i[`FD_CLR()` 매크로]]`FD_CLR(int fd, fd_set *set);`     | `fd`를 `set`에서 제거한다.           |
-| [i[`FD_ISSET()` 매크로]]`FD_ISSET(int fd, fd_set *set);` | `fd`이 `set`에 있다면 참을 돌려준다. |
-| [i[`FD_ZERO()` 매크로]]`FD_ZERO(fd_set *set);`           | `set`의 모든 요소를 제거한다.        |
+| [i[`FD_SET()` macro]]`FD_SET(int fd, fd_set *set);`     | `fd`를 `set`에 더한다.               |
+| [i[`FD_CLR()` macro]]`FD_CLR(int fd, fd_set *set);`     | `fd`를 `set`에서 제거한다.           |
+| [i[`FD_ISSET()` macro]]`FD_ISSET(int fd, fd_set *set);` | `fd`이 `set`에 있다면 참을 돌려준다. |
+| [i[`FD_ZERO()` macro]]`FD_ZERO(fd_set *set);`           | `set`의 모든 요소를 제거한다.        |
 
 [i[`struct timeval` 형]<]
 
@@ -566,7 +566,7 @@ select를 이 목적으로 쓸 수 있고, 일부에서는 그럴 수 없다. �
 일부 유닉스는 제한시간이 초과되기까지 남은 시간을 반영하기 위해서 당신의
 `struct timeval`를 업데이트한다. 그러나 다른 것들은 그렇게 하지 않는다.
 만약 이식성있는 코드를 작성하고자 한다면 그것에 의존해서는 안된다.
-(경과한 시간을 알고싶다면[i[`gettimeofday()`함수]]`gettimeofday()`
+(경과한 시간을 알고싶다면[i[`gettimeofday()`funtion]]`gettimeofday()`
 을 사용하라. 실망스럽겠지만 그것이 올바른 방법이다.)
 
 [i[`struct timeval` 형]>]
@@ -786,31 +786,29 @@ int main(void)
 모든 리눅스 팬들을 위한 짧은 이야기: 드문 몇몇 상황에서 때때로 리눅스의 `select()`
 는 실제로는 읽을 준비가 되어있지 않음에도 "읽을 준비가 되었다"고 하면서 반환한다.
 이것은 `select()`가 읽기 동작에 대한 블로킹이 없을 것이라고 말함에도 `read()`
-가 블록될 것임을 의미한다. 아무튼 해결책은 읽을 소켓에 [i[`O_NONBLOCK` 매크로]]
+가 블록될 것임을 의미한다. 아무튼 해결책은 읽을 소켓에 [i[`O_NONBLOCK` macro]]
 `O_NONBLOCK` 플래그를 설정해서 `EWOULDBLOCK`오류가 발생하도록 하는 것이다.
 (이 오류가 생겨도 무시해도 된다.) 소켓을 논블로킹 모드로 설정하는 방법에 대해서는
 [`fcntl()` 참조 페이지`](#fcntlman)를 참고하라.
 
 추가로 약간의 여담을 하자면 `select()`와 상당히 비슷한 일을 하지만 파일 설명자
-집합을 다른 방식으로 처리하는 [i[`poll()` 함수]] `poll()`이라는 다른 함수가 있다.
+집합을 다른 방식으로 처리하는 [i[`poll()` funtion]] `poll()`이라는 다른 함수가 있다.
 [한 번 확인해 보라!](#pollman)
 
-[i[`select()` function]>]
+[i[`select()` 함수]>]
 
-## Handling Partial `send()`s {#sendall}
+## 부분적인 `send()` 처리하기 {#sendall}
 
-Remember back in the [section about `send()`](#sendrecv), above, when I
-said that `send()` might not send all the bytes you asked it to? That
-is, you want it to send 512 bytes, but it returns 412. What happened to
-the remaining 100 bytes?
+위에서 다룬 [`send()`에 대한 절](#sendrecv)에서 `send()`가 당신이 전송 요청한 바이트들을
+모두 보내지는 않을 수도 있다고 말한 것을 기억하는가? 당신은 512바이트를 보내길 원해도 복귀값은
+412일 수 있다는 의미이다. 남은 100바이트에는 무슨 일이 생긴 것인가?
 
-Well, they're still in your little buffer waiting to be sent out. Due to
-circumstances beyond your control, the kernel decided not to send all
-the data out in one chunk, and now, my friend, it's up to you to get the
-data out there.
+음, 그것들은 여전히 당신의 작은 버퍼에 남아서 보내지길 기다리고 있다. 당신의 통제 밖에 있는
+상황때문에 커널이 데이터를 한 덩어리로 전부 보내지는 않기로 결정한 것이다. 그리고 친구여, 이제 남은
+데이터를 보내는 일은 당신에게 달려있는 것이다.
 
-[i[`sendall()` function]<]
-You could write a function like this to do it, too:
+[i[`sendall()` 함수]<]
+그 일을 하는 함수를 만드는 한 가지 방법은 이렇다:
 
 ```{.c .numberLines}
 #include <sys/types.h>
@@ -818,8 +816,8 @@ You could write a function like this to do it, too:
 
 int sendall(int s, char *buf, int *len)
 {
-    int total = 0;        // how many bytes we've sent
-    int bytesleft = *len; // how many we have left to send
+    int total = 0;        // 몇 바이트를 보냈는가
+    int bytesleft = *len; // 보내야하는 데이터는 얼마나 남아있는가
     int n;
 
     while(total < *len) {
@@ -829,24 +827,21 @@ int sendall(int s, char *buf, int *len)
         bytesleft -= n;
     }
 
-    *len = total; // return number actually sent here
+    *len = total; // 실제로 보낸 바이트 수를 기록해서 돌려준다.
 
-    return n==-1?-1:0; // return -1 on failure, 0 on success
+    return n==-1?-1:0; // 실패시에는 -1을, 성공시에는 0을 돌려준다.
 }
 ```
 
-In this example, `s` is the socket you want to send the data to, `buf`
-is the buffer containing the data, and `len` is a pointer to an `int`
-containing the number of bytes in the buffer.
+이 예제에서 `s`는 당신이 데이터를 보내고 싶은 소켓이고 `buf`는 자료를 담은 버퍼이다.
+`len`은 버퍼에 담긴 바이트의 갯수를 담은 `int`에 대한 포인터이다.
 
-The function returns `-1` on error (and `errno` is still set from the
-call to `send()`). Also, the number of bytes actually sent is returned
-in `len`. This will be the same number of bytes you asked it to send,
-unless there was an error. `sendall()` will do it's best, huffing and
-puffing, to send the data out, but if there's an error, it gets back to
-you right away.
+함수는 오류가 발생하면 `-1`을 돌려준다(`errno`는 `send()`에 대한 호출로 인해 여전히
+설정되어 있다). 또한 실제로 전송된 바이트의 갯수가 `len`을 통해 반환된다. 이 값은 오류가
+발생하지 않는 이상 당신이 전송하라고 요청한 바이트의 수와 같다. `sendall()`은 데이터를
+전송하기 위해서 최선을 다하지만 오류가 발생하면 바로 당신에게 알려줄 것이다.
 
-For completeness, here's a sample call to the function:
+완결성을 위해 이 함수에 대한 호출 예제가 여기 있다:
 
 ```{.c .numberLines}
 char buf[10] = "Beej!";
@@ -855,114 +850,99 @@ int len;
 len = strlen(buf);
 if (sendall(s, buf, &len) == -1) {
     perror("sendall");
-    printf("We only sent %d bytes because of the error!\n", len);
+    printf("오류가 발생해서 %d바이트만 전송했습니다!\n", len);
 }
 ```
 
-[i[`sendall()` function]>]
+[i[`sendall()` 함수]>]
 
-What happens on the receiver's end when part of a packet arrives? If the
-packets are variable length, how does the receiver know when one packet
-ends and another begins? Yes, real-world scenarios are a royal pain in
-the [i[Donkeys]] donkeys. You probably have to [i[Data encapsulation]]
-_encapsulate_ (remember that from the [data encapsulation
-section](#lowlevel) way back there at the beginning?) Read on for
-details!
+수신자 측에 패킷의 일부가 도착하면 무슨 일이 벌어질까? 만약 패킷이 가변 길이일 경우 수신자는
+어떻게 하나의 패킷이 끝나고 다른 하나가 시작되는 것을 알까? 그렇다. 실세계의 시나리오는 [i[Donkeys]]
+뒤지게 고통스럽다. 당신은 아마도 [i[Data encapsulation]]_캡슐화_ 를 해야 할 것이다.
+(시작부에 있던 [데이터 캡슐화 절](#lowlevel)을 기억하는가?) 자세한 내용을 알고싶다면 계속
+읽어보자!
 
-## Serialization---How to Pack Data {#serialization}
+## 직렬화---데이터를 포장하는 방법 {#serialization}
 
 [i[Serialization]<]
 
-It's easy enough to send text data across the network, you're finding,
-but what happens if you want to send some "binary" data like `int`s or
-`float`s? It turns out you have a few options.
+네트워크를 통해 문자열 데이터를 보내는 것은 꽤 쉽다는 것을 이제 알 것이다. 하지만 만약
+`int`나 `float`같은 "이진" 자료를 전송하려고 하면 어떻게 해야하는가? 몇 가지 방법이
+있다.
 
-1. Convert the number into text with a function like `sprintf()`, then
-   send the text. The receiver will parse the text back into a number
-   using a function like `strtol()`.
+1. `sprintf()`같은 함수를 써서 수를 텍스트로 변환하고 텍스트를 전송한다. 수신자는
+   `strtol()`같은 함수를 써서 텍스트를 다시 숫자로 변환한다.
 
-2. Just send the data raw, passing a pointer to the data to `send()`.
+2. `send()`에 데이터를 가리키는 포인터를 전달해서 원시 데이터를 그대로 전송한다.
 
-3. Encode the number into a portable binary form. The receiver will
-   decode it.
+3. 데이터를 호환성 있는 바이너리 형태로 인코드한다. 수신자는 디코드한다.
 
-Sneak preview! Tonight only!
 
-[_Curtain raises_]
+오늘밤의 특별 사시회!
 
-Beej says, "I prefer Method Three, above!"
+[_커튼이 올라간다_]
 
-[_THE END_]
+Beej가 말합니다: "저는 위의 세 번째 방법을 좋아합니다."
 
-(Before I begin this section in earnest, I should tell you that there
-are libraries out there for doing this, and rolling your own and
-remaining portable and error-free is quite a challenge. So hunt around
-and do your homework before deciding to implement this stuff yourself. I
-include the information here for those curious about how things like
-this work.)
+[_끝_]
 
-Actually all the methods, above, have their drawbacks and advantages,
-but, like I said, in general, I prefer the third method. First, though,
-let's talk about some of the drawbacks and advantages to the other two.
+(이 절을 기쁘게 시작하기에 앞서, 이 일을 하기 위한 라이브러리들이 이미 있다는 말을 미리
+해야겠다. 이식성 있고 오류가 없는 당신만의 라이브러리를 만드는 작업은 꽤 어려운 일이 될
+것이다. 그러므로 그런 작업을 직접 하기 전에 그것들을 살펴보고 해야하는 다른 일을 처리하는
+것이 나을 것이다. 필자는 그런 것이 어떻게 동작하는지 궁금할 독자들을 위해서 관련된
+내용을 여기에 담을 뿐이다.)
 
-The first method, encoding the numbers as text before sending, has the
-advantage that you can easily print and read the data that's coming over
-the wire. Sometimes a human-readable protocol is excellent to use in a
-non-bandwidth-intensive situation, such as with [i[IRC]] [fl[Internet
-Relay Chat (IRC)|https://en.wikipedia.org/wiki/Internet_Relay_Chat]].
-However, it has the disadvantage that it is slow to convert, and the
-results almost always take up more space than the original number!
+사실 위에 언급한 모든 방법에 각각의 장점과 단점이 있다. 그러나 위에 말한대로, 필자는 일반적으로
+세 번째 방법을 선호한다. 그러나 먼저 다른 두 가지 방법의 장단점에 대해서 조금 더 알아보자.
 
-Method two: passing the raw data. This one is quite easy (but
-dangerous!): just take a pointer to the data to send, and call send with
-it.
+수를 보내기 전에 텍스트로 인코딩하는 첫 번재 방법은 랜선을 타고 오는 정보를 출력하고 읽어보기가
+쉽다는 장점이 있다. [i[IRC]] [fl[Internet
+Relay Chat (IRC)|https://en.wikipedia.org/wiki/Internet_Relay_Chat]]
+처럼 인간이 읽을 수 있는 프로토콜은 때때로 전송 대역폭에 민감하지 않은 상황에서 사용하기에 아주
+훌륭하다. 그러나 그것은 변환이 느리다는 단점이 있고, 결과물은 언제나 원본 수보다 더 많은
+공간을 차지한다는 단점이 있다.
+
+두 번째 방법: 원시 데이터(원문: raw data)를 넘기기. 이것은 꽤 간단(하고 위험)하다:
+보낼 데이터에 대한 포인터를 얻은 후 그것에 send를 호출한다.
 
 ```{.c}
 double d = 3490.15926535;
 
-send(s, &d, sizeof d, 0);  /* DANGER--non-portable! */
+send(s, &d, sizeof d, 0);  /* 위험--이식성 없음!(역자 주: 이식성은 컴퓨터 프로그램이나 소스코드가 서로 다른 구조를 가진 컴퓨터에서 동작하는 특성을 의미한다.) */
 ```
 
-The receiver gets it like this:
+수신자는 이것을 아래와 같이 받는다:
 
 ```{.c}
 double d;
 
-recv(s, &d, sizeof d, 0);  /* DANGER--non-portable! */
+recv(s, &d, sizeof d, 0);  /* 위험--이식성 없음! */
 ```
 
-Fast, simple---what's not to like? Well, it turns out that not all
-architectures represent a `double` (or `int` for that matter) with the
-same bit representation or even the same byte ordering! The code is
-decidedly non-portable. (Hey---maybe you don't need portability, in
-which case this is nice and fast.)
+빠르고, 간단하다---문제될 것이 없지않은가? 사실, 모든 아키텍처들이 `double`
+(이나 다른 예로는 `int`)을 동일한 비트 표현이나 심지어 동일한 바이트 순서로 표시하는
+것은 아니라는 문제가 있다! 위의 코드는 절대로 이식성이 없다. (잠깐---이식성이 필요 없는
+상황도 있지 않을까? 그렇다면 이 방식은 좋고 빠른 방법이 된다.)
 
-When packing integer types, we've already seen how the [i[`htons()`
-function]] `htons()`-class of functions can help keep things portable by
-transforming the numbers into [i[Byte ordering]] Network Byte Order, and
-how that's the Right Thing to do. Unfortunately, there are no similar
-functions for `float` types. Is all hope lost?
+정수 자료형을 포장할 때 [i[`htons()` function]] `htons()`-수를 [i[Byte ordering]]
+네트워크 바이트 순서로 변환해주는 종류의 함수를 어떻게 쓰는지, 그리고 그것이 왜 필요한지
+이미 살펴보았다. 불행하게도 `float`자료형에 대해서는 유사한 함수가 없다. 희망이 없는 것일까?
 
-Fear not! (Were you afraid there for a second? No? Not even a little
-bit?) There is something we can do: we can pack (or "marshal", or
-"serialize", or one of a thousand million other names) the data into a
-known binary format that the receiver can unpack on the remote side.
+두려워 말라!(잠시 두려움을 느꼈는가? 두렵지 않았는가? 아주 조금도?) 우리에게 방법이 있다:
+우리는 데이터를 원격지에서 풀어낼 수 있는 알려진 방식으로 포장(원문 : pack)(또는 "marshal"
+또는 "직렬화" 그것도 아니면 그런 일에 대한 천만개의 다른 이름)을 할 수 있다.
 
-What do I mean by "known binary format"? Well, we've already seen the
-`htons()` example, right? It changes (or "encodes", if you want to think
-of it that way) a number from whatever the host format is into Network
-Byte Order. To reverse (unencode) the number, the receiver calls
-`ntohs()`.
+"알려진 이진 형식"은 무엇일까? 우리는 이미 `htons()`의 예제를 보았다. 그것은 수를 호스트의
+형식이 무엇이든간에 네트워크 바이트 순서로 변환(또는 "인코드", 이것이 더 이해하기 쉽다면)한다.
+수를 원래대로 돌려놓기(디코드) 위해서 수신자는 `ntohs()`를 호출해야 한다.
 
-But didn't I just get finished saying there wasn't any such function for
-other non-integer types? Yes. I did. And since there's no standard way
-in C to do this, it's a bit of a pickle (that a gratuitous pun there for
-you Python fans).
+하지만 필자가 조금 전에 비-정수 타입에 대해서는 그런 함수가 없다고 하지 않았던가? 그렇다.
+그리고 C에서 이것을 처리하는 표준 방법이 없기 때문에 이것은 조금 까다로운 일이다. (파이썬
+팬들은 이런 작업을 할 필요가 없을 것이다.)
 
-The thing to do is to pack the data into a known format and send that
-over the wire for decoding. For example, to pack `float`s, here's
-[flx[something quick and dirty with plenty of room for
-improvement|pack.c]]:
+필요한 작업은 데이터를 알려진 형식으로 포장하고 유선상으로 실어보내는 것이다. 예를 들어서
+`float`를 포장하는 작업을 위한 [flx[간단하고 지저분하고 개선할 점이 많은 예제코드|pack.c]]
+가 있다:
 
 ```{.c .numberLines}
 #include <stdint.h>
@@ -975,30 +955,29 @@ uint32_t htonf(float f)
     if (f < 0) { sign = 1; f = -f; }
     else { sign = 0; }
 
-    p = ((((uint32_t)f)&0x7fff)<<16) | (sign<<31); // whole part and sign
-    p |= (uint32_t)(((f - (int)f) * 65536.0f))&0xffff; // fraction
+    p = ((((uint32_t)f)&0x7fff)<<16) | (sign<<31); // 전체 부분과 부호
+    p |= (uint32_t)(((f - (int)f) * 65536.0f))&0xffff; // 소수점
 
     return p;
 }
 
 float ntohf(uint32_t p)
 {
-    float f = ((p>>16)&0x7fff); // whole part
-    f += (p&0xffff) / 65536.0f; // fraction
+    float f = ((p>>16)&0x7fff); // 전체
+    f += (p&0xffff) / 65536.0f; // 소수점
 
-    if (((p>>31)&0x1) == 0x1) { f = -f; } // sign bit set
+    if (((p>>31)&0x1) == 0x1) { f = -f; } // 부호 비트 설정
 
     return f;
 }
 ```
 
-The above code is sort of a naive implementation that stores a `float`
-in a 32-bit number. The high bit (31) is used to store the sign of the
-number ("1" means negative), and the next seven bits (30-16) are used to
-store the whole number portion of the `float`. Finally, the remaining
-bits (15-0) are used to store the fractional portion of the number.
+위의 코드는 `float`를 32비트 수에 저장하기 위한 단순한 구현이다. 최상위 비트(31)가 수의 부호를
+저장하기 위해 쓰인다. ("1"이 음수를 의미한다.) 다음 15비트(30-16)(역자 주: 원문에서는 7비트라고
+적혀 있으나 코드의 내용상 오타로 보임)가 `float`의 전체 수 부분을 저장하기 위해서 쓰인다. 마지막으로
+남은 비트들(15-0)이 수의 소수점 부분을 기록하기 위해서 쓰인다.
 
-Usage is fairly straightforward:
+사용법은 꽤 직관적이다:
 
 ```{.c .numberLines}
 #include <stdio.h>
@@ -1008,8 +987,8 @@ int main(void)
     float f = 3.1415926, f2;
     uint32_t netf;
 
-    netf = htonf(f);  // convert to "network" form
-    f2 = ntohf(netf); // convert back to test
+    netf = htonf(f);  // "네트워크" 형식으로 변환
+    f2 = ntohf(netf); // 시험을 위해 원래대로 변환
 
     printf("Original: %f\n", f);        // 3.141593
     printf(" Network: 0x%08X\n", netf); // 0x0003243F
@@ -1019,11 +998,14 @@ int main(void)
 }
 ```
 
-On the plus side, it's small, simple, and fast. On the minus side, it's
-not an efficient use of space and the range is severely restricted---try
-storing a number greater-than 32767 in there and it won't be very happy!
-You can also see in the above example that the last couple decimal
-places are not correctly preserved.
+장점을 보자면, 이 코드는 작고 간단하며 빠르다. 단점을 보자면 이 방식은 공간을 효율적으로
+쓰지 않으며 표현 범위가 상당히 제한되어 있다.---32767보다 큰 수를 저장하려고 하면 이
+방법은 제대로 동작하지 않을 것이다! 또한 여러분은 위의 예제에서 소수점의 마지막 2자리가
+제대로 보존되지 않은 것을 볼 수 있다.
+
+이것을 해결하려면 어떻게 해야할까? 사실 부동소수점 수를 저장하기 위한 _표준_ 은 [i[IEEE-754]]
+[fl[IEEE-754|https://en.wikipedia.org/wiki/IEEE_754]]로 알려져 있다.
+대부분의 컴퓨터는 부동 소수점 계산을 위해서 내부적으로 이 형식을 사용한다.
 
 What can we do instead? Well, _The_ Standard for storing floating point
 numbers is known as [i[IEEE-754]]
