@@ -21,7 +21,6 @@ _(아래의 예제 코드들은 대개 필수적인 에러코드를 간략함을
 연결리스트로 적절한 결과물을 돌려준다고 가정합니다. 이런 상황은 독립 실행형
 프로그램에서는 제대로 처리되어 있으니, 그것들을 지침으로 삼으십시오.)_
 
-
 ## `getaddrinfo()`---발사 준비!
 
 [i[`getaddrinfo()` function]], 이것은 여러 옵션을 가진 진짜 일꾼입니다.
@@ -53,12 +52,12 @@ int getaddrinfo(const char *node,     // e.g. "www.example.com" 또ㅡㄴ IP
 ```
 
 이 함수에는 3개의 입력 매개변수를 넘겨줍니다. 그리고 결과 연결리스트의 포인터인
-`res`를 돌려받습니다. 
+`res`를 돌려받습니다.
 
 `node`매개변수는 접속하려는 호스트 이름이나 IP주소입니다.
 
 다음 매개변수는 `service`입니다. 이것은 "80"같은 포트 번호나 "http", "ftp",
-"telnet" 또는 "smtp"같은 특정한 서비스 이름이 될 수 있습니다. 
+"telnet" 또는 "smtp"같은 특정한 서비스 이름이 될 수 있습니다.
 ([fl[IANA 포트 목록|https://www.iana.org/assignments/port-numbers]]
 혹은 여러분이 유닉스 장치를 쓴다면 `/etc/services`에서 볼 수 있습니다)
 
@@ -218,9 +217,8 @@ IP addresses for ipv6.example.com:
   IPv6: 2001:db8:8c00:22::171
 ```
 
-이제 저것을 다룰 수 있으니, `getaddrinfo()`에서 얻은 결과를 다른 소켓 함수에 
+이제 저것을 다룰 수 있으니, `getaddrinfo()`에서 얻은 결과를 다른 소켓 함수에
 넘기고 결과적으로는 네트워크 연결을 성립할 수 있도록 해 보자! 계속 읽어보라!
-
 
 ## `socket()`---파일 설명자를 받아오라! {#socket}
 
@@ -231,7 +229,7 @@ IP addresses for ipv6.example.com:
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int socket(int domain, int type, int protocol); 
+int socket(int domain, int type, int protocol);
 ```
 
 그러나 이 인수들이 무엇인지 모를 것이다. 이것들은 어떤 종류의 소켓을 원하는지
@@ -244,7 +242,7 @@ int socket(int domain, int type, int protocol);
 을 쓸 수도 있다.)
 
 (이 `PF_INET`은 `sin_family`필드에 넣어주는 [i[`AF_INET` macro]]`AF_INET`와 유사한 것이다.
-이것을 이해하려면 짧은 이야기가 필요하다. 아주 먼 옛날에는 어쩌면 하나의 주소 체통(Address Family)
+이것을 이해하려면 짧은 이야기가 필요하다. 아주 먼 옛날에는 어쩌면 하나의 주소 계통(Address Family)
 ("`AF_INET`"안에 들어있는 "AF")가 여러 종류의 프로토콜 계통(Protocol Family)("`PF_INET`"의
 "PF"))을 지원할 것이라고 생각하던 시절이 있었다. 그런 일은 일어나지 않았다. 그리고 모두 행복하게
 오래오래 잘 살았다. 이런 이야기다. 그래서 할 수 있는 가장 정확한 일은
@@ -270,13 +268,12 @@ s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 ```
 
 `socket()`은 단순하게 이후의 시스템 호출에서 쓸 수 있는 _소켓 설명자_ 를 돌려준다.
-오류가 있으면 -1을 돌려준다. 전역 변수인  `errno`가 오류의 값으로 설정된다.
+오류가 있으면 -1을 돌려준다. 전역 변수인 `errno`가 오류의 값으로 설정된다.
 (자세한 정보는 [`errno`](#errnoman) 의 맨페이지를 참고하라.)
 
 좋다. 그러면 이제 이 소켓을 어디에 쓰는가? 정답은 아직 못 쓴다는 것이다.
 실제로 쓰기 위해서는 안내서를 더 읽고 이것이 동작하게 하기 위한 시스템 호출을
 더 해야 한다.
-
 
 ## `bind()`---나는 어떤 포트에 있는가? {#bind}
 
@@ -371,7 +368,7 @@ bind(sockfd, (struct sockaddr *)&my_addr, sizeof my_addr);
 당신의 프로그램이 포트를 재사용할 수 있도록 하는 코드를 넣을 수도 있다.
 
 [i[`setsockopt()` function]]
- [i[`SO_REUSEADDR` macro]]
+[i[`SO_REUSEADDR` macro]]
 
 ```{.c .numberLines}
 int yes=1;
@@ -381,7 +378,7 @@ int yes=1;
 if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
     perror("setsockopt");
     exit(1);
-} 
+}
 ```
 
 [i[`bind()` function]] `bind()`에 대해서 한마디 더: 이 함수를 호출할 필요가
@@ -389,7 +386,6 @@ if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
 원격 장치에 연결하려고 하고, 로컬 포트에 대해서는 신경쓰지 않는다면(`telnet`의
 경우 처럼 원격지 포트만 신경쓰는 경우) `connect()`가 자동으로 소켓이 바인드되지
 않았는지 확인하고 필요하다면 사용하지 않은 로컬 포트에 `bind()`해줄 것입니다.
-
 
 ## `connect()`---이봐, 안녕! {#connect}
 
@@ -409,7 +405,7 @@ if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int connect(int sockfd, struct sockaddr *serv_addr, int addrlen); 
+int connect(int sockfd, struct sockaddr *serv_addr, int addrlen);
 ```
 
 `sockfd`는 `socket()`함수 호출이 돌려주는 우리의 친근한 이웃인 소켓
@@ -457,7 +453,6 @@ connect(sockfd, res->ai_addr, res->ai_addrlen);
 (원격지 포트). 커널이 우리 대신 로컬 포트를 고를 것입니다. 우리가 접속하는
 사이트는 이 정보를 자동으로 우리에게서 얻어냅니다. 신경쓰실 필요가 없습니다.
 
-
 ## `listen()`---누가 연락 좀 해주실래요? {#listen}
 
 [i[`listen()` function]] 이제 흐름이 변할 때입니다. 우리가 원격지 호스트에
@@ -469,11 +464,11 @@ function]] `accept()`를 씁니다.(아래를 참고하십시오.)
 `listen()`함수 호출은 꽤 단순하지만 약간의 설명이 필요합니다:
 
 ```{.c}
-int listen(int sockfd, int backlog); 
+int listen(int sockfd, int backlog);
 ```
 
 `sockfd`은 `socket()`시스템 함수 호출로 얻어온 평범한 소켓 파일 설명자입니다.
-[i[`listen()` function-->backlog]] `backlog`는 들어오는 큐에 허용되는 
+[i[`listen()` function-->backlog]] `backlog`는 들어오는 큐에 허용되는
 연결의 숫자입니다. 이것이 무슨 뜻인지 궁금하십니까? 들어오는 연결들은
 여러분이 `accept()`를 해주기 전까지(아래를 참고하십시오) 이 큐 안에서
 기다릴 것이고 이것은 몇 개의 연결이 대기할 수 있는가를 정합니다. 대개의 시스템은
@@ -492,14 +487,13 @@ getaddrinfo();
 socket();
 bind();
 listen();
-/* accept()는 아래에 온다 */ 
+/* accept()는 아래에 온다 */
 ```
 
 I'll just leave that in the place of sample code, since it's fairly
 self-explanatory. (The code in the `accept()` section, below, is more
 complete.) The really tricky part of this whole sha-bang is the call to
 `accept()`.
-
 
 ## `accept()`---"3490포트에 접속해주셔서 감사합니다.."
 
@@ -518,7 +512,7 @@ complete.) The really tricky part of this whole sha-bang is the call to
 #include <sys/types.h>
 #include <sys/socket.h>
 
-int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen); 
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
 ```
 
 `sockfd`은 `listen()`을 하고있는 소켓 설명자입니다. 어렵지 않습니다.
@@ -581,7 +575,6 @@ int main(void)
 것입니다. 만약 단 한 개의 연결만을 받아들이길 원한다면 추가적인 연결이 같은
 포트를 통해 들어오는 것을 막기 위해서 `sockfd`을 `close()`처리할 수 있습니다.
 
-
 ## `send()`와 `recv()`---Talk to me, baby! {#sendrecv}
 
 (역자 주 : Talk to me, baby!는 Elmore James의 노래입니다. 그러나 원저자의 의도가 이것인지 확실하지는 않습니다.)
@@ -592,7 +585,7 @@ int main(void)
 [i[`send()` function]] `send()` 함수:
 
 ```{.c}
-int send(int sockfd, const void *msg, int len, int flags); 
+int send(int sockfd, const void *msg, int len, int flags);
 ```
 
 `sockfd` 은 데이터를 보내고 싶은 소켓 설명자(`socket()`으로 만들었든 `accept()`로 만들었든)입니다.
@@ -610,12 +603,11 @@ len = strlen(msg);
 bytes_sent = send(sockfd, msg, len, 0);
 .
 .
-. 
+.
 ```
 
 한 방에 모든 것을 보냈습니다. 다시 강조하지만 오류가 발생하면 `-1`이 반환되고
 `errno`가 오류 번호로 설정됩니다.
-
 
 [i[`recv()` function]] `recv()`함수는 많은 면에서 유사합니다:
 
@@ -637,10 +629,9 @@ int recv(int sockfd, void *buf, int len, int flags);
 자, 정말 쉽지않습니까? 이제 여러분은 스트림 소켓에서 자료를 주고받을 수 있습니다.
 와! 이제 여러분은 유닉스 네트워크 프로그래머입니다!
 
-
 ## `sendto()`와 `recvfrom()`---Talk to me, DGRAM-방식 {#sendtorecv}
 
-[i[`SOCK_DGRAM` macro]] "이제 다 깔끔하고 좋네요"라고 말씀하시는 소리가 
+[i[`SOCK_DGRAM` macro]] "이제 다 깔끔하고 좋네요"라고 말씀하시는 소리가
 들립니다. "그렇지만 연결이 없는 데이터그램 소켓은 어떻게 처리하지요?"라고도
 하시는군요. 문제 없습니다, 토모다치여(역자 주 : 원문은 amigo). 딱 맞는 것이
 있습니다.
@@ -650,7 +641,7 @@ int recv(int sockfd, void *buf, int len, int flags);
 
 ```{.c}
 int sendto(int sockfd, const void *msg, int len, unsigned int flags,
-           const struct sockaddr *to, socklen_t tolen); 
+           const struct sockaddr *to, socklen_t tolen);
 ```
 
 보시다시피 `send()`와 같지만 두 개의 정보가 더 있습니다. `to`는 목적지의
@@ -672,7 +663,7 @@ int sendto(int sockfd, const void *msg, int len, unsigned int flags,
 
 ```{.c}
 int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
-             struct sockaddr *from, int *fromlen); 
+             struct sockaddr *from, int *fromlen);
 ```
 
 또 다시 이것은 몇 개의 추가적인 필드가 있는 `recv()`과 같습니다.
@@ -705,7 +696,6 @@ IPv6을 담기에 충분하지 않은 것은 당연한 일입니다.)
 UDP를 사용할 것이지만 소켓 인터페이스가 자동으로 여러분을 위해서
 목적지와 원천지 정보를 추가할 것입니다.
 
-
 ## `close()`와 `shutdown()`---내 앞에서 꺼져!
 
 휴! 여러분은 하루 종일 `send()`와 `recv()`을 사용했고, 이제 충분합니다.
@@ -714,7 +704,7 @@ UDP를 사용할 것이지만 소켓 인터페이스가 자동으로 여러분�
 를 쓸 수 있습니다:
 
 ```{.c}
-close(sockfd); 
+close(sockfd);
 ```
 
 이것은 해당 소켓에 대한 후속 읽기와 쓰기를 방지할 것입니다. 원격지에서
@@ -726,20 +716,19 @@ close(sockfd);
 개요는 이렇습니다:
 
 ```{.c}
-int shutdown(int sockfd, int how); 
+int shutdown(int sockfd, int how);
 ```
 
 `sockfd`는 종료하고 싶은 소켓 파일 설명자이고, `how`는 다음 중 하나입니다:
 
-| `how` | 효과                                                     |
-|:-----:|------------------------------------------------------------|
-|  `0`  | 후속 수신이 금지됩니다.                            |
-|  `1`  | 후속 송신이 금지됩니다.                               |
+| `how` | 효과                                      |
+| :---: | ----------------------------------------- |
+|  `0`  | 후속 수신이 금지됩니다.                   |
+|  `1`  | 후속 송신이 금지됩니다.                   |
 |  `2`  | 후속 송수신이 금지됩니다. (`close()`처럼) |
 
 `shutdown()`은 성공시에 `0`을 반환하고, 오류가 발생하면 (`errno`를 적절한 값으로 설정하고)
 `-1`을 반환합니다.
-
 
 연결되지 않은 데이터그램 소켓에 기꺼이 `shutdown()`을 해주신다면,
 그것은 단순히 해당 소켓에 `send()`와 `recv()`를 사용할 수 없도록
@@ -755,7 +744,6 @@ int shutdown(int sockfd, int how);
 사용하실 경우 `close()`대신 [i[`closesocket()` function]]
 `closesocket()`을 호출해야 합니다.)
 
-
 ## `getpeername()`---누구십니까?
 
 [i[`getpeername()` function]] 이 함수는 너무 쉽습니다.
@@ -768,7 +756,7 @@ int shutdown(int sockfd, int how);
 ```{.c}
 #include <sys/socket.h>
 
-int getpeername(int sockfd, struct sockaddr *addr, int *addrlen); 
+int getpeername(int sockfd, struct sockaddr *addr, int *addrlen);
 ```
 
 `sockfd`는 연결된 스트림 소켓의 설명자입니다. `addr`은 연결의 반대편
@@ -788,7 +776,6 @@ int getpeername(int sockfd, struct sockaddr *addr, int *addrlen);
 가능합니다. 그러나 그것은 이 문서의 범위를 넘어섭니다. 더 자세한 정보를
 원한다면 [flrfc[RFC 1413|1413]]을 참고하십시오.)
 
-
 ## `gethostname()`---나는 누구인가?
 
 [i[`gethostname()` function]] `getpeername()`보다 더 쉬운 것이 바로 `gethostname()`
@@ -803,7 +790,7 @@ int getpeername(int sockfd, struct sockaddr *addr, int *addrlen);
 ```{.c}
 #include <unistd.h>
 
-int gethostname(char *hostname, size_t size); 
+int gethostname(char *hostname, size_t size);
 ```
 
 인수들은 단순합니다: `hostname`은 함수가 반환하는 호스트 이름을 담을
