@@ -231,10 +231,10 @@ _Little-Endian(리틀 엔디언)_ 이라고 합니다.
 
 | 함수        | 설명                            |
 |-----------|-------------------------------|
-| [i[`htons()` 함수]]`htons()` | `h`ost `to` `n`etwork `s`hort |
-| [i[`htonl()` 함수]]`htonl()` | `h`ost `to` `n`etwork `l`ong  |
-| [i[`ntohs()` 함수]]`ntohs()` | `n`etwork `to` `h`ost `s`hort |
-| [i[`ntohl()` 함수]]`ntohl()` | `n`etwork `to` `h`ost `l`ong  |
+| [i[`htons()` funtion]]`htons()` | `h`ost `to` `n`etwork `s`hort |
+| [i[`htonl()` funtion]]`htonl()` | `h`ost `to` `n`etwork `l`ong  |
+| [i[`ntohs()` funtion]]`ntohs()` | `n`etwork `to` `h`ost `s`hort |
+| [i[`ntohl()` funtion]]`ntohl()` | `n`etwork `to` `h`ost `l`ong  |
 
 간단히 말하자면 숫자가 랜선을 타고 나가기 전에 네트워크 바이트 순서로
 변환해야 하며 랜선에서 들어올 때에 호스트 바이트 순서로 변환해야 합니다.
@@ -319,8 +319,8 @@ struct sockaddr {
 ```
 
 `sa_family`는 몇 가지 것들 중 하나가 될 수 있는데, 우리가 이 문서에서 하는
-모들 일에 대해서는 [i[`AF_INET` 매크로]] `AF_INET` (IPv4) 이나
-[i[`AF_INET6` 매크로]] `AF_INET6` (IPv6)가 될 것입니다.
+모들 일에 대해서는 [i[`AF_INET` macro]] `AF_INET` (IPv4) 이나
+[i[`AF_INET6` macro]] `AF_INET6` (IPv6)가 될 것입니다.
 `sa_data`는 소켓을 위한 목적지 주소와 포트 번호가 담겨 있습니다.
 이것에 주소를 직접 적어넣는 일은 지루하고 불편합니다.
 
