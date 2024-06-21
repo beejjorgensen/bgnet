@@ -7211,8 +7211,8 @@ printf("recv()'d %d bytes of data in buf\n", byte_count);
 printf("from IP address %s\n",
     inet_ntop(addr.ss_family,
         addr.ss_family == AF_INET?
-            ((struct sockadd_in *)&amp;addr)-&gt;sin_addr:
-            ((struct sockadd_in6 *)&amp;addr)-&gt;sin6_addr,
+            ((struct sockaddr_in *)&amp;addr)-&gt;sin_addr:
+            ((struct sockaddr_in6 *)&amp;addr)-&gt;sin6_addr,
         ipstr, sizeof ipstr);
 
 </pre>
@@ -7850,7 +7850,7 @@ sockaddr*</tt></nobr>, eu prometo a você que é pura coincidência e você não
 <p> Então, com isso em mente, lembre-se que sempre que uma função disser que
 é necessária uma <nobr><tt class="type">struct sockaddr*</tt></nobr> você pode realizar um cast com a sua <nobr><tt class="type">struct
 sockaddr_in*</tt></nobr>, <nobr><tt class="type">struct sockaddr_in6*</tt></nobr> ou <nobr><tt class="type">struct
-sockadd_storage*</tt></nobr> para aquele tipo com facilidade e segurança.</p>
+sockaddr_storage*</tt></nobr> para aquele tipo com facilidade e segurança.</p>
 
 <p> <nobr><tt class="type">struct sockaddr_in</tt></nobr> é a estrutura utilizada com
 endereços IPv4 (por exemplo, "192.0.2.10"). Ela mantém uma família de endereços
@@ -7868,7 +7868,7 @@ sistemas. Às vezes é uma <tt class="tt">union louca</tt> com todos os tipos de
 campo <i><tt class="var">s_addr</tt></i> nessa estrutura, porque muitos sistemas
 só implementam esse.</p>
 
-<p><nobr><tt class="type">struct sockadd_in6</tt></nobr> e <nobr><tt class="type">struct in6_addr</tt></nobr> são
+<p><nobr><tt class="type">struct sockaddr_in6</tt></nobr> e <nobr><tt class="type">struct in6_addr</tt></nobr> são
 muito semelhantes, exceto que elas são usadas ​​para IPv6.</p>
 
 <p><nobr><tt class="type">struct sockaddr_storage</tt></nobr> é uma struct que você pode passar para

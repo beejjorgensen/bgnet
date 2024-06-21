@@ -8632,9 +8632,9 @@ div.cls_027{font-family:"DejaVu Sans Condensed",serif;font-size:11.2px;color:rgb
 <div style="position:absolute;left:76.48px;top:389.74px" class="cls_005"><span class="cls_005">28</span></div>
 <div style="position:absolute;left:157.60px;top:389.74px" class="cls_005"><span class="cls_005">addr.ss_family == AF_INET?</span></div>
 <div style="position:absolute;left:76.48px;top:405.59px" class="cls_005"><span class="cls_005">29</span></div>
-<div style="position:absolute;left:184.46px;top:405.59px" class="cls_005"><span class="cls_005">((</span><span class="cls_014">struct</span><span class="cls_005"> sockadd_in *)&addr)->sin_addr:</span></div>
+<div style="position:absolute;left:184.46px;top:405.59px" class="cls_005"><span class="cls_005">((</span><span class="cls_014">struct</span><span class="cls_005"> sockaddr_in *)&addr)->sin_addr:</span></div>
 <div style="position:absolute;left:76.48px;top:421.44px" class="cls_005"><span class="cls_005">30</span></div>
-<div style="position:absolute;left:184.46px;top:421.44px" class="cls_005"><span class="cls_005">((</span><span class="cls_014">struct</span><span class="cls_005"> sockadd_in6 *)&addr)->sin6_addr,</span></div>
+<div style="position:absolute;left:184.46px;top:421.44px" class="cls_005"><span class="cls_005">((</span><span class="cls_014">struct</span><span class="cls_005"> sockaddr_in6 *)&addr)->sin6_addr,</span></div>
 <div style="position:absolute;left:76.48px;top:437.30px" class="cls_005"><span class="cls_005">31</span></div>
 <div style="position:absolute;left:157.60px;top:437.30px" class="cls_005"><span class="cls_005">ipstr, </span><span class="cls_014">sizeof</span><span class="cls_005"> ipstr);</span></div>
 <div style="position:absolute;left:60.99px;top:474.10px" class="cls_005"><span class="cls_005">Veja também</span></div>
@@ -9244,7 +9244,7 @@ div.cls_027{font-family:"DejaVu Sans Condensed",serif;font-size:11.2px;color:rgb
 <div style="position:absolute;left:60.99px;top:544.94px" class="cls_005"><span class="cls_005">você que é pura coincidência e você não deveria nem se preocupar com isso.</span></div>
 <div style="position:absolute;left:60.99px;top:570.12px" class="cls_005"><span class="cls_005">Então, com isso em mente, lembre-se que sempre que uma função disser que é necessária</span></div>
 <div style="position:absolute;left:60.99px;top:585.04px" class="cls_005"><span class="cls_005">uma struct sockaddr* você pode realizar um cast com a sua struct sockaddr_in*,</span></div>
-<div style="position:absolute;left:60.99px;top:600.90px" class="cls_005"><span class="cls_005">struct sockaddr_in6* ou struct sockadd_storage* para aquele tipo com facilidade</span></div>
+<div style="position:absolute;left:60.99px;top:600.90px" class="cls_005"><span class="cls_005">struct sockaddr_in6* ou struct sockaddr_storage* para aquele tipo com facilidade</span></div>
 <div style="position:absolute;left:60.99px;top:615.82px" class="cls_005"><span class="cls_005">e segurança.</span></div>
 <div style="position:absolute;left:60.99px;top:641.93px" class="cls_005"><span class="cls_005">struct sockaddr_in é a estrutura utilizada com endereços IPv4 (por exemplo,</span></div>
 <div style="position:absolute;left:60.99px;top:657.79px" class="cls_005"><span class="cls_005">"192.0.2.10"). Ela mantém uma família de endereços (AF_INET), uma porta em sin_port, e</span></div>
@@ -9265,7 +9265,7 @@ div.cls_027{font-family:"DejaVu Sans Condensed",serif;font-size:11.2px;color:rgb
 <div style="position:absolute;left:60.99px;top:70.79px" class="cls_005"><span class="cls_005">union louca com todos os tipos de #defines e outras bobagens. Mas o que você deve fazer</span></div>
 <div style="position:absolute;left:60.99px;top:86.64px" class="cls_005"><span class="cls_005">é usar apenas o campo s_addr nessa estrutura, porque muitos sistemas só implementam</span></div>
 <div style="position:absolute;left:60.99px;top:101.56px" class="cls_005"><span class="cls_005">esse.</span></div>
-<div style="position:absolute;left:60.99px;top:127.68px" class="cls_005"><span class="cls_005">struct sockadd_in6 e struct in6_addr são muito semelhantes, exceto que elas são</span></div>
+<div style="position:absolute;left:60.99px;top:127.68px" class="cls_005"><span class="cls_005">struct sockaddr_in6 e struct in6_addr são muito semelhantes, exceto que elas são</span></div>
 <div style="position:absolute;left:60.99px;top:142.60px" class="cls_005"><span class="cls_005">usadas para IPv6.</span></div>
 <div style="position:absolute;left:60.99px;top:168.71px" class="cls_005"><span class="cls_005">struct sockaddr_storage é uma struct que você pode passar para accept() ou</span></div>
 <div style="position:absolute;left:60.99px;top:184.56px" class="cls_005"><span class="cls_005">recvfrom() quando estiver tentando escrever um código independente de versão IP e não</span></div>
