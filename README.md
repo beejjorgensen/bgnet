@@ -24,9 +24,35 @@ Mac dependencies install (reopen terminal after doing this):
 xcode-select --install                  # installs make
 brew install python                     # installs Python3
 brew install pandoc
-brew install mactex --cask              # installs XeLaTeX
+brew install mactex                     # installs XeLaTeX
 brew tap homebrew/cask-fonts
-brew install font-liberation            # installs sans, serif, and mono
+brew install font-liberation            # installs Liberation fonts
+```
+
+You might have to add something like this to your path to find `xelatex`:
+
+```
+PATH=$PATH:/usr/local/texlive/2021/bin/universal-darwin
+```
+
+### Dependency: Build System
+
+This depends on an external repo to build: [Beej's Guide Build System
+for Pandoc](https://github.com/beejjorgensen/bgbspd).
+
+You'll want to clone that repo as a sibling to this one:
+
+```
+mystuff-->bggit
+      \-->bgbspd
+```
+
+The Makefiles here will look for the build system there.
+
+You can override the `bgbspd` directory before running `make` like this:
+
+```
+export BGBSPD_BUILD_DIR=/some/path/to/bgbspd
 ```
 
 ### Build
@@ -76,9 +102,4 @@ have to consider any copyright issues when merging changes.
 * File transfer example maybe in son of data encapsulation
 * Multicast?
 * Event IO?
-
-### Bug fixes
-
-* When pandoc 2.8 comes up, switch all man page subheaders to h3 and supress
-  them from the table of contents.
 
