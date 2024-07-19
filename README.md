@@ -57,7 +57,7 @@ export BGBSPD_BUILD_DIR=/some/path/to/bgbspd
 
 ### Build
 
-1. Type `make` from the top-level directory.
+1. Type `make all` from the top-level directory.
 
    If you have Gnu Make, it should work fine.  Other makes might work as
    well.  Windows users might want to check out Cygwin.
