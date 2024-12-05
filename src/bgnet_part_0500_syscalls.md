@@ -629,7 +629,18 @@ connected datagram sockets. If you want to use regular unconnected
 datagram sockets, you'll need to see the section on [`sendto()` and
 `recvfrom()`](#sendtorecv), below.
 
-[i[`send()` function]] The `send()` call:
+> [i[Blocking]] Here's something that might (or might not) be new to
+> you: these are _blocking_ calls. That is, `recv()` will _block_ until
+> there is some data ready to receive. "But what does 'block' mean,
+> already?!" It means your program is going to stop there, on that
+> system call, until someone sends you something. (The OS techie jargon
+> for "stop" in that sentence is actually _sleep_, so I might use those
+> terms interchangeably.) `send()` can also block if the stuff you're
+> sending is all jammed up somehow, but that's rarer. We'll [revisit
+> this concept later](#blocking), and talk about how to avoid it when
+> you need to.
+
+[i[`send()` function]] Here's the `send()` call:
 
 ```{.c}
 int send(int sockfd, const void *msg, int len, int flags); 
