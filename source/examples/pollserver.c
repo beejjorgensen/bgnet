@@ -147,7 +147,7 @@ int main(void)
         for(int i = 0; i < fd_count; i++) {
 
             // Check if someone's ready to read
-            if (pfds[i].revents & POLLIN) { // We got one!!
+            if (pfds[i].revents & (POLLIN | POLLHUP)) { // We got one!!
 
                 if (pfds[i].fd == listener) {
                     // If listener is ready to read, handle new connection
