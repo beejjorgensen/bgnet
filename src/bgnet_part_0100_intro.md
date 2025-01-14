@@ -53,12 +53,12 @@ I'll appreciate the purchase because it helps sustain my
 document-writing lifestyle!
 
 
-## Note for Solaris/SunOS Programmers {#solaris}
+## Note for Solaris/SunOS/illumos Programmers {#solaris}
 
-When compiling for [i[Solaris]] Solaris or [i[SunOS]] SunOS, you need to
-specify some extra command-line switches for linking in the proper
-libraries. In order to do this, simply add "`-lnsl -lsocket -lresolv`"
-to the end of the compile command, like so:
+When compiling for a [i[Solaris]] Solaris variant or [i[SunOS]] SunOS,
+you need to specify some extra command-line switches for linking in the
+proper libraries. In order to do this, simply add "`-lnsl -lsocket
+-lresolv`" to the end of the compile command, like so:
 
 ```
 $ cc -o server server.c -lnsl -lsocket -lresolv
@@ -90,40 +90,50 @@ information---it's just what people have told me through email.
 
 At this point in the guide, historically, I've done a bit of bagging on
 [i[Windows]] Windows, simply due to the fact that I don't like it very
-much. But I should really be fair and tell you that Windows has a huge
-install base and is obviously a perfectly fine operating system.
+much. But then Windows and Microsoft (as a company) got a lot better.
+Windows 9 and 10 coupled with WSL (below) actually were decent operating
+systems. Not really a lot to complain about.
 
-They say absence makes the heart grow fonder, and in this case, I
-believe it to be true. (Or maybe it's age.) But what I can say is that
-after a decade-plus of not using Microsoft OSes for my personal work,
-I'm much happier! As such, I can sit back and safely say, "Sure, feel
-free to use Windows!"  ...OK yes, it does make me grit my teeth to say
-that.
+Well, a little—for example, I'm writing this (in 2025) on a 2015 laptop
+that used to run Windows 10. Eventually it got too slow and I installed
+Linux on it. And have been using it ever since.
+
+And now the news is out that Windows 11 will require beefier hardware
+than Windows 10. I'm not a fan of that. The OS should be as unobtrusive
+as possible and not require you to spend more money. The extra CPU power
+should be for apps, not the OS!
 
 So I still encourage you to try [i[Linux]]
 [fl[Linux|https://www.linux.com/]], [i[BSD]] [fl[BSD|https://bsd.org/]],
-or some flavor of Unix, instead.
+[i[illumos]] [fl[illumos|https://www.illumos.org/]] or some other flavor
+of Unix, instead.
+
+How'd that soapbox get there?
 
 But people like what they like, and you Windows folk will be pleased to
-know that this information is generally applicable to you guys, with a
-few minor changes, if any.
+know that this information is generally applicable to Windows, with a
+few minor changes.
 
-Another thing that you should strongly consider is [i[WSL]] [i[Windows
+Oh, hey, the soapbox is back!
+
+One thing that you should strongly consider is [i[WSL]] [i[Windows
 Subsystem For Linux]] the [fl[Windows Subsystem for
 Linux|https://learn.microsoft.com/en-us/windows/wsl/]]. This basically
 allows you to install a Linux VM-ish thing on Windows 10. That will also
 definitely get you situated, and you'll be able to build and run these
 programs as is.
 
-One cool thing you can do is install [i[Cygwin]]
+Another thing you can do is install [i[Cygwin]]
 [fl[Cygwin|https://cygwin.com/]], which is a collection of Unix tools
 for Windows. I've heard on the grapevine that doing so allows all these
 programs to compile unmodified, but I've never tried it.
 
-But some of you might want to do things the Pure Windows Way. That's
-very gutsy of you, and this is what you have to do: run out and get Unix
+Some of you might want to do things the Pure Windows Way. That's very
+gutsy of you, and this is what you have to do: run out and get Unix
 immediately! No, no---I'm kidding. I'm supposed to be
 Windows-friendly(er) these days...
+
+Okay, okay. I'll get on with it.
 
 [i[Winsock]]
 
@@ -160,8 +170,6 @@ available.
 
 The code to do that looks something like this:
 
-[[book-pagebreak]]
-
 ```{.c .numberLines}
 #include <winsock2.h>
 
@@ -176,7 +184,7 @@ The code to do that looks something like this:
     if (LOBYTE(wsaData.wVersion) != 2 ||
         HIBYTE(wsaData.wVersion) != 2)
     {
-        fprintf(stderr,"Versiion 2.2 of Winsock is not available.\n");
+        fprintf(stderr,"Version 2.2 of Winsock not available.\n");
         WSACleanup();
         exit(2);
     }
