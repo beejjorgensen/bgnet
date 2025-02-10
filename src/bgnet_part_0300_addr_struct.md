@@ -75,7 +75,7 @@ Forget this dots-and-numbers look of IPv4, too; now we've got a
 hexadecimal representation, with each two-byte chunk separated by a
 colon, like this:
 
-```
+``` {.default}
 2001:0db8:c9d2:aee5:73e3:934a:a5ae:9551
 ```
 
@@ -84,7 +84,7 @@ zeros in it, and you can compress them between two colons. And you can
 leave off leading zeros for each byte pair. For instance, each of these
 pairs of addresses are equivalent:
 
-```
+``` {.default}
 2001:0db8:c9d2:0012:0000:0000:0000:0051
 2001:db8:c9d2:12::51
 
