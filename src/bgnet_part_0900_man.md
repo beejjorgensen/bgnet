@@ -1161,7 +1161,7 @@ in_addr_t inet_addr(const char *cp);
 ### Description {.unnumbered .unlisted}
 
 _These functions are deprecated because they don't handle IPv6! Use
-(`inet_ntop()`)[#inet_ntopman] or (`inet_pton()`)[#inet_ntopman]
+[`inet_ntop()`](#inet_ntopman) or [`inet_pton()`](#inet_ntopman)
 instead! They are included here because they can still be found in the
 wild._
 
