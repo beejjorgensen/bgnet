@@ -88,6 +88,7 @@ void add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
 
     (*pfds)[*fd_count].fd = newfd;
     (*pfds)[*fd_count].events = POLLIN; // Check ready-to-read
+    (*pfds)[*fd_count].revents = 0;
 
     (*fd_count)++;
 }
