@@ -125,7 +125,7 @@ The `events` field is the bitwise-OR of the following:
 |-----------|--------------------------------------------------------------|
 | `POLLIN`  | Alert me when data is ready to `recv()` on this socket.      |
 | `POLLOUT` | Alert me when I can `send()` data to this socket without blocking.|
-| `POLLHUP` | Alert me when the remote closed the connection.
+| `POLLHUP` | Alert me when the remote closed the connection.|
 
 Once you have your array of `struct pollfd`s in order, then you can pass
 it to `poll()`, also passing the size of the array, as well as a timeout
