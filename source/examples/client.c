@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
 		break;
 	}
 
+	freeaddrinfo(servinfo); // all done with this structure
+
 	if (p == NULL) {
 		fprintf(stderr, "client: failed to connect\n");
 		return 2;
@@ -75,8 +77,6 @@ int main(int argc, char *argv[])
 	inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
 			s, sizeof s);
 	printf("client: connecting to %s\n", s);
-
-	freeaddrinfo(servinfo); // all done with this structure
 
 	if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
 	    perror("recv");

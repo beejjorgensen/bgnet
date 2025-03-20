@@ -120,7 +120,7 @@ obviously!)
 [i[DHCP]] **[flrfc[RFC 2131|2131]]**
 ---Dynamic Host Configuration Protocol (DHCP)
 
-[i[HTTP protocol]] **[flrfc[RFC 2616|2616]]**
+[i[HTTP protocol]] **[flrfc[RFC 9110|9110]]**
 ---Hypertext Transfer Protocol (HTTP)
 
 [i[SMTP]] **[flrfc[RFC 2821|2821]]**
