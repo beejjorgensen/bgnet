@@ -125,9 +125,9 @@ important when implementing reliable `SOCK_DGRAM` applications.
 
 For unreliable applications like games, audio, or video, you just ignore
 the dropped packets, or perhaps try to cleverly compensate for them.
-(Quake players will know the manifestation this effect by the technical
-term: _accursed lag_.  The word "accursed", in this case, represents any
-extremely profane utterance.)
+(Quake players will know the manifestation of this effect by the
+technical term: _accursed lag_.  The word "accursed", in this case,
+represents any extremely profane utterance.)
 
 Why would you use an unreliable underlying protocol? Two reasons: speed
 and speed. It's way faster to fire-and-forget than it is to keep track

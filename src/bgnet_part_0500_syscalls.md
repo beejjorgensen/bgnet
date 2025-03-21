@@ -757,7 +757,7 @@ sockaddr_storage` which we know will be big enough for either.
 (So... here's another question: why isn't `struct sockaddr` itself big
 enough for any address? We even cast the general-purpose `struct
 sockaddr_storage` to the general-purpose `struct sockaddr`! Seems
-extraneous and redundant, huh. The answer is, it just isn't big enough,
+extraneous and redundant, huh? The answer is, it just isn't big enough,
 and I'd guess that changing it at this point would be Problematic. So
 they made a new one.)
 

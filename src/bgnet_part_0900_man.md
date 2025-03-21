@@ -419,7 +419,7 @@ struct addrinfo {
 
 `getaddrinfo()` is an excellent function that will return information on
 a particular host name (such as its IP address) and load up a `struct
-sockaddr` for you, taking care of the gritty details (like if it's IPv4
+sockaddr` for you, taking care of the gritty details (like if its IPv4
 or IPv6). It replaces the old functions `gethostbyname()` and
 `getservbyname()`.The description, below, contains a lot of information
 that might be a little daunting, but actual usage is pretty simple. It
@@ -1408,13 +1408,14 @@ getaddrinfo(NULL, "3490", &hints, &res);
 
 // make a socket:
 
-sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+sockfd = socket(res->ai_family, res->ai_socktype,
+    res->ai_protocol);
 
 // bind it to the port we passed in to getaddrinfo():
 
 bind(sockfd, res->ai_addr, res->ai_addrlen);
 
-listen(sockfd, 10); // set s up to be a server (listening) socket
+listen(sockfd, 10); // set sockfd up to be a server socket
 
 // then have an accept() loop down here somewhere
 ```
@@ -1655,8 +1656,8 @@ vanilla `recv()`.
 | Macro         | Description                                              |
 |---------------|----------------------------------------------------------|
 | [i[Out-of-band data]][i[`MSG_OOB` macro]i]`MSG_OOB` | Receive Out of Band data. This is how to get data that has been sent to you with the `MSG_OOB` flag in `send()`. As the receiving side, you will have had signal [i[`SIGURG` macro]i] `SIGURG` raised telling you there is urgent data. In your handler for that signal, you could call `recv()` with this `MSG_OOB` flag.|
-| [i[`MSG_PEEK` macro]i]`MSG_PEEK`                    | If you want to call `recv()` "just for pretend", you can call it with this flag. This will tell you what's waiting in the buffer for when you call `recv()` "for real" (i.e. _without_ the `MSG_PEEK` flag. It's like a sneak preview into the next `recv()` call.| 
-| [i[`MSG_WAITALL` macro]i]`MSG_WAITALL`              | Tell `recv()` to not return until all the data you specified in the `len` parameter. It will ignore your wishes in extreme circumstances, however, like if a signal interrupts the call or if some error occurs or if the remote side closes the connection, etc. Don't be mad with it.| 
+| [i[`MSG_PEEK` macro]i]`MSG_PEEK`                    | If you want to call `recv()` "just for pretend", you can call it with this flag. This will tell you what's waiting in the buffer for when you call `recv()` "for real" (i.e. _without_ the `MSG_PEEK` flag.) It's like a sneak preview into the next `recv()` call.| 
+| [i[`MSG_WAITALL` macro]i]`MSG_WAITALL`              | Tell `recv()` to not return until all the data you specified in the `len` parameter has been received. It will ignore your wishes in extreme circumstances, however, like if a signal interrupts the call or if some error occurs or if the remote side closes the connection, etc. Don't be mad with it.| 
 
 When you call `recv()`, it will block until there is some data to read.
 If you want to not block, set the socket to non-blocking or check with

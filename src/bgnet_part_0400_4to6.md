@@ -60,4 +60,4 @@ this, but this is what applies to the guide.)
 
 12. `INADDR_BROADCAST` no longer works. Use IPv6 multicast instead.
 
-_Et voila_!
+_Et voilà_!

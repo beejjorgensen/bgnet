@@ -872,7 +872,7 @@ containing the number of bytes in the buffer.
 The function returns `-1` on error (and `errno` is still set from the
 call to `send()`). Also, the number of bytes actually sent is returned
 in `len`. This will be the same number of bytes you asked it to send,
-unless there was an error. `sendall()` will do it's best, huffing and
+unless there was an error. `sendall()` will do its best, huffing and
 puffing, to send the data out, but if there's an error, it gets back to
 you right away.
 
@@ -1206,7 +1206,7 @@ Pike, they implement `printf()`-like functions called `pack()` and
 `unpack()` that do exactly this. I'd link to them, but apparently those
 functions aren't online with the rest of the source from the book.
 
-(The Practice of Programming is an excellent read. Zeus saves a kitten
+(_The Practice of Programming_ is an excellent read. Zeus saves a kitten
 every time I recommend it.)
 
 At this point, I'm going to drop a pointer to a [fl[Protocol Buffers
