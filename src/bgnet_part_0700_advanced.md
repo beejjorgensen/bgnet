@@ -281,12 +281,12 @@ int get_listener_socket(void)
         break;
     }
 
-    freeaddrinfo(ai); // All done with this
-
     // If we got here, it means we didn't get bound
     if (p == NULL) {
         return -1;
     }
+
+    freeaddrinfo(ai); // All done with this
 
     // Listen
     if (listen(listener, 10) == -1) {
@@ -308,6 +308,7 @@ void add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
 
     (*pfds)[*fd_count].fd = newfd;
     (*pfds)[*fd_count].events = POLLIN; // Check ready-to-read
+    (*pfds)[*fd_count].revents = 0;
 
     (*fd_count)++;
 }
@@ -367,7 +368,7 @@ int main(void)
         for(int i = 0; i < fd_count; i++) {
 
             // Check if someone's ready to read
-            if (pfds[i].revents & (POLLIN | POLLHUP) { // We got one!!
+            if (pfds[i].revents & (POLLIN | POLLHUP)) { // We got one!!
 
                 if (pfds[i].fd == listener) {
                     // If listener is ready to read, handle new connection
@@ -407,6 +408,9 @@ int main(void)
                         close(pfds[i].fd); // Bye!
 
                         del_from_pfds(pfds, i, &fd_count);
+
+                        // reexamine the slot we just deleted
+                        i--;
 
                     } else {
                         // We got some good data from a client

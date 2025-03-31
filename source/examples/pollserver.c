@@ -189,6 +189,9 @@ int main(void)
 
                         del_from_pfds(pfds, i, &fd_count);
 
+                        // reexamine the slot we just deleted
+                        i--;
+
                     } else {
                         // We got some good data from a client
 
