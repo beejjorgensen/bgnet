@@ -218,30 +218,30 @@ information---it's just what people have told me through email.
 At this point in the guide, historically, I've done a bit of bagging on
 [i[Windows]] Windows, simply due to the fact that I don't like it very
 much. But then Windows and Microsoft (as a company) got a lot better.
-Windows 9 and 10 coupled with WSL (below) actually were decent operating
-systems. Not really a lot to complain about.
+Windows 10 coupled with WSL (below) actually makes for a decent
+operating system. Not really a lot to complain about.
 
 Well, a little—for example, I'm writing this (in 2025) on a 2015 laptop
 that used to run Windows 10. Eventually it got too slow and I installed
 Linux on it. And have been using it ever since.
 
-And now the news is out that Windows 11 will require beefier hardware
+But now we have Windows 11 that apparently requires beefier hardware
 than Windows 10. I'm not a fan of that. The OS should be as unobtrusive
 as possible and not require you to spend more money. The extra CPU power
-should be for apps, not the OS!
+should be for apps, not the OS! Additionally, Microsoft knows what you
+want, and what you want is more advertising! Right? In your operating
+system! Weren't you missing that? Now you can have it with Windows 11.
 
-So I still encourage you to try [i[Linux]]
+So... I still encourage you to try [i[Linux]]
 [fl[Linux|https://www.linux.com/]], [i[BSD]] [fl[BSD|https://bsd.org/]],
-[i[illumos]] [fl[illumos|https://www.illumos.org/]] or some other flavor
-of Unix, instead.
+[i[illumos]] [fl[illumos|https://www.illumos.org/]] or any other flavor
+of Unix instead of Windows.
 
 How'd that soapbox get there?
 
 But people like what they like, and you Windows folk will be pleased to
 know that this information is generally applicable to Windows, with a
 few minor changes.
-
-Oh, hey, the soapbox is back!
 
 One thing that you should strongly consider is [i[WSL]] [i[Windows
 Subsystem For Linux]] the [fl[Windows Subsystem for
