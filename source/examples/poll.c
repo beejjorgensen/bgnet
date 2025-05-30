@@ -22,9 +22,11 @@ int main(void)
 		int pollin_happened = pfds[0].revents & POLLIN;
 
 		if (pollin_happened) {
-			printf("File descriptor %d is ready to read\n", pfds[0].fd);
+			printf("File descriptor %d is ready to read\n",
+                    pfds[0].fd);
 		} else {
-			printf("Unexpected event occurred: %d\n", pfds[0].revents);
+			printf("Unexpected event occurred: %d\n",
+                    pfds[0].revents);
 		}
 	}
 

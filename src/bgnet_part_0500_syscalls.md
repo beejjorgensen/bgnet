@@ -407,10 +407,7 @@ int yes=1;
 //char yes='1'; // Solaris people use this
 
 // lose the pesky "Address already in use" error message
-if (setsockopt(listener,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof yes) == -1) {
-    perror("setsockopt");
-    exit(1);
-} 
+setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes);
 ```
 
 [i[`bind()` function]] One small extra final note about `bind()`: there

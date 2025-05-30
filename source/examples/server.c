@@ -17,7 +17,7 @@
 
 #define PORT "3490"  // the port users will be connecting to
 
-#define BACKLOG 10	 // how many pending connections queue will hold
+#define BACKLOG 10   // how many pending connections queue will hold
 
 void sigchld_handler(int s)
 {
@@ -44,9 +44,10 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(void)
 {
-	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+	// listen on sock_fd, new connection on new_fd
+	int sockfd, new_fd;
 	struct addrinfo hints, *servinfo, *p;
-	struct sockaddr_storage their_addr; // connector's address information
+	struct sockaddr_storage their_addr; // connector's address info
 	socklen_t sin_size;
 	struct sigaction sa;
 	int yes=1;
@@ -110,7 +111,8 @@ int main(void)
 
 	while(1) {  // main accept() loop
 		sin_size = sizeof their_addr;
-		new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+		new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
+				&sin_size);
 		if (new_fd == -1) {
 			perror("accept");
 			continue;

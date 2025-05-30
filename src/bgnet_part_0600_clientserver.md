@@ -63,7 +63,7 @@ where `remotehostname` is the name of the machine you're running it on.
 
 #define PORT "3490"  // the port users will be connecting to
 
-#define BACKLOG 10     // how many pending connections queue will hold
+#define BACKLOG 10   // how many pending connections queue will hold
 
 void sigchld_handler(int s)
 {
@@ -90,9 +90,10 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(void)
 {
-    int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+    // listen on sock_fd, new connection on new_fd
+    int sockfd, new_fd;
     struct addrinfo hints, *servinfo, *p;
-    struct sockaddr_storage their_addr; // connector's address information
+    struct sockaddr_storage their_addr; // connector's address info
     socklen_t sin_size;
     struct sigaction sa;
     int yes=1;
@@ -156,7 +157,8 @@ int main(void)
 
     while(1) {  // main accept() loop
         sin_size = sizeof their_addr;
-        new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+        new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
+            &sin_size);
         if (new_fd == -1) {
             perror("accept");
             continue;
@@ -223,9 +225,9 @@ to the host you specify on the command line, port
 
 #include <arpa/inet.h>
 
-#define PORT "3490" // the port client will be connecting to
+#define PORT "3490" // the port client will be connecting to 
 
-#define MAXDATASIZE 100 // max number of bytes we can get at once
+#define MAXDATASIZE 100 // max number of bytes we can get at once 
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -239,7 +241,7 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(int argc, char *argv[])
 {
-    int sockfd, numbytes;
+    int sockfd, numbytes;  
     char buf[MAXDATASIZE];
     struct addrinfo hints, *servinfo, *p;
     int rv;
@@ -286,7 +288,8 @@ int main(int argc, char *argv[])
         return 2;
     }
 
-    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
+    inet_ntop(p->ai_family,
+            get_in_addr((struct sockaddr *)p->ai_addr),
             s, sizeof s);
     printf("client: connected to %s\n", s);
 
@@ -461,7 +464,7 @@ Next comes the [flx[source for `talker.c`|talker.c]]:
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#define SERVERPORT "4950"    // the port users will be connecting to
+#define SERVERPORT "4950"   // the port users will be connecting to
 
 int main(int argc, char *argv[])
 {
@@ -479,7 +482,8 @@ int main(int argc, char *argv[])
     hints.ai_family = AF_INET6; // set to AF_INET to use IPv4
     hints.ai_socktype = SOCK_DGRAM;
 
-    if ((rv = getaddrinfo(argv[1], SERVERPORT, &hints, &servinfo)) != 0) {
+    rv = getaddrinfo(argv[1], SERVERPORT, &hints, &servinfo);
+    if (rv != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
         return 1;
     }
