@@ -417,7 +417,7 @@ What about [i[IPv6]] IPv6? Similar `struct`s exist for it, as well:
 
 struct sockaddr_in6 {
     u_int16_t       sin6_family;   // address family, AF_INET6
-    u_int16_t       sin6_port;     // port number, Network Byte Order
+    u_int16_t       sin6_port;     // port, Network Byte Order
     u_int32_t       sin6_flowinfo; // IPv6 flow information
     struct in6_addr sin6_addr;     // IPv6 address
     u_int32_t       sin6_scope_id; // Scope ID
@@ -478,7 +478,7 @@ struct sockaddr_in sa; // IPv4
 struct sockaddr_in6 sa6; // IPv6
 
 inet_pton(AF_INET, "10.12.110.57", &(sa.sin_addr)); // IPv4
-inet_pton(AF_INET6, "2001:db8:63b3:1::3490", &(sa6.sin6_addr)); // IPv6
+inet_pton(AF_INET6, "2001:db8::1::3490", &(sa6.sin6_addr)); // IPv6
 ```
 
 (Quick note: the old way of doing things used a function called

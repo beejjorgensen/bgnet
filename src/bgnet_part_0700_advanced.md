@@ -1065,8 +1065,11 @@ uint32_t htonf(float f)
     if (f < 0) { sign = 1; f = -f; }
     else { sign = 0; }
         
-    p = ((((uint32_t)f)&0x7fff)<<16) | (sign<<31); // whole part and sign
-    p |= (uint32_t)(((f - (int)f) * 65536.0f))&0xffff; // fraction
+    // whole part and sign
+    p = ((((uint32_t)f)&0x7fff)<<16) | (sign<<31);
+
+    // fraction
+    p |= (uint32_t)(((f - (int)f) * 65536.0f))&0xffff;
 
     return p;
 }
@@ -1140,7 +1143,9 @@ uint64_t pack754(long double f, unsigned bits, unsigned expbits)
     long double fnorm;
     int shift;
     long long sign, exp, significand;
-    unsigned significandbits = bits - expbits - 1; // -1 for sign bit
+
+    // -1 for sign bit
+    unsigned significandbits = bits - expbits - 1;
 
     if (f == 0.0) return 0; // get this special case out of the way
 
@@ -1169,7 +1174,9 @@ long double unpack754(uint64_t i, unsigned bits, unsigned expbits)
     long double result;
     long long shift;
     unsigned bias;
-    unsigned significandbits = bits - expbits - 1; // -1 for sign bit
+
+    // -1 for sign bit
+    unsigned significandbits = bits - expbits - 1;
 
     if (i == 0) return 0.0;
 
@@ -1692,37 +1699,42 @@ packets in an effort to attack your system!
 
 ```{.c .numberLines}
 #include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
 
-// various bits for floating point types--
-// varies for different architectures
+// If you have a C23 compiler
+#if __STDC_VERSION__ >= 202311L
+#include <stdfloat.h>
+#else
+// Otherwise let's define our own.
+// Varies for different architectures! But you're probably:
 typedef float float32_t;
 typedef double float64_t;
+#endif
 
 int main(void)
 {
-    unsigned char buf[1024];
+    uint8_t buf[1024];
     int8_t magic;
     int16_t monkeycount;
     int32_t altitude;
     float32_t absurdityfactor;
-    char *s = "Great unmitigated Zot! You've found the Runestaff!";
+    char *s = "Great unmitigated Zot!  You've found the Runestaff!";
     char s2[96];
     int16_t packetsize, ps2;
 
-    packetsize = pack(buf, "chhlsf", (int8_t)'B', (int16_t)0, (int16_t)37, 
-            (int32_t)-5, s, (float32_t)-3490.6677);
-    packi16(buf+1, packetsize); // store packet size in packet for kicks
+    packetsize = pack(buf, "chhlsf", (int8_t)'B', (int16_t)0,
+            (int16_t)37, (int32_t)-5, s, (float32_t)-3490.6677);
+    packi16(buf+1, packetsize); // store packet size for kicks
 
     printf("packet is %" PRId32 " bytes\n", packetsize);
 
-    unpack(buf, "chhl96sf", &magic, &ps2, &monkeycount, &altitude, s2,
-        &absurdityfactor);
+    unpack(buf, "chhl96sf", &magic, &ps2, &monkeycount, &altitude,
+            s2, &absurdityfactor);
 
     printf("'%c' %" PRId32" %" PRId16 " %" PRId32
             " \"%s\" %f\n", magic, ps2, monkeycount,
             altitude, s2, absurdityfactor);
-
-    return 0;
 }
 ```
 

@@ -50,7 +50,7 @@ Let's take a look!
 #include <sys/socket.h>
 #include <netdb.h>
 
-int getaddrinfo(const char *node,     // e.g. "www.example.com" or IP
+int getaddrinfo(const char *node,   // e.g. "www.example.com" or IP
                 const char *service,  // e.g. "http" or port number
                 const struct addrinfo *hints,
                 struct addrinfo **res);
@@ -86,11 +86,12 @@ hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
 hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 
 if ((status = getaddrinfo(NULL, "3490", &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+    fprintf(stderr, "gai error: %s\n", gai_strerror(status));
     exit(1);
 }
 
-// servinfo now points to a linked list of 1 or more struct addrinfos
+// servinfo now points to a linked list of 1 or more
+// struct addrinfos
 
 // ... do everything until you don't need servinfo anymore ....
 
@@ -133,7 +134,8 @@ hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
 // get ready to connect
 status = getaddrinfo("www.example.net", "3490", &hints, &servinfo);
 
-// servinfo now points to a linked list of 1 or more struct addrinfos
+// servinfo now points to a linked list of 1 or more
+// struct addrinfos
 
 // etc.
 ```
@@ -145,7 +147,9 @@ addresses for whatever host you specify on the command line:
 
 ```{.c .numberLines}
 /*
-** showip.c -- show IP addresses for a host given on the command line
+** showip.c
+**
+** show IP addresses for a host given on the command line
 */
 
 #include <stdio.h>
@@ -168,7 +172,7 @@ int main(int argc, char *argv[])
     }
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+    hints.ai_family = AF_UNSPEC;  // Either IPv4 or IPv6
     hints.ai_socktype = SOCK_STREAM;
 
     if ((status = getaddrinfo(argv[1], NULL, &hints, &res)) != 0) {
@@ -181,15 +185,17 @@ int main(int argc, char *argv[])
     for(p = res;p != NULL; p = p->ai_next) {
         void *addr;
         char *ipver;
+        struct sockaddr_in *ipv4;
+        struct sockaddr_in6 *ipv6;
 
         // get the pointer to the address itself,
         // different fields in IPv4 and IPv6:
         if (p->ai_family == AF_INET) { // IPv4
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+            ipv4 = (struct sockaddr_in *)p->ai_addr;
             addr = &(ipv4->sin_addr);
             ipver = "IPv4";
         } else { // IPv6
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            ipv6 = (struct sockaddr_in6 *)p->ai_addr;
             addr = &(ipv6->sin6_addr);
             ipver = "IPv6";
         }
@@ -576,7 +582,7 @@ code fragment for your perusal:
 #include <netdb.h>
 
 #define MYPORT "3490"  // the port users will be connecting to
-#define BACKLOG 10     // how many pending connections queue will hold
+#define BACKLOG 10     // how many pending connections queue holds
 
 int main(void)
 {
@@ -598,14 +604,16 @@ int main(void)
 
     // make a socket, bind it, and listen on it:
 
-    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    sockfd = socket(res->ai_family, res->ai_socktype,
+                                                 res->ai_protocol);
     bind(sockfd, res->ai_addr, res->ai_addrlen);
     listen(sockfd, BACKLOG);
 
     // now accept an incoming connection:
 
     addr_size = sizeof their_addr;
-    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+    new_fd = accept(sockfd, (struct sockaddr *)&their_addr,
+                                                       &addr_size);
 
     // ready to communicate on socket descriptor new_fd!
     .

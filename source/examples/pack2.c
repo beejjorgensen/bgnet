@@ -101,7 +101,8 @@ void packi64(unsigned char *buf, unsigned long long int i)
 }
 
 /*
-** unpacki16() -- unpack a 16-bit int from a char buffer (like ntohs())
+** unpacki16() -- unpack a 16-bit int from a char buffer (like
+**                ntohs())
 */ 
 int unpacki16(unsigned char *buf)
 {
@@ -116,7 +117,8 @@ int unpacki16(unsigned char *buf)
 }
 
 /*
-** unpacku16() -- unpack a 16-bit unsigned from a char buffer (like ntohs())
+** unpacku16() -- unpack a 16-bit unsigned from a char buffer (like
+**                ntohs())
 */ 
 unsigned int unpacku16(unsigned char *buf)
 {
@@ -124,7 +126,8 @@ unsigned int unpacku16(unsigned char *buf)
 }
 
 /*
-** unpacki32() -- unpack a 32-bit int from a char buffer (like ntohl())
+** unpacki32() -- unpack a 32-bit int from a char buffer (like
+**                ntohl())
 */ 
 long int unpacki32(unsigned char *buf)
 {
@@ -142,7 +145,8 @@ long int unpacki32(unsigned char *buf)
 }
 
 /*
-** unpacku32() -- unpack a 32-bit unsigned from a char buffer (like ntohl())
+** unpacku32() -- unpack a 32-bit unsigned from a char buffer (like
+**                ntohl())
 */ 
 unsigned long int unpacku32(unsigned char *buf)
 {
@@ -153,18 +157,20 @@ unsigned long int unpacku32(unsigned char *buf)
 }
 
 /*
-** unpacki64() -- unpack a 64-bit int from a char buffer (like ntohl())
+** unpacki64() -- unpack a 64-bit int from a char buffer (like
+**                ntohl())
 */ 
 long long int unpacki64(unsigned char *buf)
 {
-	unsigned long long int i2 = ((unsigned long long int)buf[0]<<56) |
-	                            ((unsigned long long int)buf[1]<<48) |
-	                            ((unsigned long long int)buf[2]<<40) |
-	                            ((unsigned long long int)buf[3]<<32) |
-	                            ((unsigned long long int)buf[4]<<24) |
-	                            ((unsigned long long int)buf[5]<<16) |
-	                            ((unsigned long long int)buf[6]<<8)  |
-	                            buf[7];
+	unsigned long long int i2 =
+        ((unsigned long long int)buf[0]<<56) |
+        ((unsigned long long int)buf[1]<<48) |
+        ((unsigned long long int)buf[2]<<40) |
+        ((unsigned long long int)buf[3]<<32) |
+        ((unsigned long long int)buf[4]<<24) |
+        ((unsigned long long int)buf[5]<<16) |
+        ((unsigned long long int)buf[6]<<8)  |
+        buf[7];
 	long long int i;
 
 	// change unsigned numbers to signed
@@ -175,7 +181,8 @@ long long int unpacki64(unsigned char *buf)
 }
 
 /*
-** unpacku64() -- unpack a 64-bit unsigned from a char buffer (like ntohl())
+** unpacku64() -- unpack a 64-bit unsigned from a char buffer (like
+**                ntohl())
 */ 
 unsigned long long int unpacku64(unsigned char *buf)
 {
@@ -329,7 +336,8 @@ unsigned int pack(unsigned char *buf, char *format, ...)
 }
 
 /*
-** unpack() -- unpack data dictated by the format string into the buffer
+** unpack() -- unpack data dictated by the format string into the
+**             buffer
 **
 **   bits |signed   unsigned   float   string
 **   -----+----------------------------------
@@ -443,8 +451,10 @@ void unpack(unsigned char *buf, char *format, ...)
 			s = va_arg(ap, char*);
 			len = unpacku16(buf);
 			buf += 2;
-			if (maxstrlen > 0 && len > maxstrlen) count = maxstrlen - 1;
-			else count = len;
+			if (maxstrlen > 0 && len > maxstrlen)
+                count = maxstrlen - 1;
+			else
+                count = len;
 			memcpy(s, buf, count);
 			s[count] = '\0';
 			buf += len;
