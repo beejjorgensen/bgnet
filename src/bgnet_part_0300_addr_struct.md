@@ -471,14 +471,15 @@ function]] `inet_pton()`, converts an IP address in numbers-and-dots
 notation into either a `struct in_addr` or a `struct in6_addr` depending
 on whether you specify `AF_INET` or `AF_INET6`. ("`pton`" stands for
 "presentation to network"---you can call it "printable to network" if
-that's easier to remember.) The conversion can be made as follows:
+that's easier to remember.) The conversion can be made as follows for
+IPv4 and IPv6:
 
 ```{.c}
-struct sockaddr_in sa; // IPv4
+struct sockaddr_in sa;   // IPv4
 struct sockaddr_in6 sa6; // IPv6
 
-inet_pton(AF_INET, "10.12.110.57", &(sa.sin_addr)); // IPv4
-inet_pton(AF_INET6, "2001:db8::1::3490", &(sa6.sin6_addr)); // IPv6
+inet_pton(AF_INET, "10.12.110.57", &(sa.sin_addr));
+inet_pton(AF_INET6, "2001:db8:63b3:1::3490", &(sa6.sin6_addr));
 ```
 
 (Quick note: the old way of doing things used a function called
