@@ -693,39 +693,42 @@ one `telnet` session, it should appear in all the others.
 
 #define PORT "9034"   // port we're listening on
 
-// get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa)
+/*
+ * Convert socket to IP address string.
+ * addr: struct sockaddr_in or struct sockaddr_in6
+ */
+const char *inet_ntop2(void *addr, char *buf, size_t size)
 {
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
+    struct sockaddr_storage *sas = addr;
+    struct sockaddr_in *sa4;
+    struct sockaddr_in6 *sa6;
+    void *src;
+
+    switch (sas->ss_family) {
+        case AF_INET:
+            sa4 = addr;
+            src = &(sa4->sin_addr);
+            break;
+        case AF_INET6:
+            sa6 = addr;
+            src = &(sa6->sin6_addr);
+            break;
+        default:
+            return NULL;
     }
 
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+    return inet_ntop(sas->ss_family, src, buf, size);
 }
 
-int main(void)
+/*
+ * Return a listening socket
+ */
+int get_listener_socket(void)
 {
-    fd_set master;    // master file descriptor list
-    fd_set read_fds;  // temp file descriptor list for select()
-    int fdmax;        // maximum file descriptor number
-
-    int listener;     // listening socket descriptor
-    int newfd;        // newly accept()ed socket descriptor
-    struct sockaddr_storage remoteaddr; // client address
-    socklen_t addrlen;
-
-    char buf[256];    // buffer for client data
-    int nbytes;
-
-    char remoteIP[INET6_ADDRSTRLEN];
-
-    int yes=1;        // for setsockopt() SO_REUSEADDR, below
-    int i, j, rv;
-
     struct addrinfo hints, *ai, *p;
-
-    FD_ZERO(&master);    // clear the master and temp sets
-    FD_ZERO(&read_fds);
+    int yes=1;    // for setsockopt() SO_REUSEADDR, below
+    int rv;
+    int listener;
 
     // get us a socket and bind it
     memset(&hints, 0, sizeof hints);
@@ -736,15 +739,17 @@ int main(void)
         fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
         exit(1);
     }
-    
+
     for(p = ai; p != NULL; p = p->ai_next) {
-        listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-        if (listener < 0) { 
+        listener = socket(p->ai_family, p->ai_socktype,
+                p->ai_protocol);
+        if (listener < 0) {
             continue;
         }
-        
+
         // lose the pesky "address already in use" error message
-        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes,
+                sizeof(int));
 
         if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
             close(listener);
@@ -768,6 +773,99 @@ int main(void)
         exit(3);
     }
 
+    return listener;
+}
+
+/*
+ * Add new incoming connections to the proper sets
+ */
+void handle_new_connection(int listener, fd_set *master, int *fdmax)
+{
+    socklen_t addrlen;
+    int newfd;        // newly accept()ed socket descriptor
+    struct sockaddr_storage remoteaddr; // client address
+    char remoteIP[INET6_ADDRSTRLEN];
+
+    addrlen = sizeof remoteaddr;
+    newfd = accept(listener,
+        (struct sockaddr *)&remoteaddr,
+        &addrlen);
+
+    if (newfd == -1) {
+        perror("accept");
+    } else {
+        FD_SET(newfd, master); // add to master set
+        if (newfd > *fdmax) {  // keep track of the max
+            *fdmax = newfd;
+        }
+        printf("selectserver: new connection from %s on "
+            "socket %d\n",
+            inet_ntop2(&remoteaddr, remoteIP, sizeof remoteIP),
+            newfd);
+    }
+}
+
+/*
+ * Broadcast a message to all clients
+ */
+void broadcast(char *buf, int nbytes, int listener, int s,
+               fd_set *master, int fdmax)
+{
+    for(int j = 0; j <= fdmax; j++) {
+        // send to everyone!
+        if (FD_ISSET(j, master)) {
+            // except the listener and ourselves
+            if (j != listener && j != s) {
+                if (send(j, buf, nbytes, 0) == -1) {
+                    perror("send");
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Handle client data and hangups
+ */
+void handle_client_data(int s, int listener, fd_set *master,
+                        int fdmax)
+{
+    char buf[256];    // buffer for client data
+    int nbytes;
+
+    // handle data from a client
+    if ((nbytes = recv(s, buf, sizeof buf, 0)) <= 0) {
+        // got error or connection closed by client
+        if (nbytes == 0) {
+            // connection closed
+            printf("selectserver: socket %d hung up\n", s);
+        } else {
+            perror("recv");
+        }
+        close(s); // bye!
+        FD_CLR(s, master); // remove from master set
+    } else {
+        // we got some data from a client
+        broadcast(buf, nbytes, listener, s, master, fdmax);
+    }
+}
+
+/*
+ * Main
+ */
+int main(void)
+{
+    fd_set master;    // master file descriptor list
+    fd_set read_fds;  // temp file descriptor list for select()
+    int fdmax;        // maximum file descriptor number
+
+    int listener;     // listening socket descriptor
+
+    FD_ZERO(&master);    // clear the master and temp sets
+    FD_ZERO(&read_fds);
+
+    listener = get_listener_socket();
+
     // add the listener to the master set
     FD_SET(listener, &master);
 
@@ -782,61 +880,18 @@ int main(void)
             exit(4);
         }
 
-        // run through the existing connections looking for data to read
-        for(i = 0; i <= fdmax; i++) {
+        // run through the existing connections looking for data
+        // to read
+        for(int i = 0; i <= fdmax; i++) {
             if (FD_ISSET(i, &read_fds)) { // we got one!!
-                if (i == listener) {
-                    // handle new connections
-                    addrlen = sizeof remoteaddr;
-                    newfd = accept(listener,
-                        (struct sockaddr *)&remoteaddr,
-                        &addrlen);
+                if (i == listener)
+                    handle_new_connection(i, &master, &fdmax);
+                else
+                    handle_client_data(i, listener, &master, fdmax);
+            }
+        }
+    }
 
-                    if (newfd == -1) {
-                        perror("accept");
-                    } else {
-                        FD_SET(newfd, &master); // add to master set
-                        if (newfd > fdmax) {    // keep track of the max
-                            fdmax = newfd;
-                        }
-                        printf("selectserver: new connection from %s on "
-                            "socket %d\n",
-                            inet_ntop(remoteaddr.ss_family,
-                                get_in_addr((struct sockaddr*)&remoteaddr),
-                                remoteIP, INET6_ADDRSTRLEN),
-                            newfd);
-                    }
-                } else {
-                    // handle data from a client
-                    if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
-                        // got error or connection closed by client
-                        if (nbytes == 0) {
-                            // connection closed
-                            printf("selectserver: socket %d hung up\n", i);
-                        } else {
-                            perror("recv");
-                        }
-                        close(i); // bye!
-                        FD_CLR(i, &master); // remove from master set
-                    } else {
-                        // we got some data from a client
-                        for(j = 0; j <= fdmax; j++) {
-                            // send to everyone!
-                            if (FD_ISSET(j, &master)) {
-                                // except the listener and ourselves
-                                if (j != listener && j != i) {
-                                    if (send(j, buf, nbytes, 0) == -1) {
-                                        perror("send");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } // END handle data from client
-            } // END got new incoming connection
-        } // END looping through file descriptors
-    } // END for(;;)--and you thought it would never end!
-    
     return 0;
 }
 ```
@@ -1300,7 +1355,7 @@ into a `char` array instead of another integer.)
 
 /*
 ** packi16() -- store a 16-bit int into a char buffer (like htons())
-*/ 
+*/
 void packi16(unsigned char *buf, unsigned int i)
 {
     *buf++ = i>>8; *buf++ = i;
@@ -1308,7 +1363,7 @@ void packi16(unsigned char *buf, unsigned int i)
 
 /*
 ** packi32() -- store a 32-bit int into a char buffer (like htonl())
-*/ 
+*/
 void packi32(unsigned char *buf, unsigned long int i)
 {
     *buf++ = i>>24; *buf++ = i>>16;
@@ -1317,7 +1372,7 @@ void packi32(unsigned char *buf, unsigned long int i)
 
 /*
 ** packi64() -- store a 64-bit int into a char buffer (like htonl())
-*/ 
+*/
 void packi64(unsigned char *buf, unsigned long long int i)
 {
     *buf++ = i>>56; *buf++ = i>>48;
@@ -1327,8 +1382,9 @@ void packi64(unsigned char *buf, unsigned long long int i)
 }
 
 /*
-** unpacki16() -- unpack a 16-bit int from a char buffer (like ntohs())
-*/ 
+** unpacki16() -- unpack a 16-bit int from a char buffer (like
+**                ntohs())
+*/
 int unpacki16(unsigned char *buf)
 {
     unsigned int i2 = ((unsigned int)buf[0]<<8) | buf[1];
@@ -1342,16 +1398,18 @@ int unpacki16(unsigned char *buf)
 }
 
 /*
-** unpacku16() -- unpack a 16-bit unsigned from a char buffer (like ntohs())
-*/ 
+** unpacku16() -- unpack a 16-bit unsigned from a char buffer (like
+**                ntohs())
+*/
 unsigned int unpacku16(unsigned char *buf)
 {
     return ((unsigned int)buf[0]<<8) | buf[1];
 }
 
 /*
-** unpacki32() -- unpack a 32-bit int from a char buffer (like ntohl())
-*/ 
+** unpacki32() -- unpack a 32-bit int from a char buffer (like
+**                ntohl())
+*/
 long int unpacki32(unsigned char *buf)
 {
     unsigned long int i2 = ((unsigned long int)buf[0]<<24) |
@@ -1368,8 +1426,9 @@ long int unpacki32(unsigned char *buf)
 }
 
 /*
-** unpacku32() -- unpack a 32-bit unsigned from a char buffer (like ntohl())
-*/ 
+** unpacku32() -- unpack a 32-bit unsigned from a char buffer (like
+**                ntohl())
+*/
 unsigned long int unpacku32(unsigned char *buf)
 {
     return ((unsigned long int)buf[0]<<24) |
@@ -1379,18 +1438,20 @@ unsigned long int unpacku32(unsigned char *buf)
 }
 
 /*
-** unpacki64() -- unpack a 64-bit int from a char buffer (like ntohl())
-*/ 
+** unpacki64() -- unpack a 64-bit int from a char buffer (like
+**                ntohl())
+*/
 long long int unpacki64(unsigned char *buf)
 {
-    unsigned long long int i2 = ((unsigned long long int)buf[0]<<56) |
-                                ((unsigned long long int)buf[1]<<48) |
-                                ((unsigned long long int)buf[2]<<40) |
-                                ((unsigned long long int)buf[3]<<32) |
-                                ((unsigned long long int)buf[4]<<24) |
-                                ((unsigned long long int)buf[5]<<16) |
-                                ((unsigned long long int)buf[6]<<8)  |
-                                buf[7];
+    unsigned long long int i2 =
+        ((unsigned long long int)buf[0]<<56) |
+        ((unsigned long long int)buf[1]<<48) |
+        ((unsigned long long int)buf[2]<<40) |
+        ((unsigned long long int)buf[3]<<32) |
+        ((unsigned long long int)buf[4]<<24) |
+        ((unsigned long long int)buf[5]<<16) |
+        ((unsigned long long int)buf[6]<<8)  |
+        buf[7];
     long long int i;
 
     // change unsigned numbers to signed
@@ -1401,8 +1462,9 @@ long long int unpacki64(unsigned char *buf)
 }
 
 /*
-** unpacku64() -- unpack a 64-bit unsigned from a char buffer (like ntohl())
-*/ 
+** unpacku64() -- unpack a 64-bit unsigned from a char buffer (like
+**                ntohl())
+*/
 unsigned long long int unpacku64(unsigned char *buf)
 {
     return ((unsigned long long int)buf[0]<<56) |
@@ -1420,14 +1482,14 @@ unsigned long long int unpacku64(unsigned char *buf)
 **
 **   bits |signed   unsigned   float   string
 **   -----+----------------------------------
-**      8 |   c        C         
+**      8 |   c        C
 **     16 |   h        H         f
 **     32 |   l        L         d
 **     64 |   q        Q         g
 **      - |                               s
 **
 **  (16-bit unsigned length is automatically prepended to strings)
-*/ 
+*/
 
 unsigned int pack(unsigned char *buf, char *format, ...)
 {
@@ -1555,11 +1617,12 @@ unsigned int pack(unsigned char *buf, char *format, ...)
 }
 
 /*
-** unpack() -- unpack data dictated by the format string into the buffer
+** unpack() -- unpack data dictated by the format string into the
+**             buffer
 **
 **   bits |signed   unsigned   float   string
 **   -----+----------------------------------
-**      8 |   c        C         
+**      8 |   c        C
 **     16 |   h        H         f
 **     32 |   l        L         d
 **     64 |   q        Q         g
@@ -1669,8 +1732,10 @@ void unpack(unsigned char *buf, char *format, ...)
             s = va_arg(ap, char*);
             len = unpacku16(buf);
             buf += 2;
-            if (maxstrlen > 0 && len >= maxstrlen) count = maxstrlen - 1;
-            else count = len;
+            if (maxstrlen > 0 && len > maxstrlen)
+                count = maxstrlen - 1;
+            else
+                count = len;
             memcpy(s, buf, count);
             s[count] = '\0';
             buf += len;
@@ -2003,12 +2068,12 @@ call this program [flx[`broadcaster.c`|broadcaster.c]]:
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#define SERVERPORT 4950 // the port users will be connecting to
+#define SERVERPORT 4950    // the port users will be connecting to
 
 int main(int argc, char *argv[])
 {
     int sockfd;
-    struct sockaddr_in their_addr; // connector's address information
+    struct sockaddr_in their_addr; // connector's address info
     struct hostent *he;
     int numbytes;
     int broadcast = 1;
@@ -2037,12 +2102,14 @@ int main(int argc, char *argv[])
     }
 
     their_addr.sin_family = AF_INET;     // host byte order
-    their_addr.sin_port = htons(SERVERPORT); // short, network byte order
+    their_addr.sin_port = htons(SERVERPORT); // network byte order
     their_addr.sin_addr = *((struct in_addr *)he->h_addr);
     memset(their_addr.sin_zero, '\0', sizeof their_addr.sin_zero);
 
-    if ((numbytes=sendto(sockfd, argv[2], strlen(argv[2]), 0,
-             (struct sockaddr *)&their_addr, sizeof their_addr)) == -1) {
+    numbytes = sendto(sockfd, argv[2], strlen(argv[2]), 0,
+             (struct sockaddr *)&their_addr, sizeof their_addr);
+
+    if (numbytes == -1) {
         perror("sendto");
         exit(1);
     }

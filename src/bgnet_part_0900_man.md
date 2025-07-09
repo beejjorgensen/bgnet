@@ -396,7 +396,8 @@ sockaddr` with the result.
 #include <netdb.h>
 
 int getaddrinfo(const char *nodename, const char *servname,
-                const struct addrinfo *hints, struct addrinfo **res);
+                const struct addrinfo *hints,
+                struct addrinfo **res);
 
 void freeaddrinfo(struct addrinfo *ai);
 
@@ -507,7 +508,8 @@ memset(&hints, 0, sizeof hints);
 hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6
 hints.ai_socktype = SOCK_STREAM;
 
-if ((rv = getaddrinfo("www.example.com", "http", &hints, &servinfo)) != 0) {
+rv = getaddrinfo("www.example.com", "http", &hints, &servinfo);
+if (rv != 0) {
     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
     exit(1);
 }
@@ -740,7 +742,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if ((he = gethostbyname(argv[1])) == NULL) {  // get the host info
+    if ((he = gethostbyname(argv[1])) == NULL) {  // get host info
         herror("gethostbyname");
         return 2;
     }
@@ -844,7 +846,8 @@ char service[20];
 
 // pretend sa is full of good information about the host and port...
 
-getnameinfo(&sa, sizeof sa, host, sizeof host, service, sizeof service, 0);
+getnameinfo(&sa, sizeof sa, host, sizeof host, service,
+            sizeof service, 0);
 
 printf("   host: %s\n", host);    // e.g. "www.example.com"
 printf("service: %s\n", service); // e.g. "http"
@@ -1151,7 +1154,8 @@ back
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-// ALL THESE ARE DEPRECATED! Use inet_pton()  or inet_ntop() instead!!
+// ALL THESE ARE DEPRECATED!
+// Use inet_pton() or inet_ntop() instead!
 
 char *inet_ntoa(struct in_addr in);
 int inet_aton(const char *cp, struct in_addr *inp);
@@ -1330,13 +1334,15 @@ char *get_ip_str(const struct sockaddr *sa, char *s, size_t maxlen)
 {
     switch(sa->sa_family) {
         case AF_INET:
-            inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
-                    s, maxlen);
+            inet_ntop(AF_INET,
+                    &(((struct sockaddr_in *)sa)->sin_addr), s,
+                    maxlen);
             break;
 
         case AF_INET6:
-            inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
-                    s, maxlen);
+            inet_ntop(AF_INET6,
+                    &(((struct sockaddr_in6 *)sa)->sin6_addr), s,
+                    maxlen);
             break;
 
         default:
@@ -1525,7 +1531,7 @@ descriptor, and contains the following fields:
 struct pollfd {
     int fd;         // the socket descriptor
     short events;   // bitmap of events we're interested in
-    short revents;  // when poll() returns, bitmap of events that occurred
+    short revents;  // after return, bitmap of events that occurred
 };
 ```
 
@@ -1574,11 +1580,11 @@ s2 = socket(PF_INET, SOCK_STREAM, 0);
 
 // set up the array of file descriptors.
 //
-// in this example, we want to know when there's normal or out-of-band
-// data ready to be recv()'d...
+// in this example, we want to know when there's normal or
+// out-of-band (OOB) data ready to be recv()'d...
 
 ufds[0].fd = s1;
-ufds[0].events = POLLIN | POLLPRI; // check for normal or out-of-band
+ufds[0].events = POLLIN | POLLPRI; // check for normal or OOB
 
 ufds[1].fd = s2;
 ufds[1].events = POLLIN; // check for just normal data
@@ -1749,8 +1755,8 @@ Check if sockets descriptors are ready to read/write
 ```{.c}
 #include <sys/select.h>
 
-int select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-           struct timeval *timeout);
+int select(int n, fd_set *readfds, fd_set *writefds,
+           fd_set *exceptfds, struct timeval *timeout);
 
 FD_SET(int fd, fd_set *set);
 FD_CLR(int fd, fd_set *set);
@@ -1834,7 +1840,8 @@ FD_SET(s2, &readfds);
 // the n param in select()
 n = s2 + 1;
 
-// wait until either socket has data ready to be recv()d (timeout 10.5 secs)
+// wait until either socket has data ready to be recv()d
+// (timeout 10.5 secs)
 tv.tv_sec = 10;
 tv.tv_usec = 500000;
 rv = select(n, &readfds, NULL, NULL, &tv);
@@ -2028,7 +2035,8 @@ temp = htonl(spatula_count);
 send(stream_socket, &temp, sizeof temp, 0);
 
 // send secret message out of band:
-send(stream_socket, secret_message, strlen(secret_message)+1, MSG_OOB);
+send(stream_socket, secret_message, strlen(secret_message)+1,
+        MSG_OOB);
 
 // now with UDP datagram sockets:
 //getaddrinfo(...
@@ -2184,8 +2192,9 @@ Structures for handling internet addresses
 ```{.c}
 #include <netinet/in.h>
 
-// All pointers to socket address structures are often cast to pointers
-// to this type before use in various functions and system calls:
+// All pointers to socket address structures are often cast to
+// pointers to this type before use in various functions and system
+// calls:
 
 struct sockaddr {
     unsigned short    sa_family;    // address family, AF_xxx
@@ -2211,7 +2220,7 @@ struct in_addr {
 
 struct sockaddr_in6 {
     u_int16_t       sin6_family;   // address family, AF_INET6
-    u_int16_t       sin6_port;     // port number, Network Byte Order
+    u_int16_t       sin6_port;     // port number, network order
     u_int32_t       sin6_flowinfo; // IPv6 flow information
     struct in6_addr sin6_addr;     // IPv6 address
     u_int32_t       sin6_scope_id; // Scope ID
@@ -2222,8 +2231,8 @@ struct in6_addr {
 };
 
 
-// General socket address holding structure, big enough to hold either
-// struct sockaddr_in or struct sockaddr_in6 data:
+// General socket address holding structure, big enough to hold
+// either struct sockaddr_in or struct sockaddr_in6 data:
 
 struct sockaddr_storage {
     sa_family_t  ss_family;     // address family
