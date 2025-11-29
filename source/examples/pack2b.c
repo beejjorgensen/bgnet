@@ -5,9 +5,10 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-// or #include <stdfloat.h> if you have a C23 compiler
-#if __STDC_VERSION__ >= 202311L
-#include <stdfloat.h>
+// If you have a compiler that supports them, we can use these exact types:
+#ifdef __STDC_IEC_60559_TYPES__
+typedef _Float32_t float32_t;
+typedef _Float64_t float64_t;
 #else
 // Otherwise let's define our own.
 // Varies for different architectures! But you're probably:
