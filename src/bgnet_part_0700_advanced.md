@@ -2089,7 +2089,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+    if ((sockfd = socket(PF_INET, SOCK_DGRAM, 0)) == -1) {
         perror("socket");
         exit(1);
     }
