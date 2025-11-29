@@ -190,7 +190,7 @@ numbers.  You can see them all in [fl[the Big IANA Port
 List|https://www.iana.org/assignments/port-numbers]] or, if you're on a
 Unix box, in your `/etc/services` file. HTTP (the web) is port 80,
 telnet is port 23, SMTP is port 25, the game
-[fl[DOOM|https://en.wikipedia.org/wiki/Doom_(1993_video_game)]] used
+[fl[DOOM|https://en.wikipedia.org/wiki/Doom_%281993_video_game%29]] used
 port 666, etc. and so on. Ports under 1024 are often considered special,
 and usually require special OS privileges to use.
 
