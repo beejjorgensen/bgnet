@@ -390,15 +390,15 @@ me to hear that it is being used for good! `:-)` Thank you!
 [i[Mirroring the Guide]] You are more than welcome to mirror this site,
 whether publicly or privately. If you publicly mirror the site and want
 me to link to it from the main page, drop me a line at
-[`beej@beej.us`](beej@beej.us).
+[`beej@beej.us`](mailto:beej@beej.us).
 
 
 ## Note for Translators
 
 [i[Translating the Guide]] If you want to translate the guide into
-another language, write me at [`beej@beej.us`](beej@beej.us) and I'll
-link to your translation from the main page. Feel free to add your name
-and contact info to the translation.
+another language, write me at [`beej@beej.us`](mailto:beej@beej.us) and
+I'll link to your translation from the main page. Feel free to add your
+name and contact info to the translation.
 
 This source markdown document uses UTF-8 encoding.
 
