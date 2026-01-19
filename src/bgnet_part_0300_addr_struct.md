@@ -268,9 +268,10 @@ Basically, you'll want to convert the numbers to Network Byte Order
 before they go out on the wire, and convert them to Host Byte Order as
 they come in off the wire.
 
-I don't know of a 64-bit variant, sorry. And if you want to do floating
-point, check out the section on [Serialization](#serialization), far
-below.
+There are no standard 64-bit variants in the sockets API, but I talk
+about other options in the [`htons()` reference page](#htonsman). And if
+you want to do floating point, check out the section on
+[Serialization](#serialization), far below.
 
 Assume the numbers in this document are in Host Byte Order unless I say
 otherwise.

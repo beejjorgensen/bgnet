@@ -1097,9 +1097,14 @@ might want to build it on an Intel machine and still have things work
 properly.)
 
 Note that the types involved are 32-bit (4 byte, probably `int`) and
-16-bit (2 byte, very likely `short`) numbers. 64-bit machines might have
-a `htonll()` for 64-bit `int`s, but I've not seen it. You'll just have
-to write your own.
+16-bit (2 byte, very likely `short`) numbers.
+
+There are non-standard 64-bit variants on various systems. Check out the
+[flm[`htobe64()`|htobe64]] function and its relatives in `<endian.h>` if
+you have it. And GCC has [fl[byte swapping
+built-ins|https://gcc.gnu.org/onlinedocs/gcc/Byte-Swapping-Builtins.html]]
+that even go up to 128 bits. [flx[Or you can roll your own|htonll.c]],
+but only actually do the swap if you're on a little-endian machine!
 
 Anyway, the way these functions work is that you first decide if you're
 converting _from_ host (your machine's) byte order or from network byte
