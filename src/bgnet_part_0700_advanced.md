@@ -1179,11 +1179,17 @@ numbers is known as [i[IEEE-754]]
 use this format internally for doing floating point math, so in those
 cases, strictly speaking, conversion wouldn't need to be done. But if
 you want your source code to be portable, that's an assumption you can't
-necessarily make. (On the other hand, if you want things to be fast, you
-should optimize this out on platforms that don't need to do it! That's
-what `htons()` and its ilk do.)
+necessarily make.
 
-[flx[Here's some code that encodes floats and doubles into IEEE-754
+Or can you? Very probably your systems are IEEE-754, just like they're
+probably 2's complement for integers. So if you know that's what you
+have, you can just pass the data over the wire (though you need to fix the
+endianness with `htonl()` or the appropriate function—`float`s have
+endianness, too). And this is what `htons()` and its ilk do on
+big-endian systems where no conversion is necessary.
+
+But just in case you are on a system that isn't IEEE-754, [flx[here's
+some code that encodes `float`s and `double`s into IEEE-754
 format|ieee754.c]].  (Mostly---it doesn't encode NaN or Infinity, but it
 could be modified to do that.)
 
