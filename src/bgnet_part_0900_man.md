@@ -1099,9 +1099,10 @@ properly.)
 Note that the types involved are 32-bit (4 byte, probably `int`) and
 16-bit (2 byte, very likely `short`) numbers.
 
-There are non-standard 64-bit variants on various systems. Check out the
+There are 64-bit variants on various systems. Check out the
 [flm[`htobe64()`|htobe64]] function and its relatives in `<endian.h>` if
-you have it. And GCC has [fl[byte swapping
+you have it (which apparently MacOS doesn't). And GCC has [fl[byte
+swapping
 built-ins|https://gcc.gnu.org/onlinedocs/gcc/Byte-Swapping-Builtins.html]]
 that even go up to 128 bits. [flx[Or you can roll your own|htonll.c]],
 but only actually do the swap if you're on a little-endian machine!
