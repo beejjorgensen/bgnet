@@ -2007,9 +2007,8 @@ broadcast packet, and since it is all of them on the local network, that
 could be a lot of machines doing a lot of unnecessary work. When the
 game Doom first came out, this was a complaint about its network code.
 
-Now, there is more than one way to skin a cat... wait a minute. Is there
-really more than one way to skin a cat? What kind of expression is that?
-Uh, and likewise, there is more than one way to send a broadcast packet.
+Now, there is more than one way to do this. Likewise, there is more than
+one way to send a broadcast packet.
 So, to get to the meat and potatoes of the whole thing: how do you
 specify the destination address for a broadcast message? There are two
 common ways:
