@@ -2007,12 +2007,18 @@ broadcast packet, and since it is all of them on the local network, that
 could be a lot of machines doing a lot of unnecessary work. When the
 game Doom first came out, this was a complaint about its network code.
 
-Now, there is more than one way to skin a cat... wait a minute. Is there
-really more than one way to skin a cat? What kind of expression is that?
-Uh, and likewise, there is more than one way to send a broadcast packet.
-So, to get to the meat and potatoes of the whole thing: how do you
-specify the destination address for a broadcast message? There are two
-common ways:
+Now, there is more than one way to skin a cat[^6178]... wait a minute.
+Is there really more than one way to skin a cat? What kind of expression
+is that? Uh, and likewise, there is more than one way to send a
+broadcast packet. So, to get to the meat and potatoes of the whole
+thing: how do you specify the destination address for a broadcast
+message? There are two common ways:
+
+[^6178]: For the record, I love cats. They're the best. I've had many
+    beloved feline companions over the years. Though I acknowledge the
+    some object to this morbid, figurative expression whose etymology
+    has been lost to time, I think this portion of the guide is best
+    served by its use.
 
 1. Send the data to a specific subnet's broadcast address. This is the
    subnet's network number with all one-bits set for the host portion of
