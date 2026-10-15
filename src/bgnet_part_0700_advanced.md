@@ -1142,9 +1142,9 @@ float ntohf(uint32_t p)
 
 The above code is sort of a naive implementation that stores a `float`
 in a 32-bit number. The high bit (31) is used to store the sign of the
-number ("1" means negative), and the next seven bits (30-16) are used to
+number ("1" means negative), and the next fifteen bits (30-16) are used to
 store the whole number portion of the `float`. Finally, the remaining
-bits (15-0) are used to store the fractional portion of the number.
+sixteen bits (15-0) are used to store the fractional portion of the number.
 
 Usage is fairly straightforward:
 
