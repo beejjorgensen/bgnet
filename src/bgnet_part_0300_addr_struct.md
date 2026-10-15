@@ -259,10 +259,13 @@ are:
 
 | Function  | Description                   |
 |-----------|-------------------------------|
-| [i[`htons()` function]]`htons()` | `h`ost `to` `n`etwork `s`hort |
-| [i[`htonl()` function]]`htonl()` | `h`ost `to` `n`etwork `l`ong  |
-| [i[`ntohs()` function]]`ntohs()` | `n`etwork `to` `h`ost `s`hort |
-| [i[`ntohl()` function]]`ntohl()` | `n`etwork `to` `h`ost `l`ong  |
+| `htons()` | `h`ost `to` `n`etwork `s`hort |
+| `htonl()` | `h`ost `to` `n`etwork `l`ong  |
+| `ntohs()` | `n`etwork `to` `h`ost `s`hort |
+| `ntohl()` | `n`etwork `to` `h`ost `l`ong  |
+
+[i[`htons()` function]] [i[`htonl()` function]] [i[`ntohs()` function]]
+[i[`ntohl()` function]]
 
 Basically, you'll want to convert the numbers to Network Byte Order
 before they go out on the wire, and convert them to Host Byte Order as
