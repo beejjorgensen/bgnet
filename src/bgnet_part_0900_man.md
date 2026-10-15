@@ -281,7 +281,7 @@ address and port, but this is pretty rare.
 Once the socket is `connect()`ed, you're free to `send()` and `recv()`
 data on it to your heart's content.
 
-[i[`connect()`-->on datagram sockets]] Special note: if you `connect()`
+[i[`connect()` function-->on datagram sockets]] Special note: if you `connect()`
 a `SOCK_DGRAM` UDP socket to a remote host, you can use `send()` and
 `recv()` as well as `sendto()` and `recvfrom()`. If you want.
 
@@ -820,7 +820,7 @@ The resultant host name and service name will be written to the area
 pointed to by the `host` and `serv` parameters. Of course, you have to
 specify the max lengths of these buffers in `hostlen` and `servlen`.
 
-Finally, there are several flags you can pass, but here a a couple good
+Finally, there are several flags you can pass, but here are a couple good
 ones.  `NI_NOFQDN` will cause the `host` to only contain the host name,
 not the whole domain name. `NI_NAMEREQD` will cause the function to fail
 if the name cannot be found with a DNS lookup (if you don't specify this
@@ -1109,7 +1109,7 @@ but only actually do the swap if you're on a little-endian machine!
 
 Anyway, the way these functions work is that you first decide if you're
 converting _from_ host (your machine's) byte order or from network byte
-order.  If "host", the the first letter of the function you're going to
+order.  If "host", the first letter of the function you're going to
 call is "h".  Otherwise it's "n" for "network". The middle of the
 function name is always "to" because you're converting from one "to"
 another, and the penultimate letter shows what you're converting _to_.

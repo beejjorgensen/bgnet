@@ -462,7 +462,7 @@ Slackware, vim, Python, Inkscape, pandoc, many others. And finally a big
 thank-you to the literally thousands of you who have written in with
 suggestions for improvements and words of encouragement.
 
-I dedicate this guide to some of my biggest heroes and inpirators in the
+I dedicate this guide to some of my biggest heroes and inspirators in the
 world of computers: Donald Knuth, Bruce Schneier, W. Richard Stevens,
 and The Woz, my Readership, and the entire Free and Open Source Software
 Community.

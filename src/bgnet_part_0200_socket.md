@@ -151,7 +151,7 @@ Hey, kids, it's time to learn about [i[Data encapsulation]] _Data
 Encapsulation_! This is very very important. It's so important that you
 might just learn about it if you take the networks course here at Chico
 State `;-)`.  Basically, it says this: a packet is born, the packet is
-wrapped ("encapsulated") in a [i[Data enacapsulation-->header]] header
+wrapped ("encapsulated") in a [i[Data encapsulation-->header]] header
 (and rarely a [i[Data encapsulation-->footer]] footer) by the first
 protocol (say, the [i[TFTP]] TFTP protocol), then the whole thing (TFTP
 header included) is encapsulated again by the next protocol (say,
